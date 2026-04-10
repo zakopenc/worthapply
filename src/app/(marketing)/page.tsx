@@ -33,7 +33,22 @@ const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentP
 export const metadata: Metadata = {
   title: 'WorthApply — Know if you\'re the right fit, before you apply',
   description:
-    'Fit-first job search. WorthApply analyzes your real fit for a role before you tailor your resume — evidence-based, no fabrication. Built for selective applicants targeting competitive roles.',
+    'Fit-first job search. Analyze your real fit for a role in 10 seconds before tailoring your resume. Evidence-based, no fabrication. Free plan available.',
+  alternates: { canonical: 'https://www.worthapply.com' },
+  openGraph: {
+    title: 'WorthApply — Know if you\'re the right fit, before you apply',
+    description: 'Fit-first job search. Built for selective applicants targeting competitive roles.',
+    url: 'https://www.worthapply.com',
+    siteName: 'WorthApply',
+    images: [{ url: 'https://www.worthapply.com/og-image.png', width: 1200, height: 630 }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'WorthApply — Know if you\'re the right fit, before you apply',
+    description: 'Fit-first job search. Evidence-based. No fabrication.',
+    images: ['https://www.worthapply.com/og-image.png'],
+  },
 };
 
 export default function HomePage() {

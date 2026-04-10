@@ -4,8 +4,9 @@ import { ArrowRight, Target, Users, TrendUp } from '@/components/ui/phosphor-ico
 import { RevealOnScroll, StaggerGroup, FadeUp, HoverCard } from '@/components/ui/motion';
 
 export const metadata: Metadata = {
-  title: 'Compare WorthApply - How We Stack Up Against Other Resume Tools',
-  description: 'See how WorthApply compares to Jobscan, Teal, and Rezi. Fit-first workflow, evidence-backed AI, and strategic job search approach.',
+  title: 'WorthApply vs Jobscan vs Teal vs Rezi — Full Comparison 2026',
+  description: 'How does WorthApply compare to Jobscan ($49/mo), Rezi ($29/mo), and Teal ($29/mo)? See the full feature comparison and find out why fit-first beats keyword-stuffing.',
+  alternates: { canonical: 'https://www.worthapply.com/compare' },
 };
 
 const competitors = [

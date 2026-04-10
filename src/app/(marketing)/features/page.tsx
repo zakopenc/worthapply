@@ -16,11 +16,11 @@ import { FeaturesShowcase } from './FeaturesShowcase';
 import { StaggerGroup, FadeUp, RevealOnScroll } from '@/components/ui/motion';
 
 export const metadata: Metadata = {
-  title: 'Features | WorthApply',
+  title: 'Features — Job Fit Analysis, Resume Tailoring & Application Tracking',
   description:
-    'See how WorthApply combines fit analysis, evidence-backed tailoring, and organized tracking for stronger, more focused job applications.',
+    'Analyze job fit in seconds, tailor your resume with real evidence, and track every application in one place. The only tool that tells you whether to apply before you start tailoring.',
   alternates: {
-    canonical: 'https://worthapply.com/features',
+    canonical: 'https://www.worthapply.com/features',
   },
 };
 

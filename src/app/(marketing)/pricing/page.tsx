@@ -5,8 +5,9 @@ import PricingCard from '@/components/marketing/PricingCard';
 import { RevealOnScroll, StaggerGroup, FadeUp } from '@/components/ui/motion';
 
 export const metadata: Metadata = {
-  title: 'Pricing — WorthApply | Fit-first job search, unlimited analyses at $39/mo',
-  description: 'Simple, transparent pricing. Start free, upgrade when you need more. No credit card required for the free plan. 7-day money-back guarantee.',
+  title: 'Pricing — Unlimited Job Fit Analyses at $39/mo',
+  description: 'Simple, transparent pricing. Free plan available. Pro plan at $39/mo includes unlimited analyses, resume tailoring, cover letter generator, and application tracking. 7-day money-back guarantee.',
+  alternates: { canonical: 'https://www.worthapply.com/pricing' },
 };
 
 export default function PricingPage() {

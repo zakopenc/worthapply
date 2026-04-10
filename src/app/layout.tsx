@@ -23,20 +23,39 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://worthapply.com'),
-  title: "WorthApply | Know if you're the right fit, before you apply",
+  metadataBase: new URL('https://www.worthapply.com'),
+  title: {
+    default: "WorthApply — Know if you're the right fit, before you apply",
+    template: '%s | WorthApply',
+  },
   description:
-    "Fit-first job search platform. WorthApply analyzes your real fit for a role before you tailor your resume — evidence-based, no fabrication. Built for selective applicants going after competitive roles.",
+    "Fit-first job search. Analyze your real fit for a role in 10 seconds before tailoring your resume. Evidence-based, no fabrication. Built for selective applicants targeting competitive roles.",
   keywords: [
-    "fit-first job search",
-    "job fit analysis",
+    "job fit score",
     "resume tailoring",
-    "evidence-based resume",
-    "AI resume tool",
+    "ATS resume checker",
+    "jobscan alternative",
+    "should I apply for this job",
     "job application tracker",
     "cover letter generator",
-    "ATS resume checker",
+    "fit-first job search",
+    "job fit analysis",
+    "evidence-based resume",
+    "AI resume tool",
   ],
+  authors: [{ name: 'WorthApply' }],
+  creator: 'WorthApply',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large' as const,
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: [
       { url: '/favicon.ico?v=3', sizes: 'any' },
