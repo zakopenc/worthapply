@@ -34,6 +34,13 @@ function convertMarkdownTables(content: string): string {
   return result.join('\n');
 }
 
+function inlineMd(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>');
+}
+
 function tableToHTML(rows: string[]): string {
   const parseCells = (row: string): string[] =>
     row.split('|').slice(1, -1).map(cell => cell.trim());
@@ -41,11 +48,11 @@ function tableToHTML(rows: string[]): string {
   const headers = parseCells(rows[0]);
   const bodyRows = rows.slice(2); // skip header + separator
 
-  const headerHTML = headers.map(h => `<th>${h}</th>`).join('');
+  const headerHTML = headers.map(h => `<th>${inlineMd(h)}</th>`).join('');
   const bodyHTML = bodyRows
     .map(row => {
       const cells = parseCells(row);
-      return `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
+      return `<tr>${cells.map(c => `<td>${inlineMd(c)}</td>`).join('')}</tr>`;
     })
     .join('\n');
 
@@ -151,7 +158,4 @@ export async function getFeaturedPosts(): Promise<BlogPostMetadata[]> {
   return allPosts.filter(post => post.featured).slice(0, 3);
 }
 
-export async function getPostsByCategory(category: 'comparison' | 'guide'): Promise<BlogPostMetadata[]> {
-  const allPosts = await getAllPosts();
-  return allPosts.filter(post => post.category === category);
-}
+export async function getPostsByCategory(category: 'compa
