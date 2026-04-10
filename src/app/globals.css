@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dark mode — invert the Material Design 3 surfaces and text colors */
+/* Dark mode — comprehensive inversion for hardcoded color sites */
 @layer base {
   :root {
     --background: 252 249 245; /* #fcf9f5 */
@@ -10,49 +10,38 @@
   }
 
   .dark {
-    --background: 17 17 17; /* #111111 */
-    --foreground: 245 245 245; /* #f5f5f5 */
-
-    /* Override M3 surfaces, text, and key tokens via specificity */
+    --background: 17 17 17;
+    --foreground: 245 245 245;
     color-scheme: dark;
   }
+}
 
-  /* Dark mode overrides for all M3 color utilities */
-  .dark .bg-background,
-  .dark.bg-background { background-color: #111111 !important; }
-  .dark .bg-surface,
-  .dark.bg-surface { background-color: #111111 !important; }
-  .dark .bg-surface-dim { background-color: #1a1a1a !important; }
-  .dark .bg-surface-bright { background-color: #242424 !important; }
-  .dark .bg-surface-container-lowest { background-color: #0c0c0c !important; }
-  .dark .bg-surface-container-low { background-color: #161616 !important; }
-  .dark .bg-surface-container { background-color: #1e1e1e !important; }
-  .dark .bg-surface-container-high { background-color: #262626 !important; }
-  .dark .bg-surface-container-highest { background-color: #303030 !important; }
-  .dark .bg-surface-variant { background-color: #2d2a27 !important; }
+/* Dark mode: invert everything, then re-invert media so images look normal.
+   hue-rotate(180deg) corrects the hue shift from invert(). */
+html.dark {
+  filter: invert(0.92) hue-rotate(180deg);
+  background-color: #111 !important;
+}
 
-  .dark .text-on-surface,
-  .dark.text-on-surface { color: #e5e2de !important; }
-  .dark .text-on-background { color: #e5e2de !important; }
-  .dark .text-on-surface-variant { color: #cfc5bd !important; }
+/* Re-invert media elements so images/videos look normal */
+html.dark img,
+html.dark video,
+html.dark svg:not(.phosphor-icon),
+html.dark [style*="background-image"],
+html.dark canvas,
+html.dark iframe,
+html.dark .no-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
 
-  .dark .border-outline-variant { border-color: #3d3832 !important; }
-  .dark [class*="border-outline-variant\\/"] { border-color: rgba(61, 56, 50, var(--tw-border-opacity, 1)) !important; }
+/* Fix the Remy chat widget avatar */
+html.dark [class*="chat-widget"] img {
+  filter: invert(1) hue-rotate(180deg);
+}
 
-  .dark .bg-primary { background-color: #ccc5c0 !important; }
-  .dark .text-primary { color: #ccc5c0 !important; }
-  .dark .text-on-primary { color: #111111 !important; }
-  .dark .bg-secondary { background-color: #fab79c !important; }
-  .dark .text-secondary { color: #fab79c !important; }
-  .dark .bg-secondary-container { background-color: #3d2518 !important; }
-  .dark .text-on-secondary-container { color: #ffdbcd !important; }
-
-  .dark .bg-error-container { background-color: #93000a !important; }
-  .dark .text-on-error-container { color: #ffdad6 !important; }
-
-  .dark .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3) !important; }
-  .dark .shadow-md { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3) !important; }
-  .dark .shadow-lg { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important; }
+/* Ensure shadows don't look weird inverted */
+html.dark * {
+  --tw-shadow-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Material Symbols Icon Configuration */
