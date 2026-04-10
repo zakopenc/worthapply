@@ -3,7 +3,7 @@ import { SealCheck, ShieldCheck, Sparkle, Target } from '@/components/ui/phospho
 import { StaggerGroup, FadeUp, RevealOnScroll, GradientCard } from '@/components/ui/motion';
 import styles from './about.module.css';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'About | WorthApply',
