@@ -22,6 +22,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://worthapply.com/sitemap.xml',
+    sitemap: 'https://www.worthapply.com/sitemap.xml',
   };
 }

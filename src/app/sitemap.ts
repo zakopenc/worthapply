@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/blog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://worthapply.com';
+  const baseUrl = 'https://www.worthapply.com';
   const blogPosts = await getAllPosts();
   
   return [
@@ -52,9 +52,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     
+    // Alternative pages - high conversion value
+    {
+      url: `${baseUrl}/alternative/jobscan-alternative`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/alternative/teal-alternative`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/alternative/rezi-alternative`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+
     // Tools - acquisition surfaces
     {
       url: `${baseUrl}/tools/ats-checker`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+
+    // Demo page
+    {
+      url: `${baseUrl}/demo`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
