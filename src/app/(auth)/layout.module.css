@@ -1,0 +1,141 @@
+.wrapper {
+  min-height: 100vh;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 30%),
+    radial-gradient(circle at 85% 10%, rgba(6, 182, 212, 0.12), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #eef6ff 40%, #ffffff 100%);
+}
+
+.shell {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  min-height: calc(100vh - 96px);
+  display: grid;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.brandPanel,
+.card {
+  border-radius: 30px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+}
+
+.brandPanel {
+  padding: 28px;
+  background: linear-gradient(135deg, #0f172a 0%, #111827 55%, #0b1220 100%);
+  color: #e2e8f0;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.logoMark {
+  display: inline-flex;
+  align-items: center;
+}
+
+.logoMark :global(img) {
+  display: block;
+  width: auto;
+  height: 46px;
+}
+
+.brandContent {
+  margin-top: 48px;
+}
+
+.kicker {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brandContent h1 {
+  margin-top: 18px;
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  max-width: 11ch;
+}
+
+.brandContent p {
+  margin-top: 16px;
+  max-width: 40rem;
+  color: #cbd5e1;
+  line-height: 1.75;
+}
+
+.points {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+  list-style: none;
+}
+
+.points li {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.cardInner {
+  padding: 28px;
+}
+
+.globalFooter {
+  width: min(1180px, 100%);
+  margin: 20px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footerLinks a {
+  color: #475569;
+}
+
+.footerLinks a:hover {
+  color: #0f172a;
+}
+
+@media (min-width: 960px) {
+  .shell {
+    grid-template-columns: 1.02fr 0.88fr;
+  }
+
+  .card {
+    align-self: center;
+  }
+
+  .globalFooter {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

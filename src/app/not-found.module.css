@@ -1,0 +1,81 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-8);
+  text-align: center;
+  background: var(--color-bg);
+}
+
+.code {
+  font-size: 120px;
+  font-weight: var(--weight-extrabold);
+  color: var(--color-surface-container-high);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-4);
+}
+
+.message {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+}
+
+.description {
+  font-size: var(--text-body);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-8);
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+.links {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.primaryLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-8);
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--text-button);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  box-shadow: var(--shadow-accent);
+  transition: all var(--transition-fast);
+}
+
+.primaryLink:hover {
+  background: var(--color-accent-dark);
+}
+
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-6);
+  background: var(--color-surface-container-lowest);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-button);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.secondaryLink:hover {
+  background: var(--color-surface-container-low);
+}

@@ -1,0 +1,463 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-8);
+  display: grid;
+  gap: var(--space-6);
+  animation: fadeIn 0.28s ease;
+}
+
+.heroCard,
+.metricCard,
+.filterCard,
+.card,
+.upgradeCard,
+.emptyState {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(198, 138, 113, 0.14);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.heroCard {
+  display: grid;
+  grid-template-columns: 1.2fr auto;
+  gap: var(--space-6);
+  padding: clamp(1.5rem, 1.1rem + 1vw, 2.25rem);
+  background:
+    radial-gradient(circle at top right, rgba(198, 138, 113, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 249, 246, 0.95) 100%);
+}
+
+.heroEyebrow,
+.sectionEyebrow,
+.metricLabel {
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+}
+
+.heroTitle {
+  margin-top: var(--space-2);
+  font-size: clamp(2rem, 1.6rem + 1.1vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--color-text);
+}
+
+.heroText,
+.metricText,
+.filterMeta,
+.cardCompany,
+.inlineHint,
+.emptyDesc,
+.upgradeText,
+.upgradeBenefits span {
+  color: var(--color-text-secondary);
+}
+
+.heroText {
+  margin-top: var(--space-4);
+  max-width: 62ch;
+}
+
+.heroHighlights,
+.cardMeta,
+.tags,
+.upgradeBenefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.heroHighlights {
+  margin-top: var(--space-5);
+}
+
+.highlightItem,
+.locationBadge,
+.tag,
+.verdictBadge,
+.filterMeta,
+.pill,
+.upgradeBenefits span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+}
+
+.highlightItem,
+.locationBadge,
+.tag,
+.filterMeta,
+.pill,
+.upgradeBenefits span {
+  background: var(--color-surface-container-low);
+}
+
+.heroActions {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 220px;
+}
+
+.primaryAction,
+.secondaryAction,
+.analyzeLink,
+.upgradeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 16px;
+  text-decoration: none;
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.primaryAction,
+.upgradeBtn {
+  background: linear-gradient(180deg, #d59a81 0%, var(--color-accent) 100%);
+  color: #fff;
+  box-shadow: var(--shadow-accent);
+}
+
+.secondaryAction,
+.analyzeLink {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.primaryAction:hover,
+.secondaryAction:hover,
+.analyzeLink:hover,
+.upgradeBtn:hover,
+.pill:hover,
+.bookmarkBtn:hover,
+.card:hover {
+  transform: translateY(-1px);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.metricCard,
+.filterCard,
+.card,
+.upgradeCard {
+  padding: 1.25rem;
+}
+
+.metricValue {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-text);
+}
+
+.metricText {
+  margin-top: 10px;
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.sectionTitle {
+  margin-top: 4px;
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+}
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: var(--space-5);
+}
+
+.pill {
+  border: 1px solid transparent;
+  color: var(--color-text-secondary);
+}
+
+.pillActive {
+  background: rgba(198, 138, 113, 0.14);
+  border-color: rgba(198, 138, 113, 0.2);
+  color: var(--color-accent-dark);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.cardTop {
+  display: flex;
+  gap: var(--space-4);
+  padding-right: 40px;
+}
+
+.companyLogo {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: rgba(198, 138, 113, 0.12);
+  color: var(--color-accent-dark);
+  font-size: 1.1rem;
+  font-weight: var(--weight-bold);
+}
+
+.cardInfo {
+  min-width: 0;
+}
+
+.cardTitle {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+}
+
+.cardCompany {
+  margin-top: 4px;
+}
+
+.bookmarkBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.bookmarkBtn:hover,
+.bookmarkActive {
+  background: rgba(198, 138, 113, 0.1);
+  color: var(--color-accent-dark);
+}
+
+.cardMeta {
+  margin-top: var(--space-4);
+}
+
+.locationBadge {
+  color: var(--color-text-secondary);
+}
+
+.salary {
+  color: var(--color-accent-dark);
+  font-weight: var(--weight-semibold);
+}
+
+.cardScoreRow {
+  margin-top: var(--space-5);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.scoreBox {
+  display: grid;
+  gap: 4px;
+}
+
+.scoreBox strong {
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.scoreBox span {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+}
+
+.verdictBadge {
+  text-transform: capitalize;
+}
+
+.verdictApply {
+  background: rgba(198, 138, 113, 0.14);
+  color: var(--color-accent-dark);
+}
+
+.verdictLowPriority {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning);
+}
+
+.verdictSkip {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-danger);
+}
+
+.tags {
+  margin-top: var(--space-5);
+}
+
+.tag {
+  color: var(--color-accent-dark);
+}
+
+.cardFooter {
+  margin-top: var(--space-5);
+  display: grid;
+  gap: 10px;
+}
+
+.inlineHint {
+  font-size: var(--text-small);
+}
+
+.lockedSection {
+  position: relative;
+}
+
+.upgradeOverlayContent {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.42;
+}
+
+.upgradeCard {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: min(460px, calc(100% - 2rem));
+  text-align: center;
+  z-index: 10;
+}
+
+.upgradeIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-4);
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(198, 138, 113, 0.14);
+  color: var(--color-accent-dark);
+}
+
+.upgradeTitle,
+.emptyTitle {
+  color: var(--color-text);
+  font-size: 1.4rem;
+  letter-spacing: -0.03em;
+}
+
+.upgradeText {
+  margin-top: 12px;
+  line-height: 1.65;
+}
+
+.upgradeBenefits {
+  justify-content: center;
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.emptyState {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+}
+
+.emptyIcon {
+  color: var(--color-accent-dark);
+  opacity: 0.4;
+  margin-bottom: var(--space-4);
+}
+
+.emptyDesc {
+  margin-top: 10px;
+  max-width: 50ch;
+}
+
+@media (max-width: 1100px) {
+  .heroCard,
+  .metricsGrid,
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroActions {
+    min-width: 0;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: var(--space-5);
+  }
+
+  .heroActions,
+  .filterHeader,
+  .cardScoreRow {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .primaryAction,
+  .secondaryAction,
+  .analyzeLink,
+  .upgradeBtn {
+    width: 100%;
+  }
+
+  .upgradeCard {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    margin-top: -2rem;
+  }
+}

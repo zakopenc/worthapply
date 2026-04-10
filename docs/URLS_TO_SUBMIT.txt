@@ -1,0 +1,30 @@
+# URLs to Submit to Google Search Console
+# Copy-paste these into URL Inspection tool for immediate indexing
+
+## Priority 1: New SEO Content (Submit These First)
+https://worthapply.com/blog
+https://worthapply.com/blog/worthapply-vs-jobscan
+https://worthapply.com/blog/worthapply-vs-teal
+https://worthapply.com/blog/worthapply-vs-rezi
+https://worthapply.com/tools/ats-checker
+
+## Priority 2: Sitemap (Auto-discovers all pages)
+https://worthapply.com/sitemap.xml
+
+## Priority 3: Supporting Pages
+https://worthapply.com
+https://worthapply.com/pricing
+https://worthapply.com/signup
+
+---
+
+## Google Search Console Submission Steps:
+
+1. Go to: https://search.google.com/search-console
+2. Select property: worthapply.com
+3. Click "URL Inspection" in left sidebar
+4. Paste URL from list above
+5. Click "Request Indexing"
+6. Repeat for all Priority 1 URLs
+
+Expected timeline: 1-7 days for indexing

@@ -1,0 +1,526 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-8);
+  display: grid;
+  gap: var(--space-6);
+  animation: fadeIn 0.28s ease;
+}
+
+.heroCard,
+.metricCard,
+.featureCard,
+.tableCard,
+.sideCard,
+.emptyPanel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(198, 138, 113, 0.14);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.heroCard {
+  display: grid;
+  grid-template-columns: 1.2fr auto;
+  gap: var(--space-6);
+  padding: clamp(1.5rem, 1.1rem + 1vw, 2.25rem);
+  background:
+    radial-gradient(circle at top right, rgba(198, 138, 113, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 249, 246, 0.95) 100%);
+}
+
+.heroEyebrow,
+.sectionEyebrow,
+.metricLabel {
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+}
+
+.heroTitle {
+  margin-top: var(--space-2);
+  font-size: clamp(2rem, 1.6rem + 1.1vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--color-text);
+}
+
+.heroText,
+.metricText,
+.recommendationText,
+.emptyPanel p,
+.emptyBlock p,
+.emptyBlockCompact p,
+.roleCell span,
+.mutedText,
+.digestItem span,
+.quickActionPrimary span,
+.quickActionSecondary span {
+  color: var(--color-text-secondary);
+}
+
+.heroText {
+  margin-top: var(--space-4);
+  max-width: 60ch;
+}
+
+.heroHighlights,
+.pipelineRow,
+.applicationMeta,
+.digestMeta,
+.actionStack,
+.healthRows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.highlightItem,
+.pipelinePill,
+.scoreChip,
+.statusBadge,
+.ghostFlag,
+.verdictBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+}
+
+.heroHighlights {
+  margin-top: var(--space-5);
+}
+
+.highlightItem {
+  background: var(--color-surface-container-low);
+  color: var(--color-text-secondary);
+}
+
+.heroActions {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 230px;
+}
+
+.primaryAction,
+.secondaryAction,
+.inlineLink,
+.quickActionPrimary,
+.quickActionSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.primaryAction,
+.secondaryAction {
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 16px;
+  text-decoration: none;
+}
+
+.primaryAction {
+  background: linear-gradient(180deg, #d59a81 0%, var(--color-accent) 100%);
+  color: #fff;
+  box-shadow: var(--shadow-accent);
+}
+
+.secondaryAction,
+.inlineLink,
+.quickActionSecondary {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.primaryAction:hover,
+.secondaryAction:hover,
+.inlineLink:hover,
+.quickActionPrimary:hover,
+.quickActionSecondary:hover {
+  transform: translateY(-1px);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.metricCard,
+.featureCard,
+.tableCard,
+.sideCard {
+  padding: 1.25rem;
+}
+
+.metricHeader,
+.sectionHeader,
+.sectionHeaderCompact,
+.healthRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.metricHeader svg,
+.sectionHeaderCompact svg {
+  color: var(--color-accent-dark);
+}
+
+.metricValue {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-text);
+}
+
+.metricText {
+  margin-top: 10px;
+  font-size: var(--text-small);
+}
+
+.pipelineRow {
+  gap: 12px;
+}
+
+.pipelinePill {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(198, 138, 113, 0.14);
+}
+
+.pipelinePill span {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: var(--text-label);
+}
+
+.pipelinePill strong {
+  color: var(--color-text);
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) 360px;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.primaryColumn,
+.sideColumn,
+.digestList,
+.applicationList {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.sectionTitle,
+.sectionTitleSmall,
+.recommendationTitle,
+.applicationItem h3,
+.emptyPanel h3 {
+  color: var(--color-text);
+  letter-spacing: -0.03em;
+}
+
+.sectionTitle {
+  margin-top: 4px;
+  font-size: 1.25rem;
+}
+
+.sectionTitleSmall {
+  margin-top: 4px;
+  font-size: 1rem;
+}
+
+.inlineLink {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.verdictBadge {
+  text-transform: capitalize;
+}
+
+.verdictApply {
+  background: rgba(198, 138, 113, 0.14);
+  color: var(--color-accent-dark);
+}
+
+.verdictLowPriority {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning);
+}
+
+.verdictSkip {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-danger);
+}
+
+.recommendationCard {
+  margin-top: var(--space-5);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-5);
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--color-surface-container-low);
+}
+
+.recommendationTitle {
+  font-size: 1.2rem;
+}
+
+.recommendationCompany {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+}
+
+.recommendationText {
+  margin-top: 10px;
+  max-width: 58ch;
+}
+
+.scoreBlock {
+  min-width: 120px;
+  display: grid;
+  justify-items: end;
+  align-content: start;
+}
+
+.scoreBlock strong {
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.scoreBlock span {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+}
+
+.tableWrap {
+  margin-top: var(--space-5);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.table th {
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background: rgba(198, 138, 113, 0.04);
+}
+
+.roleCell {
+  display: grid;
+  gap: 4px;
+}
+
+.roleCell strong,
+.digestItem strong,
+.quickActionPrimary strong,
+.quickActionSecondary strong,
+.applicationItem h3 {
+  color: var(--color-text);
+}
+
+.scoreChip {
+  background: var(--color-surface-container-low);
+}
+
+.applicationItem,
+.digestItem,
+.quickActionPrimary,
+.quickActionSecondary,
+.emptyBlock,
+.emptyBlockCompact {
+  border-radius: 18px;
+  text-decoration: none;
+}
+
+.applicationItem,
+.digestItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: var(--color-surface-container-low);
+}
+
+.applicationItem p {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+}
+
+.applicationMeta,
+.digestMeta {
+  justify-content: flex-end;
+}
+
+.statusBadge {
+  text-transform: capitalize;
+}
+
+.statusSaved { background: var(--color-surface-container); color: var(--color-text-secondary); }
+.statusApplied { background: rgba(198, 138, 113, 0.12); color: var(--color-accent-dark); }
+.statusInterview { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+.statusOffer { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+.statusRejected { background: rgba(220, 38, 38, 0.1); color: var(--color-danger); }
+
+.ghostFlag {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning);
+}
+
+.digestItem span {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--text-small);
+}
+
+.quickActionPrimary,
+.quickActionSecondary {
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.quickActionPrimary {
+  background: linear-gradient(180deg, rgba(213, 154, 129, 0.16) 0%, rgba(198, 138, 113, 0.1) 100%);
+  color: var(--color-text);
+  border: 1px solid rgba(198, 138, 113, 0.2);
+}
+
+.healthRows {
+  display: grid;
+  margin-top: var(--space-3);
+}
+
+.healthRow {
+  min-height: 42px;
+  padding: 0 2px;
+  color: var(--color-text-secondary);
+}
+
+.healthRow strong {
+  color: var(--color-text);
+}
+
+.emptyPanel {
+  margin-top: var(--space-5);
+  padding: 32px 20px;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.emptyPanel svg,
+.emptyBlock svg,
+.emptyBlockCompact svg {
+  color: var(--color-accent-dark);
+}
+
+.emptyBlock,
+.emptyBlockCompact {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: var(--color-surface-container-low);
+}
+
+.emptyBlock strong {
+  display: block;
+  color: var(--color-text);
+}
+
+.emptyBlockCompact {
+  align-items: center;
+}
+
+@media (max-width: 1180px) {
+  .heroCard,
+  .metricsGrid,
+  .mainGrid,
+  .recommendationCard {
+    grid-template-columns: 1fr;
+  }
+
+  .heroActions {
+    min-width: 0;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: var(--space-5);
+  }
+
+  .heroActions,
+  .pipelineRow,
+  .applicationMeta,
+  .digestMeta {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .primaryAction,
+  .secondaryAction,
+  .inlineLink {
+    width: 100%;
+  }
+
+  .applicationItem,
+  .digestItem,
+  .recommendationCard,
+  .sectionHeader,
+  .sectionHeaderCompact {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}

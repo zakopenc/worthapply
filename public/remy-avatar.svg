@@ -1,0 +1,61 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#84523c"/>
+      <stop offset="1" stop-color="#C68A71"/>
+    </linearGradient>
+    <linearGradient id="faceGrad" x1="60" y1="50" x2="140" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDDCB5"/>
+      <stop offset="1" stop-color="#F0C9A0"/>
+    </linearGradient>
+    <linearGradient id="hairGrad" x1="55" y1="30" x2="145" y2="90" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3D2314"/>
+      <stop offset="1" stop-color="#5C3A26"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="url(#bgGrad)"/>
+  <!-- Neck -->
+  <rect x="85" y="135" width="30" height="20" rx="4" fill="url(#faceGrad)"/>
+  <!-- Shoulders / top -->
+  <ellipse cx="100" cy="175" rx="55" ry="30" fill="#FFF9F3"/>
+  <ellipse cx="100" cy="175" rx="50" ry="27" fill="#f6f3ef"/>
+  <!-- Face -->
+  <ellipse cx="100" cy="100" rx="42" ry="48" fill="url(#faceGrad)"/>
+  <!-- Hair back -->
+  <ellipse cx="100" cy="72" rx="46" ry="38" fill="url(#hairGrad)"/>
+  <!-- Hair bangs -->
+  <path d="M58 78 C62 52, 82 42, 100 44 C118 42, 138 52, 142 78 C140 66, 125 56, 100 55 C75 56, 60 66, 58 78Z" fill="url(#hairGrad)"/>
+  <!-- Hair sides -->
+  <path d="M58 78 C55 90, 56 108, 62 118 C60 104, 58 88, 58 78Z" fill="url(#hairGrad)"/>
+  <path d="M142 78 C145 90, 144 108, 138 118 C140 104, 142 88, 142 78Z" fill="url(#hairGrad)"/>
+  <!-- Eyes -->
+  <ellipse cx="82" cy="100" rx="5.5" ry="6" fill="#3D2314"/>
+  <ellipse cx="118" cy="100" rx="5.5" ry="6" fill="#3D2314"/>
+  <!-- Eye shine -->
+  <circle cx="84" cy="98" r="2" fill="white" opacity="0.8"/>
+  <circle cx="120" cy="98" r="2" fill="white" opacity="0.8"/>
+  <!-- Eyebrows -->
+  <path d="M72 90 Q82 85, 90 89" stroke="#3D2314" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M110 89 Q118 85, 128 90" stroke="#3D2314" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Nose -->
+  <path d="M97 108 Q100 113, 103 108" stroke="#D4A882" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Smile -->
+  <path d="M85 118 Q100 130, 115 118" stroke="#C17F5C" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Cheek blush -->
+  <ellipse cx="72" cy="112" rx="8" ry="5" fill="#F0A08C" opacity="0.3"/>
+  <ellipse cx="128" cy="112" rx="8" ry="5" fill="#F0A08C" opacity="0.3"/>
+  <!-- Headset band -->
+  <path d="M54 90 C54 58, 74 40, 100 40 C126 40, 146 58, 146 90" stroke="#555" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Headset ear left -->
+  <rect x="48" y="86" width="12" height="20" rx="6" fill="#444"/>
+  <rect x="50" y="89" width="8" height="14" rx="4" fill="#666"/>
+  <!-- Headset ear right -->
+  <rect x="140" y="86" width="12" height="20" rx="6" fill="#444"/>
+  <rect x="142" y="89" width="8" height="14" rx="4" fill="#666"/>
+  <!-- Headset mic arm -->
+  <path d="M50 100 C42 100, 38 110, 42 118 L56 118" stroke="#555" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Mic -->
+  <ellipse cx="56" cy="118" rx="5" ry="4" fill="#444"/>
+  <ellipse cx="56" cy="118" rx="3" ry="2.5" fill="#666"/>
+</svg>

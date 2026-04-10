@@ -1,0 +1,565 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.page {
+  display: grid;
+  gap: var(--space-6);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-8);
+  animation: fadeIn 0.28s ease;
+}
+
+.heroCard,
+.scoreCard,
+.actionCard,
+.mainPanel,
+.sideCard,
+.loadingState,
+.emptyState,
+.successBanner,
+.errorBanner {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(198, 138, 113, 0.14);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.heroCard {
+  display: grid;
+  grid-template-columns: 1.25fr auto;
+  gap: var(--space-5);
+  padding: clamp(1.4rem, 1rem + 1vw, 2rem);
+  background:
+    radial-gradient(circle at top right, rgba(198, 138, 113, 0.15), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 249, 246, 0.95) 100%);
+}
+
+.eyebrow,
+.cardLabel,
+.rewriteLabel {
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+}
+
+.heroTitle {
+  margin-top: var(--space-2);
+  font-size: clamp(1.9rem, 1.5rem + 1vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--color-text);
+}
+
+.heroMetaRow,
+.actionMeta,
+.keywordList,
+.statusGrid,
+.tabList,
+.dualMetricRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.metaPill,
+.statusBadge,
+.keywordChip,
+.keywordChipMatched,
+.skillChip,
+.signalPillPositive,
+.signalPillWarning,
+.calloutWarning {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
+}
+
+.metaPill {
+  background: var(--color-surface-container-low);
+  color: var(--color-text-secondary);
+}
+
+.heroSummary,
+.supportText,
+.emptyText,
+.coverLetterText,
+.detailCard p,
+.loadingState p,
+.emptyState p {
+  color: var(--color-text-secondary);
+}
+
+.heroSummary {
+  margin-top: var(--space-4);
+  max-width: 60ch;
+}
+
+.heroActions {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 220px;
+}
+
+.primaryButton,
+.secondaryButton,
+.copyButton,
+.statusOption,
+.tab {
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 46px;
+  padding: 0 16px;
+}
+
+.primaryButton {
+  background: linear-gradient(180deg, #d59a81 0%, var(--color-accent) 100%);
+  color: #fff;
+  box-shadow: var(--shadow-accent);
+}
+
+.secondaryButton,
+.copyButton,
+.statusOption,
+.tab {
+  background: #fff;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.copyButton:hover,
+.statusOption:hover,
+.tab:hover {
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.statusOption:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.inlineSpin,
+.spinner {
+  animation: spin 0.9s linear infinite;
+}
+
+.successBanner,
+.errorBanner {
+  padding: 12px 16px;
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+}
+
+.successBanner {
+  color: var(--color-accent-dark);
+  background: rgba(198, 138, 113, 0.12);
+}
+
+.errorBanner {
+  color: var(--color-danger);
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr 1fr;
+  gap: var(--space-5);
+}
+
+.scoreCard,
+.actionCard,
+.mainPanel,
+.sideCard {
+  padding: 1.25rem;
+}
+
+.cardHeader,
+.detailHeader,
+.checkRow,
+.metricRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scoreRingWrap {
+  position: relative;
+  width: 156px;
+  height: 156px;
+  margin: var(--space-5) auto;
+}
+
+.scoreRingSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.scoreRingTrack,
+.scoreRingFill {
+  fill: none;
+  stroke-width: 10;
+}
+
+.scoreRingTrack {
+  stroke: var(--color-surface-container-high);
+}
+
+.scoreRingFill {
+  stroke-linecap: round;
+}
+
+.scoreRingCenter {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.scoreRingCenter strong {
+  color: var(--color-text);
+  font-size: 2.15rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.scoreRingCenter span {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+  text-transform: capitalize;
+}
+
+.metricStack,
+.checkStack,
+.panelStack,
+.signalList,
+.rewriteList {
+  display: grid;
+  gap: 12px;
+}
+
+.metricRow,
+.checkRow {
+  min-height: 38px;
+  padding: 0 2px;
+  color: var(--color-text-secondary);
+}
+
+.metricRow strong,
+.checkRow strong,
+.miniMetricCard strong,
+.signalItem strong,
+.actionTitle,
+.emptyState h3,
+.emptyPanel h3,
+.detailCard h3 {
+  color: var(--color-text);
+}
+
+.actionTitle {
+  margin-top: var(--space-4);
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.metaBlock {
+  display: grid;
+  gap: 4px;
+  min-width: 110px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: var(--color-surface-container-low);
+}
+
+.metaBlock strong {
+  color: var(--color-text);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.metaBlock span {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.warningCallout,
+.calloutWarning {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning);
+}
+
+.statusGrid {
+  margin-top: var(--space-4);
+}
+
+.statusOption {
+  min-height: 40px;
+  padding: 0 12px;
+  text-transform: capitalize;
+}
+
+.statusOptionActive {
+  background: rgba(198, 138, 113, 0.12);
+  border-color: rgba(198, 138, 113, 0.2);
+  color: var(--color-accent-dark);
+}
+
+.workspaceGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) 360px;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.mainPanel {
+  min-width: 0;
+}
+
+.tabList {
+  margin-bottom: var(--space-5);
+}
+
+.tab {
+  min-height: 42px;
+  padding: 0 14px;
+}
+
+.tabActive {
+  background: rgba(198, 138, 113, 0.12);
+  border-color: rgba(198, 138, 113, 0.18);
+  color: var(--color-accent-dark);
+}
+
+.tabPanel {
+  min-height: 420px;
+}
+
+.miniMetricCard,
+.detailCard,
+.rewriteItem,
+.signalItem,
+.emptyPanel {
+  border-radius: 18px;
+  background: var(--color-surface-container-low);
+}
+
+.miniMetricCard {
+  min-width: 140px;
+  padding: 12px 14px;
+}
+
+.miniMetricCard span,
+.rewriteLabel {
+  display: block;
+}
+
+.miniMetricCard span {
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.miniMetricCard strong {
+  margin-top: 6px;
+  display: block;
+  font-size: 1.1rem;
+}
+
+.detailCard,
+.rewriteItem,
+.signalItem {
+  padding: 16px;
+}
+
+.detailHeader {
+  margin-bottom: 12px;
+}
+
+.detailCard h3 {
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.copyButton {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.rewriteItem {
+  display: grid;
+  gap: 12px;
+}
+
+.rewriteLabel {
+  margin-bottom: 6px;
+}
+
+.skillChip {
+  background: rgba(198, 138, 113, 0.12);
+  color: var(--color-accent-dark);
+}
+
+.coverLetterText {
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.signalItem {
+  display: grid;
+  gap: 10px;
+}
+
+.signalPillPositive {
+  background: rgba(198, 138, 113, 0.14);
+  color: var(--color-accent-dark);
+  width: fit-content;
+}
+
+.signalPillWarning {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning);
+  width: fit-content;
+}
+
+.sidePanel {
+  display: grid;
+  gap: var(--space-4);
+  position: sticky;
+  top: calc(var(--topbar-height) + var(--space-6));
+}
+
+.notesTextarea {
+  width: 100%;
+  min-height: 160px;
+  margin-top: var(--space-4);
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  resize: vertical;
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: #fff;
+}
+
+.notesTextarea:focus {
+  outline: none;
+  border-color: rgba(198, 138, 113, 0.45);
+  box-shadow: 0 0 0 4px rgba(198, 138, 113, 0.1);
+}
+
+.keywordChip {
+  background: var(--color-surface-container-low);
+  color: var(--color-text-secondary);
+}
+
+.keywordChipMatched {
+  background: rgba(198, 138, 113, 0.14);
+  color: var(--color-accent-dark);
+}
+
+.passText {
+  color: var(--color-accent-dark);
+}
+
+.warnText {
+  color: var(--color-warning);
+}
+
+.loadingState,
+.emptyState,
+.emptyPanel {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.loadingState,
+.emptyState {
+  padding: var(--space-16) var(--space-6);
+}
+
+.emptyPanel {
+  gap: 10px;
+  padding: 32px 20px;
+}
+
+.emptyPanel svg,
+.emptyState svg,
+.loadingState svg {
+  color: var(--color-accent-dark);
+}
+
+.statusSaved { background: var(--color-surface-container-low); color: var(--color-text-secondary); }
+.statusApplied { background: rgba(198, 138, 113, 0.12); color: var(--color-accent-dark); }
+.statusInterview { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+.statusOffer { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+.statusRejected { background: rgba(220, 38, 38, 0.1); color: var(--color-danger); }
+
+@media (max-width: 1180px) {
+  .summaryGrid,
+  .workspaceGrid,
+  .heroCard {
+    grid-template-columns: 1fr;
+  }
+
+  .sidePanel {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-5);
+  }
+
+  .heroActions,
+  .primaryButton,
+  .secondaryButton,
+  .statusOption,
+  .tab,
+  .copyButton {
+    width: 100%;
+  }
+
+  .heroActions,
+  .tabList,
+  .dualMetricRow,
+  .statusGrid,
+  .actionMeta {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
