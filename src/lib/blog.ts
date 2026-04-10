@@ -158,4 +158,7 @@ export async function getFeaturedPosts(): Promise<BlogPostMetadata[]> {
   return allPosts.filter(post => post.featured).slice(0, 3);
 }
 
-export async function getPostsByCategory(category: 'compa
+export async function getPostsByCategory(category: 'comparison' | 'guide' | 'tool'): Promise<BlogPostMetadata[]> {
+  const allPosts = await getAllPosts();
+  return allPosts.filter(post => post.category === category);
+}
