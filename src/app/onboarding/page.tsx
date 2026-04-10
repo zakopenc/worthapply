@@ -2,54 +2,66 @@
 
 import { useRef, useState, type KeyboardEvent } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  LayoutDashboard,
+  Briefcase,
+  CheckCircle,
+  CurrencyDollar,
   MapPin,
-  Search,
-  Sparkles,
+  MagnifyingGlass,
+  Sparkle,
+  SquaresFour,
   Target,
-  Upload,
+  UploadSimple,
   Wallet,
   X,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import Topbar from '@/components/app/Topbar';
 import { createClient } from '@/lib/supabase/client';
 import styles from './onboarding.module.css';
 
 const STEPS = [
-  { title: 'Resume foundation', short: 'Resume' },
+  { title: 'Upload your resume', short: 'Resume' },
   { title: 'Search goals', short: 'Goals' },
-  { title: 'Compensation and location', short: 'Preferences' },
-  { title: 'Launch', short: 'Complete' },
+  { title: 'Preferences', short: 'Preferences' },
+  { title: 'All set', short: 'Complete' },
 ] as const;
+
+const STEP_ICONS = [
+  UploadSimple,
+  Briefcase,
+  CurrencyDollar,
+  Sparkle,
+];
 
 const WORK_PREFERENCES = [
-  { value: 'remote', label: 'Remote' },
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'onsite', label: 'On-site' },
+  { value: 'remote', label: 'Remote', desc: 'Work from anywhere' },
+  { value: 'hybrid', label: 'Hybrid', desc: 'Mix of office & remote' },
+  { value: 'onsite', label: 'On-site', desc: 'In-office full time' },
 ] as const;
 
-function StepPreview({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
-  return (
-    <div className={styles.previewCard}>
-      <div className={styles.previewIcon}>{icon}</div>
-      <div>
-        <strong>{title}</strong>
-        <span>{text}</span>
-      </div>
-    </div>
-  );
-}
+const PARTICLES = Array.from({ length: 16 }, (_, i) => ({
+  angle: (i / 16) * 360,
+  distance: 60 + Math.random() * 80,
+  size: 4 + Math.random() * 6,
+  color: ['#c68a71', '#ddb09c', '#f4a261', '#84523c', '#e8c4b0'][i % 5],
+  delay: Math.random() * 0.3,
+}));
+
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
+};
 
 export default function OnboardingPage() {
   const supabase = createClient();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<string | null>(null);
@@ -113,20 +125,14 @@ export default function OnboardingPage() {
 
   const handleUpload = async (file: File) => {
     if (!file) return;
-
     setUploading(true);
     setError('');
-
     try {
       const formData = new FormData();
       formData.append('file', file);
       const response = await fetch('/api/parse-resume', { method: 'POST', body: formData });
       const payload = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(payload.error || 'Unable to upload and parse your resume right now.');
-      }
-
+      if (!response.ok) throw new Error(payload.error || 'Unable to upload and parse your resume right now.');
       setUploadedFile(file.name);
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : 'Unable to upload your resume right now.');
@@ -148,10 +154,7 @@ export default function OnboardingPage() {
   };
 
   const saveStep = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('You must be signed in to continue onboarding.');
 
     if (step === 1) {
@@ -163,7 +166,6 @@ export default function OnboardingPage() {
           target_industries: targetIndustries,
         })
         .eq('id', user.id);
-
       if (updateError) throw updateError;
     }
 
@@ -177,7 +179,6 @@ export default function OnboardingPage() {
           open_to_relocation: openToRelocation,
         })
         .eq('id', user.id);
-
       if (updateError) throw updateError;
     }
   };
@@ -185,25 +186,19 @@ export default function OnboardingPage() {
   const next = async () => {
     setSaving(true);
     setError('');
-
+    setDirection(1);
     try {
       await saveStep();
-
       if (step === 2) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
+        const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const { error: updateError } = await supabase
             .from('profiles')
             .update({ onboarding_complete: true })
             .eq('id', user.id);
-
           if (updateError) throw updateError;
         }
       }
-
       setStep((current) => Math.min(current + 1, STEPS.length - 1));
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : 'Unable to save this step right now.');
@@ -214,335 +209,447 @@ export default function OnboardingPage() {
 
   const back = () => {
     setError('');
+    setDirection(-1);
     setStep((current) => Math.max(current - 1, 0));
   };
 
-  const skip = async () => {
-    await next();
-  };
+  const skip = async () => { await next(); };
 
-  const renderStepHeader = (title: string, subtitle: string) => (
-    <div className={styles.stepHeader}>
-      <div className={styles.stepEyebrow}>{STEPS[step].short}</div>
-      <h2 className={styles.stepTitle}>{title}</h2>
-      <p className={styles.stepSubtitle}>{subtitle}</p>
-    </div>
-  );
+  const StepIcon = STEP_ICONS[step];
 
   return (
     <>
       <Topbar title="Get Started" breadcrumb="Workspace / Onboarding" />
-      <motion.div
-        className={styles.page}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.25, 0.4, 0, 1] }}
-      >
-        <section className={styles.heroCard}>
-          <div>
-            <div className={styles.heroEyebrow}>WorthApply setup</div>
-            <h1 className={styles.heroTitle}>Build the profile that powers better-fit applications.</h1>
-            <p className={styles.heroText}>
-              In a few minutes, you’ll give WorthApply the context it needs to analyze jobs, tailor resumes, and focus your effort where it has the highest return.
-            </p>
+      <div className={styles.page}>
+        <section className={styles.wizard}>
+          {/* Slim progress bar */}
+          <div className={styles.progressBar}>
+            <motion.div
+              className={styles.progressFill}
+              animate={{ width: `${progressPercentage}%` }}
+              transition={{ duration: 0.5, ease: [0.25, 0.4, 0, 1] }}
+            />
           </div>
 
-          <div className={styles.previewGrid}>
-            <StepPreview icon={<Upload size={18} />} title="Resume evidence" text="Upload your resume so WorthApply can extract the proof points behind your experience." />
-            <StepPreview icon={<Target size={18} />} title="Career direction" text="Define the titles and industries that should shape future matches." />
-            <StepPreview icon={<Wallet size={18} />} title="Compensation fit" text="Set salary expectations so you stop wasting effort on misaligned roles." />
-            <StepPreview icon={<MapPin size={18} />} title="Location logic" text="Add location preferences and relocation flexibility to improve targeting." />
-          </div>
-        </section>
-
-        <section className={styles.progressCard}>
-          <div className={styles.progressHeader}>
-            <div>
-              <div className={styles.progressEyebrow}>Progress</div>
-              <div className={styles.progressTitle}>Step {step + 1} of {STEPS.length}: {STEPS[step].title}</div>
-            </div>
-            <div className={styles.progressPercent}>{Math.round(progressPercentage)}%</div>
-          </div>
-
-          <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${progressPercentage}%` }} />
-          </div>
-
-          <div className={styles.progressChips}>
-            {STEPS.map((item, index) => (
+          {/* Step dots */}
+          <div className={styles.stepDots}>
+            {STEPS.map((_, i) => (
               <div
-                key={item.title}
-                className={`${styles.progressChip} ${index === step ? styles.progressChipActive : ''} ${index < step ? styles.progressChipDone : ''}`}
-              >
-                <span>{index + 1}</span>
-                <strong>{item.short}</strong>
-              </div>
+                key={i}
+                className={`${styles.dot} ${i === step ? styles.dotActive : ''} ${i < step ? styles.dotDone : ''}`}
+              />
             ))}
           </div>
-        </section>
 
-        {error ? <div className={styles.errorBanner}>{error}</div> : null}
+          {/* Error banner */}
+          {error && (
+            <motion.div
+              className={styles.errorBanner}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+            >
+              {error}
+            </motion.div>
+          )}
 
-        <section className={styles.card}>
-          {step === 0 && (
-            <>
-              {renderStepHeader(
-                'Upload your resume',
-                'We’ll parse your resume into an evidence bank so job analysis and tailoring have real material to work with.'
-              )}
-
-              <div className={styles.stepLayout}>
-                <div
-                  className={`${styles.dropzone} ${dragOver ? styles.dropzoneDragOver : ''}`}
-                  onClick={() => fileRef.current?.click()}
-                  onDragOver={(event) => {
-                    event.preventDefault();
-                    setDragOver(true);
-                  }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={handleDrop}
+          {/* Step content with slide transitions */}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: [0.25, 0.4, 0, 1] }}
+              className={styles.stepContent}
+            >
+              {/* Step icon */}
+              {step < 3 && (
+                <motion.div
+                  className={styles.stepIconCircle}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
                 >
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className={styles.fileInput}
-                    onChange={handleFileChange}
-                  />
+                  <StepIcon size={40} weight="duotone" />
+                </motion.div>
+              )}
 
-                  {uploading ? (
-                    <div className={styles.uploading}>
-                      <div className={styles.spinner} />
-                      <strong>Uploading and parsing your resume…</strong>
-                      <span>This usually takes just a moment.</span>
-                    </div>
-                  ) : uploadedFile ? (
-                    <div className={styles.uploadSuccess}>
-                      <CheckCircle2 size={22} />
-                      <div>
-                        <strong>{uploadedFile}</strong>
-                        <span>Your resume is ready for job-fit analysis.</span>
+              {/* Step header */}
+              {step < 3 && (
+                <div className={styles.stepHeader}>
+                  <motion.div
+                    className={styles.stepLabel}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                  >
+                    Step {step + 1} of {STEPS.length}
+                  </motion.div>
+                  <h2 className={styles.stepTitle}>{STEPS[step].title}</h2>
+                </div>
+              )}
+
+              {/* ─── Step 0: Resume Upload ─── */}
+              {step === 0 && (
+                <div className={styles.stepBody}>
+                  <p className={styles.stepSubtitle}>
+                    We&apos;ll parse your resume into an evidence bank so job analysis and tailoring have real material to work with.
+                  </p>
+
+                  <div
+                    className={`${styles.dropzone} ${dragOver ? styles.dropzoneDragOver : ''}`}
+                    onClick={() => fileRef.current?.click()}
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={handleDrop}
+                  >
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      className={styles.fileInput}
+                      onChange={handleFileChange}
+                    />
+
+                    {uploading ? (
+                      <div className={styles.uploading}>
+                        <div className={styles.spinner} />
+                        <strong>Uploading and parsing&hellip;</strong>
+                        <span>This usually takes just a moment.</span>
                       </div>
+                    ) : uploadedFile ? (
+                      <motion.div
+                        className={styles.uploadSuccess}
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                      >
+                        <CheckCircle size={28} weight="fill" className={styles.successIcon} />
+                        <div>
+                          <strong>{uploadedFile}</strong>
+                          <span>Your resume is ready for job-fit analysis.</span>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <>
+                        <div className={styles.dropzoneIcon}>
+                          <UploadSimple size={32} weight="duotone" />
+                        </div>
+                        <div className={styles.dropzoneTitle}>Drop your resume here</div>
+                        <div className={styles.dropzoneText}>
+                          PDF, DOC, or DOCX &middot; Click to browse
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className={styles.tipPanel}>
+                    <strong>Tips for best results</strong>
+                    <ul className={styles.tipList}>
+                      <li>Use a current resume with measurable bullets</li>
+                      <li>Clear section headers: Experience, Skills, Education</li>
+                      <li>One polished version rather than multiple drafts</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* ─── Step 1: Search Goals ─── */}
+              {step === 1 && (
+                <div className={styles.stepBody}>
+                  <p className={styles.stepSubtitle}>
+                    Help WorthApply score opportunities through the lens of what you actually want.
+                  </p>
+
+                  <div className={styles.formGrid}>
+                    <motion.div
+                      className={styles.field}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <label className={styles.label}>Preferred job titles</label>
+                      <div className={styles.tagInput}>
+                        {preferredTitles.map((title, index) => (
+                          <span key={title + index} className={styles.tagItem}>
+                            {title}
+                            <button type="button" className={styles.tagRemove} onClick={() => removeTag(preferredTitles, index, setPreferredTitles)}>
+                              <X size={12} />
+                            </button>
+                          </span>
+                        ))}
+                        <input
+                          className={styles.tagInputField}
+                          placeholder="e.g. Product Manager, UX Designer&hellip;"
+                          value={titleInput}
+                          onChange={(e) => setTitleInput(e.target.value)}
+                          onKeyDown={handleTitleKey}
+                        />
+                      </div>
+                      <p className={styles.helperText}>Press Enter or comma after each title</p>
+                    </motion.div>
+
+                    <motion.div
+                      className={styles.field}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <label className={styles.label}>Work preference</label>
+                      <div className={styles.choiceGrid}>
+                        {WORK_PREFERENCES.map((item) => {
+                          const active = workPreference.includes(item.value);
+                          return (
+                            <button
+                              key={item.value}
+                              type="button"
+                              className={`${styles.choiceCard} ${active ? styles.choiceCardActive : ''}`}
+                              onClick={() => toggleWorkPref(item.value)}
+                            >
+                              <strong>{item.label}</strong>
+                              <span>{item.desc}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className={styles.field}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <label className={styles.label}>Target industries</label>
+                      <div className={styles.tagInput}>
+                        {targetIndustries.map((industry, index) => (
+                          <span key={industry + index} className={styles.tagItem}>
+                            {industry}
+                            <button type="button" className={styles.tagRemove} onClick={() => removeTag(targetIndustries, index, setTargetIndustries)}>
+                              <X size={12} />
+                            </button>
+                          </span>
+                        ))}
+                        <input
+                          className={styles.tagInputField}
+                          placeholder="e.g. Fintech, Healthcare, SaaS&hellip;"
+                          value={industryInput}
+                          onChange={(e) => setIndustryInput(e.target.value)}
+                          onKeyDown={handleIndustryKey}
+                        />
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+              )}
+
+              {/* ─── Step 2: Compensation & Location ─── */}
+              {step === 2 && (
+                <div className={styles.stepBody}>
+                  <p className={styles.stepSubtitle}>
+                    Set constraints so WorthApply surfaces roles that actually fit your life.
+                  </p>
+
+                  <div className={styles.formGrid}>
+                    <motion.div
+                      className={styles.field}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <label className={styles.label}>Salary range (USD)</label>
+                      <div className={styles.rangeRow}>
+                        <input
+                          className={styles.rangeInput}
+                          type="number"
+                          placeholder="Min"
+                          value={salaryMin}
+                          onChange={(e) => setSalaryMin(e.target.value)}
+                        />
+                        <span className={styles.rangeSep}>&mdash;</span>
+                        <input
+                          className={styles.rangeInput}
+                          type="number"
+                          placeholder="Max"
+                          value={salaryMax}
+                          onChange={(e) => setSalaryMax(e.target.value)}
+                        />
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className={styles.field}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <label className={styles.label}>Preferred locations</label>
+                      <div className={styles.tagInput}>
+                        {preferredLocations.map((location, index) => (
+                          <span key={location + index} className={styles.tagItem}>
+                            {location}
+                            <button type="button" className={styles.tagRemove} onClick={() => removeTag(preferredLocations, index, setPreferredLocations)}>
+                              <X size={12} />
+                            </button>
+                          </span>
+                        ))}
+                        <input
+                          className={styles.tagInputField}
+                          placeholder="e.g. San Francisco, Remote US&hellip;"
+                          value={locationInput}
+                          onChange={(e) => setLocationInput(e.target.value)}
+                          onKeyDown={handleLocationKey}
+                        />
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className={styles.field}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <label className={styles.label}>Open to relocation?</label>
+                      <button
+                        type="button"
+                        className={`${styles.toggleCard} ${openToRelocation ? styles.toggleCardActive : ''}`}
+                        onClick={() => setOpenToRelocation(!openToRelocation)}
+                      >
+                        <div>
+                          <strong>{openToRelocation ? 'Yes, open to relocating' : 'No, staying local'}</strong>
+                          <span>{openToRelocation ? 'Include relocation-friendly roles' : 'Prioritize local or remote opportunities'}</span>
+                        </div>
+                        <div className={`${styles.toggleSwitch} ${openToRelocation ? styles.toggleSwitchActive : ''}`} />
+                      </button>
+                    </motion.div>
+                  </div>
+                </div>
+              )}
+
+              {/* ─── Step 3: Completion ─── */}
+              {step === 3 && (
+                <div className={styles.complete}>
+                  {/* Particle burst */}
+                  <div className={styles.particleContainer}>
+                    {PARTICLES.map((p, i) => (
+                      <motion.div
+                        key={i}
+                        className={styles.particle}
+                        style={{ background: p.color, width: p.size, height: p.size }}
+                        initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                        animate={{
+                          x: Math.cos((p.angle * Math.PI) / 180) * p.distance,
+                          y: Math.sin((p.angle * Math.PI) / 180) * p.distance,
+                          opacity: 0,
+                          scale: 0.2,
+                        }}
+                        transition={{ duration: 1.2, delay: 0.4 + p.delay, ease: 'easeOut' }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Animated checkmark */}
+                  <motion.svg
+                    viewBox="0 0 52 52"
+                    className={styles.checkmark}
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+                  >
+                    <motion.circle
+                      cx="26" cy="26" r="24" fill="none" stroke="currentColor" strokeWidth="2"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
+                    />
+                    <motion.path
+                      d="M15 27l7 7 15-15" fill="none" stroke="currentColor" strokeWidth="2.5"
+                      strokeLinecap="round" strokeLinejoin="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.4, delay: 0.7, ease: 'easeOut' }}
+                    />
+                  </motion.svg>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <div className={styles.completeEyebrow}>You&apos;re all set</div>
+                    <h2 className={styles.completeTitle}>Your workspace is ready</h2>
+                    <p className={styles.completeText}>
+                      Start analyzing roles or head to your dashboard to review everything.
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    className={styles.completeStats}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    <div className={styles.completeStat}>
+                      <strong>{uploadedFile ? '1' : '0'}</strong>
+                      <span>Resume</span>
                     </div>
-                  ) : (
-                    <>
-                      <div className={styles.dropzoneIcon}><Upload size={28} strokeWidth={1.6} /></div>
-                      <div className={styles.dropzoneTitle}>Drop your resume here</div>
-                      <div className={styles.dropzoneText}>Click to browse or drag a PDF, DOC, or DOCX file into the workspace.</div>
-                    </>
-                  )}
-                </div>
+                    <div className={styles.completeStat}>
+                      <strong>{preferredTitles.length}</strong>
+                      <span>Titles</span>
+                    </div>
+                    <div className={styles.completeStat}>
+                      <strong>{preferredLocations.length}</strong>
+                      <span>Locations</span>
+                    </div>
+                  </motion.div>
 
-                <div className={styles.tipPanel}>
-                  <h3>Best results come from:</h3>
-                  <ul className={styles.tipList}>
-                    <li>a current resume with measurable bullets</li>
-                    <li>clear section headers like Experience, Skills, and Education</li>
-                    <li>one polished version rather than multiple rough drafts</li>
-                  </ul>
+                  <motion.div
+                    className={styles.completeLinks}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9 }}
+                  >
+                    <Link href="/analyzer" className={styles.completeLinkPrimary}>
+                      <MagnifyingGlass size={18} weight="bold" /> Analyze a job
+                    </Link>
+                    <Link href="/dashboard" className={styles.completeLinkSecondary}>
+                      <SquaresFour size={18} weight="duotone" /> Go to dashboard
+                    </Link>
+                  </motion.div>
                 </div>
-              </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
 
-              <div className={styles.nav}>
+          {/* Navigation — outside AnimatePresence so buttons don't slide */}
+          {step < 3 && (
+            <div className={styles.nav}>
+              {step > 0 ? (
+                <button className={styles.backBtn} onClick={back} disabled={saving}>
+                  <ArrowLeft size={16} weight="bold" /> Back
+                </button>
+              ) : (
                 <div />
-                <div className={styles.navRight}>
-                  <button 
-                    className={styles.nextBtn} 
-                    onClick={next} 
-                    disabled={saving || !uploadedFile}
-                    title={!uploadedFile ? 'Please upload your resume to continue' : ''}
-                  >
-                    {saving ? 'Saving…' : 'Next'} <ArrowRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-          {step === 1 && (
-            <>
-              {renderStepHeader(
-                'Clarify your search goals',
-                'This helps WorthApply score opportunities through the lens of what you actually want, not just what you could do.'
               )}
-
-              <div className={styles.formGrid}>
-                <div className={styles.field}>
-                  <label className={styles.label}>Preferred job titles</label>
-                  <div className={styles.tagInput}>
-                    {preferredTitles.map((title, index) => (
-                      <span key={title + index} className={styles.tagItem}>
-                        {title}
-                        <button type="button" className={styles.tagRemove} onClick={() => removeTag(preferredTitles, index, setPreferredTitles)}>
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
-                    <input
-                      className={styles.tagInputField}
-                      placeholder="IT Manager, Systems Engineer, Security Analyst…"
-                      value={titleInput}
-                      onChange={(event) => setTitleInput(event.target.value)}
-                      onKeyDown={handleTitleKey}
-                    />
-                  </div>
-                  <p className={styles.helperText}>Press Enter or comma after each title.</p>
-                </div>
-
-                <div className={styles.field}>
-                  <label className={styles.label}>Work preference</label>
-                  <div className={styles.choiceGrid}>
-                    {WORK_PREFERENCES.map((item) => {
-                      const active = workPreference.includes(item.value);
-                      return (
-                        <button
-                          key={item.value}
-                          type="button"
-                          className={`${styles.choiceCard} ${active ? styles.choiceCardActive : ''}`}
-                          onClick={() => toggleWorkPref(item.value)}
-                        >
-                          <strong>{item.label}</strong>
-                          <span>{active ? 'Selected' : 'Tap to include in your search'}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className={styles.field}>
-                  <label className={styles.label}>Target industries</label>
-                  <div className={styles.tagInput}>
-                    {targetIndustries.map((industry, index) => (
-                      <span key={industry + index} className={styles.tagItem}>
-                        {industry}
-                        <button type="button" className={styles.tagRemove} onClick={() => removeTag(targetIndustries, index, setTargetIndustries)}>
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
-                    <input
-                      className={styles.tagInputField}
-                      placeholder="Fintech, healthcare, government, SaaS…"
-                      value={industryInput}
-                      onChange={(event) => setIndustryInput(event.target.value)}
-                      onKeyDown={handleIndustryKey}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.nav}>
-                <button className={styles.backBtn} onClick={back} disabled={saving}><ArrowLeft size={16} /> Back</button>
-                <div className={styles.navRight}>
+              <div className={styles.navRight}>
+                {step > 0 && (
                   <button className={styles.skipBtn} onClick={skip} disabled={saving}>Skip</button>
-                  <button className={styles.nextBtn} onClick={next} disabled={saving}>
-                    {saving ? 'Saving…' : 'Next'} <ArrowRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              {renderStepHeader(
-                'Set compensation and location preferences',
-                'These filters reduce wasted effort by helping WorthApply surface roles that fit your real-world constraints.'
-              )}
-
-              <div className={styles.formGrid}>
-                <div className={styles.field}>
-                  <label className={styles.label}>Salary range (USD)</label>
-                  <div className={styles.rangeRow}>
-                    <input
-                      className={styles.rangeInput}
-                      type="number"
-                      placeholder="Minimum"
-                      value={salaryMin}
-                      onChange={(event) => setSalaryMin(event.target.value)}
-                    />
-                    <span className={styles.rangeSep}>to</span>
-                    <input
-                      className={styles.rangeInput}
-                      type="number"
-                      placeholder="Maximum"
-                      value={salaryMax}
-                      onChange={(event) => setSalaryMax(event.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.field}>
-                  <label className={styles.label}>Preferred locations</label>
-                  <div className={styles.tagInput}>
-                    {preferredLocations.map((location, index) => (
-                      <span key={location + index} className={styles.tagItem}>
-                        {location}
-                        <button type="button" className={styles.tagRemove} onClick={() => removeTag(preferredLocations, index, setPreferredLocations)}>
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
-                    <input
-                      className={styles.tagInputField}
-                      placeholder="Phoenix, remote in US, Dallas…"
-                      value={locationInput}
-                      onChange={(event) => setLocationInput(event.target.value)}
-                      onKeyDown={handleLocationKey}
-                    />
-                  </div>
-                  <p className={styles.helperText}>Add as many geographies or remote preferences as you need.</p>
-                </div>
-
-                <div className={styles.field}>
-                  <label className={styles.label}>Open to relocation</label>
-                  <button
-                    type="button"
-                    className={`${styles.toggleCard} ${openToRelocation ? styles.toggleCardActive : ''}`}
-                    onClick={() => setOpenToRelocation(!openToRelocation)}
-                  >
-                    <div>
-                      <strong>{openToRelocation ? 'Yes, I can relocate' : 'No, keep me local'}</strong>
-                      <span>{openToRelocation ? 'WorthApply can include relocation-friendly roles.' : 'WorthApply will prioritize local or remote opportunities.'}</span>
-                    </div>
-                    <div className={`${styles.toggleSwitch} ${openToRelocation ? styles.toggleSwitchActive : ''}`} />
-                  </button>
-                </div>
-              </div>
-
-              <div className={styles.nav}>
-                <button className={styles.backBtn} onClick={back} disabled={saving}><ArrowLeft size={16} /> Back</button>
-                <div className={styles.navRight}>
-                  <button className={styles.skipBtn} onClick={skip} disabled={saving}>Skip</button>
-                  <button className={styles.nextBtn} onClick={next} disabled={saving}>
-                    {saving ? 'Saving…' : 'Finish setup'} <ArrowRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <div className={styles.complete}>
-              <div className={styles.completeIcon}><Sparkles size={34} strokeWidth={1.6} /></div>
-              <div className={styles.completeEyebrow}>Ready to go</div>
-              <h2 className={styles.completeTitle}>Your WorthApply workspace is set up.</h2>
-              <p className={styles.completeText}>
-                You can start analyzing roles immediately, or head to the dashboard to review your workspace and pipeline.
-              </p>
-              <div className={styles.completeStats}>
-                <div className={styles.completeStat}><strong>{uploadedFile ? '1' : '0'}</strong><span>Resume uploaded</span></div>
-                <div className={styles.completeStat}><strong>{preferredTitles.length}</strong><span>Target titles</span></div>
-                <div className={styles.completeStat}><strong>{preferredLocations.length}</strong><span>Preferred locations</span></div>
-              </div>
-              <div className={styles.completeLinks}>
-                <Link href="/analyzer" className={styles.completeLinkPrimary}><Search size={18} /> Analyze a job</Link>
-                <Link href="/dashboard" className={styles.completeLinkSecondary}><LayoutDashboard size={18} /> Go to dashboard</Link>
+                )}
+                <button
+                  className={styles.nextBtn}
+                  onClick={next}
+                  disabled={saving || (step === 0 && !uploadedFile)}
+                >
+                  {saving ? 'Saving\u2026' : step === 2 ? 'Finish setup' : 'Continue'}
+                  <ArrowRight size={16} weight="bold" />
+                </button>
               </div>
             </div>
           )}
         </section>
-      </motion.div>
+      </div>
     </>
   );
 }
