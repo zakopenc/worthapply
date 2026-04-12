@@ -6,7 +6,16 @@
     "cta_signup": "https://www.worthapply.com/signup",
     "cta_demo": "https://www.worthapply.com/demo",
     "price_pro": "$39/mo",
-    "competitors": ["Jobscan", "Rezi", "Teal", "Resume Worded", "Kickresume", "Enhancv", "TopResume", "Zety"]
+    "competitors": [
+      "Jobscan",
+      "Rezi",
+      "Teal",
+      "Resume Worded",
+      "Kickresume",
+      "Enhancv",
+      "TopResume",
+      "Zety"
+    ]
   },
   "articles": [
     {
@@ -14,7 +23,12 @@
       "slug": "how-to-know-if-youre-qualified-for-a-job",
       "title": "How to Know If You're Qualified for a Job Before Applying (Honest Guide)",
       "target_keyword": "how to know if you are qualified for a job",
-      "secondary_keywords": ["am I qualified for this job", "job requirements checklist", "should I apply for this job", "job fit"],
+      "secondary_keywords": [
+        "am I qualified for this job",
+        "job requirements checklist",
+        "should I apply for this job",
+        "job fit"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 3200,
       "competition": "low",
@@ -27,8 +41,8 @@
         "The problem: most people either over-apply or under-apply",
         "The 5 things that actually determine if you're qualified",
         "How to read a job description honestly (not optimistically)",
-        "The 70% rule — what it really means",
-        "Skills vs. experience vs. culture fit — which matters most?",
+        "The 70% rule â what it really means",
+        "Skills vs. experience vs. culture fit â which matters most?",
         "A simple scoring framework you can use right now",
         "When to apply even if you're not 100% qualified",
         "When to skip even if you're technically qualified",
@@ -41,7 +55,12 @@
       "slug": "jobscan-alternative",
       "title": "The Best Jobscan Alternative in 2026 (Fit-First, Not Keyword-First)",
       "target_keyword": "jobscan alternative",
-      "secondary_keywords": ["jobscan alternative free", "better than jobscan", "jobscan vs worthapply", "jobscan competitors"],
+      "secondary_keywords": [
+        "jobscan alternative free",
+        "better than jobscan",
+        "jobscan vs worthapply",
+        "jobscan competitors"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 2400,
       "competition": "medium",
@@ -55,7 +74,7 @@
         "What Jobscan does well (honest assessment)",
         "Jobscan's key limitations in 2026",
         "The fundamental problem: optimizing without knowing if you should apply",
-        "WorthApply vs Jobscan — feature by feature table",
+        "WorthApply vs Jobscan â feature by feature table",
         "Pricing comparison",
         "Who should use Jobscan vs WorthApply",
         "Other alternatives worth considering: Teal, Rezi, Resume Worded",
@@ -68,7 +87,12 @@
       "slug": "what-is-a-job-fit-score",
       "title": "What Is a Job Fit Score? (And Why It's More Useful Than ATS Matching)",
       "target_keyword": "job fit score",
-      "secondary_keywords": ["what is job fit", "resume fit score", "job match score", "how to measure job fit"],
+      "secondary_keywords": [
+        "what is job fit",
+        "resume fit score",
+        "job match score",
+        "how to measure job fit"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 900,
       "competition": "very low",
@@ -78,7 +102,7 @@
       "category": "guides",
       "status": "pending",
       "outline": [
-        "What is a job fit score — definition",
+        "What is a job fit score â definition",
         "Job fit score vs ATS score: what's the difference?",
         "The 4 dimensions of job fit: skills, experience, keywords, culture",
         "Why traditional ATS tools only measure one dimension",
@@ -93,7 +117,11 @@
       "slug": "should-i-apply-for-this-job",
       "title": "Should I Apply for This Job? A Framework That Actually Works",
       "target_keyword": "should I apply for this job",
-      "secondary_keywords": ["is this job worth applying to", "job application decision", "how to decide which jobs to apply to"],
+      "secondary_keywords": [
+        "is this job worth applying to",
+        "job application decision",
+        "how to decide which jobs to apply to"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 2800,
       "competition": "low",
@@ -101,7 +129,7 @@
       "word_count": 1600,
       "cta_type": "demo",
       "category": "guides",
-      "status": "pending",
+      "status": "published",
       "outline": [
         "The paralysis problem: too many jobs, no clear way to choose",
         "Why gut instinct fails you as a decision tool",
@@ -119,7 +147,12 @@
       "slug": "how-to-tailor-resume-without-fabricating",
       "title": "How to Tailor Your Resume for a Job Without Fabricating Experience",
       "target_keyword": "how to tailor resume for a job",
-      "secondary_keywords": ["resume tailoring tips", "customize resume for job description", "tailor resume without lying", "evidence-based resume"],
+      "secondary_keywords": [
+        "resume tailoring tips",
+        "customize resume for job description",
+        "tailor resume without lying",
+        "evidence-based resume"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 5400,
       "competition": "medium",
@@ -134,7 +167,7 @@
         "What tailoring actually means vs what people think it means",
         "Step 1: Identify the 5-8 core requirements of the role",
         "Step 2: Map your real experience to each requirement",
-        "Step 3: Reframe, don't reinvent — language that surfaces hidden fit",
+        "Step 3: Reframe, don't reinvent â language that surfaces hidden fit",
         "Step 4: Quantify what's already there (not invent numbers)",
         "Step 5: Write a summary that speaks directly to the role",
         "Common tailoring mistakes that hurt you",
@@ -147,7 +180,12 @@
       "slug": "why-mass-applying-doesnt-work",
       "title": "Why Sending 100+ Job Applications Doesn't Work (And What to Do Instead)",
       "target_keyword": "why am I not getting job interviews",
-      "secondary_keywords": ["job application spray and pray", "quality vs quantity job search", "why no response from job applications", "job search strategy 2026"],
+      "secondary_keywords": [
+        "job application spray and pray",
+        "quality vs quantity job search",
+        "why no response from job applications",
+        "job search strategy 2026"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 6100,
       "competition": "medium",
@@ -173,7 +211,11 @@
       "slug": "teal-alternative",
       "title": "Best Teal Alternative in 2026: When Tracking Isn't Enough",
       "target_keyword": "teal alternative",
-      "secondary_keywords": ["teal hq alternative", "teal app competitors", "teal vs worthapply"],
+      "secondary_keywords": [
+        "teal hq alternative",
+        "teal app competitors",
+        "teal vs worthapply"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 1200,
       "competition": "low",
@@ -199,7 +241,12 @@
       "slug": "ats-resume-mistakes",
       "title": "7 ATS Resume Mistakes That Kill Your Application (Before a Human Sees It)",
       "target_keyword": "ATS resume mistakes",
-      "secondary_keywords": ["ats resume tips", "why is my resume not getting through ats", "ats resume formatting", "how to pass ats screening"],
+      "secondary_keywords": [
+        "ats resume tips",
+        "why is my resume not getting through ats",
+        "ats resume formatting",
+        "how to pass ats screening"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 4200,
       "competition": "medium",
@@ -226,7 +273,12 @@
       "slug": "how-to-get-more-job-interviews",
       "title": "How to Get More Job Interviews in 2026: A Data-Driven Guide",
       "target_keyword": "how to get more job interviews",
-      "secondary_keywords": ["increase interview rate", "why am I not getting interviews", "job interview tips 2026", "improve resume interview rate"],
+      "secondary_keywords": [
+        "increase interview rate",
+        "why am I not getting interviews",
+        "job interview tips 2026",
+        "improve resume interview rate"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 7800,
       "competition": "high",
@@ -238,11 +290,11 @@
       "outline": [
         "Why most advice about getting interviews is wrong",
         "The interview rate math: what's normal vs what's fixable",
-        "Factor 1: Fit — are you applying to the right roles?",
-        "Factor 2: Resume quality — are you communicating fit clearly?",
-        "Factor 3: ATS — is your resume even being read?",
-        "Factor 4: Volume vs quality — the right balance",
-        "Factor 5: Follow-up — what most people skip",
+        "Factor 1: Fit â are you applying to the right roles?",
+        "Factor 2: Resume quality â are you communicating fit clearly?",
+        "Factor 3: ATS â is your resume even being read?",
+        "Factor 4: Volume vs quality â the right balance",
+        "Factor 5: Follow-up â what most people skip",
         "A 2-week experiment: 10 targeted applications vs 50 generic ones",
         "Tools that actually help",
         "FAQ"
@@ -253,7 +305,11 @@
       "slug": "resume-tailoring-checklist",
       "title": "Resume Tailoring Checklist: Exactly What to Change for Every Job You Apply To",
       "target_keyword": "resume tailoring checklist",
-      "secondary_keywords": ["how to customize resume", "resume tailoring template", "what to change on resume for each job"],
+      "secondary_keywords": [
+        "how to customize resume",
+        "resume tailoring template",
+        "what to change on resume for each job"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 1900,
       "competition": "low",
@@ -281,7 +337,12 @@
       "slug": "resume-worded-alternative",
       "title": "Resume Worded Alternative: A Better Way to Analyze Job Fit in 2026",
       "target_keyword": "resume worded alternative",
-      "secondary_keywords": ["resume worded vs worthapply", "better than resume worded", "resume worded competitors", "resume worded free alternative"],
+      "secondary_keywords": [
+        "resume worded vs worthapply",
+        "better than resume worded",
+        "resume worded competitors",
+        "resume worded free alternative"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 1800,
       "competition": "low",
@@ -307,7 +368,12 @@
       "slug": "rezi-alternative",
       "title": "Best Rezi Alternative in 2026: Evidence-Based Beats AI-Generated",
       "target_keyword": "rezi alternative",
-      "secondary_keywords": ["rezi ai alternative", "better than rezi", "rezi competitors", "rezi vs worthapply"],
+      "secondary_keywords": [
+        "rezi ai alternative",
+        "better than rezi",
+        "rezi competitors",
+        "rezi vs worthapply"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 1400,
       "competition": "low",
@@ -333,7 +399,12 @@
       "slug": "how-to-follow-up-on-a-job-application",
       "title": "How to Follow Up on a Job Application (Without Being Annoying)",
       "target_keyword": "how to follow up on a job application",
-      "secondary_keywords": ["job application follow up email", "when to follow up after applying", "follow up email after job application", "job application no response"],
+      "secondary_keywords": [
+        "job application follow up email",
+        "when to follow up after applying",
+        "follow up email after job application",
+        "job application no response"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 8900,
       "competition": "medium",
@@ -359,7 +430,12 @@
       "slug": "career-change-resume-tips",
       "title": "Career Change Resume Tips: How to Show Transferable Skills Without Fabricating",
       "target_keyword": "career change resume tips",
-      "secondary_keywords": ["how to write resume for career change", "transferable skills resume", "career pivot resume", "resume for different industry"],
+      "secondary_keywords": [
+        "how to write resume for career change",
+        "transferable skills resume",
+        "career pivot resume",
+        "resume for different industry"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 5200,
       "competition": "medium",
@@ -385,7 +461,12 @@
       "slug": "how-to-get-job-after-layoff",
       "title": "How to Get a Job After Being Laid Off: A No-BS Action Plan",
       "target_keyword": "how to get a job after being laid off",
-      "secondary_keywords": ["job search after layoff", "laid off what to do", "finding a job after layoff", "job search tips after losing job"],
+      "secondary_keywords": [
+        "job search after layoff",
+        "laid off what to do",
+        "finding a job after layoff",
+        "job search tips after losing job"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 6700,
       "competition": "medium",
@@ -411,7 +492,12 @@
       "slug": "how-long-should-a-resume-be",
       "title": "How Long Should a Resume Be in 2026? The Honest Answer",
       "target_keyword": "how long should a resume be",
-      "secondary_keywords": ["resume length 2026", "one page vs two page resume", "should my resume be one page", "resume page count"],
+      "secondary_keywords": [
+        "resume length 2026",
+        "one page vs two page resume",
+        "should my resume be one page",
+        "resume page count"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 12000,
       "competition": "high",
@@ -437,7 +523,12 @@
       "slug": "how-to-write-a-resume-summary",
       "title": "How to Write a Resume Summary That Actually Gets Read (With Examples)",
       "target_keyword": "how to write a resume summary",
-      "secondary_keywords": ["resume summary examples", "professional summary for resume", "resume objective vs summary", "resume summary statement"],
+      "secondary_keywords": [
+        "resume summary examples",
+        "professional summary for resume",
+        "resume objective vs summary",
+        "resume summary statement"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 14500,
       "competition": "high",
@@ -451,7 +542,7 @@
         "Resume summary vs. objective: which one to use",
         "The 3-sentence formula for a summary that works",
         "What to include: keywords, experience, value proposition",
-        "What to exclude: clichés, vague traits, filler phrases",
+        "What to exclude: clichÃ©s, vague traits, filler phrases",
         "10 resume summary examples by role and level",
         "How to tailor your summary for each job without rewriting from scratch",
         "FAQ"
@@ -462,7 +553,12 @@
       "slug": "how-to-write-resume-bullet-points",
       "title": "How to Write Resume Bullet Points That Get You Interviews",
       "target_keyword": "how to write resume bullet points",
-      "secondary_keywords": ["resume bullet points examples", "strong resume bullet points", "action verbs for resume", "quantify resume achievements"],
+      "secondary_keywords": [
+        "resume bullet points examples",
+        "strong resume bullet points",
+        "action verbs for resume",
+        "quantify resume achievements"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 9800,
       "competition": "medium",
@@ -487,7 +583,12 @@
       "slug": "how-to-write-a-cover-letter",
       "title": "How to Write a Cover Letter in 2026 That Hiring Managers Actually Read",
       "target_keyword": "how to write a cover letter",
-      "secondary_keywords": ["cover letter tips 2026", "cover letter format", "cover letter examples", "what to include in a cover letter"],
+      "secondary_keywords": [
+        "cover letter tips 2026",
+        "cover letter format",
+        "cover letter examples",
+        "what to include in a cover letter"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 22000,
       "competition": "high",
@@ -500,7 +601,7 @@
         "Do hiring managers actually read cover letters in 2026?",
         "When a cover letter matters most (and when to skip it)",
         "The cover letter structure that works: 4 paragraphs",
-        "Paragraph 1: The hook — don't start with 'I am applying for'",
+        "Paragraph 1: The hook â don't start with 'I am applying for'",
         "Paragraph 2: Why you're a strong fit (use specifics)",
         "Paragraph 3: Why this company, not just any company",
         "Paragraph 4: The close",
@@ -514,7 +615,12 @@
       "slug": "linkedin-profile-tips-for-job-seekers",
       "title": "LinkedIn Profile Tips for Job Seekers: What Actually Gets Recruiter Attention",
       "target_keyword": "LinkedIn profile tips for job seekers",
-      "secondary_keywords": ["how to optimize LinkedIn for job search", "LinkedIn job search tips", "LinkedIn profile for job hunting", "LinkedIn open to work tips"],
+      "secondary_keywords": [
+        "how to optimize LinkedIn for job search",
+        "LinkedIn job search tips",
+        "LinkedIn profile for job hunting",
+        "LinkedIn open to work tips"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 7200,
       "competition": "medium",
@@ -529,7 +635,7 @@
         "About section: tell a story, not a job description",
         "How to optimize your experience section for LinkedIn's algorithm",
         "Skills section: which ones to add and how to prioritize",
-        "Open to Work: banner vs. private signal — which is better?",
+        "Open to Work: banner vs. private signal â which is better?",
         "How to use LinkedIn to research job fit before applying",
         "Connecting with recruiters: what to say",
         "FAQ"
@@ -540,7 +646,12 @@
       "slug": "how-to-get-a-remote-job",
       "title": "How to Get a Remote Job in 2026: Where to Look and What to Say",
       "target_keyword": "how to get a remote job",
-      "secondary_keywords": ["remote job search tips", "best remote job boards 2026", "how to find remote work", "remote job application tips"],
+      "secondary_keywords": [
+        "remote job search tips",
+        "best remote job boards 2026",
+        "how to find remote work",
+        "remote job application tips"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 9400,
       "competition": "medium",
@@ -566,7 +677,12 @@
       "slug": "how-to-negotiate-salary",
       "title": "How to Negotiate Salary (Without Losing the Offer)",
       "target_keyword": "how to negotiate salary",
-      "secondary_keywords": ["salary negotiation tips", "how to negotiate job offer", "salary negotiation scripts", "how much to ask for salary"],
+      "secondary_keywords": [
+        "salary negotiation tips",
+        "how to negotiate job offer",
+        "salary negotiation scripts",
+        "how much to ask for salary"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 18000,
       "competition": "high",
@@ -590,9 +706,14 @@
     {
       "id": 23,
       "slug": "job-search-burnout",
-      "title": "Job Search Burnout Is Real — Here's How to Recover and Search Smarter",
+      "title": "Job Search Burnout Is Real â Here's How to Recover and Search Smarter",
       "target_keyword": "job search burnout",
-      "secondary_keywords": ["job hunting burnout", "how to deal with job search depression", "job search motivation", "job search exhaustion"],
+      "secondary_keywords": [
+        "job hunting burnout",
+        "how to deal with job search depression",
+        "job search motivation",
+        "job search exhaustion"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 4100,
       "competition": "low",
@@ -618,7 +739,12 @@
       "slug": "how-to-get-job-with-no-experience",
       "title": "How to Get a Job With No Experience: What Actually Works in 2026",
       "target_keyword": "how to get a job with no experience",
-      "secondary_keywords": ["entry level job tips", "how to get hired with no work experience", "first job resume tips", "how to get a job as a fresh graduate"],
+      "secondary_keywords": [
+        "entry level job tips",
+        "how to get hired with no work experience",
+        "first job resume tips",
+        "how to get a job as a fresh graduate"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 16000,
       "competition": "high",
@@ -644,7 +770,12 @@
       "slug": "how-to-explain-employment-gap",
       "title": "How to Explain an Employment Gap on Your Resume and in Interviews",
       "target_keyword": "how to explain employment gap",
-      "secondary_keywords": ["employment gap on resume", "gaps in employment resume tips", "how to address gap in work history", "resume gap year explanation"],
+      "secondary_keywords": [
+        "employment gap on resume",
+        "gaps in employment resume tips",
+        "how to address gap in work history",
+        "resume gap year explanation"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 8300,
       "competition": "medium",
@@ -669,7 +800,12 @@
       "slug": "best-time-to-apply-for-jobs",
       "title": "The Best Time to Apply for Jobs (By Day, Month, and Season)",
       "target_keyword": "best time to apply for jobs",
-      "secondary_keywords": ["when to apply for jobs", "best day to apply for job", "job search timing tips", "when do companies hire most"],
+      "secondary_keywords": [
+        "when to apply for jobs",
+        "best day to apply for job",
+        "job search timing tips",
+        "when do companies hire most"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 5600,
       "competition": "low",
@@ -694,7 +830,12 @@
       "slug": "how-to-use-linkedin-to-find-a-job",
       "title": "How to Use LinkedIn to Find a Job in 2026 (Beyond Just Applying)",
       "target_keyword": "how to use LinkedIn to find a job",
-      "secondary_keywords": ["LinkedIn job search strategy", "LinkedIn job hunt tips", "how to find job on LinkedIn", "LinkedIn job alerts setup"],
+      "secondary_keywords": [
+        "LinkedIn job search strategy",
+        "LinkedIn job hunt tips",
+        "how to find job on LinkedIn",
+        "LinkedIn job alerts setup"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 11000,
       "competition": "high",
@@ -719,7 +860,11 @@
       "slug": "kickresume-alternative",
       "title": "Kickresume Alternative in 2026: More Than a Pretty Resume Builder",
       "target_keyword": "kickresume alternative",
-      "secondary_keywords": ["kickresume vs worthapply", "better than kickresume", "kickresume competitors 2026"],
+      "secondary_keywords": [
+        "kickresume vs worthapply",
+        "better than kickresume",
+        "kickresume competitors 2026"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 900,
       "competition": "very low",
@@ -743,7 +888,12 @@
       "slug": "how-to-get-a-tech-job",
       "title": "How to Get a Tech Job in 2026: Resume, Applications, and What Actually Works",
       "target_keyword": "how to get a tech job",
-      "secondary_keywords": ["how to break into tech", "tech job search tips", "software engineer job search tips", "how to get hired at a tech company"],
+      "secondary_keywords": [
+        "how to break into tech",
+        "tech job search tips",
+        "software engineer job search tips",
+        "how to get hired at a tech company"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 8500,
       "competition": "medium",
@@ -768,7 +918,12 @@
       "slug": "how-to-get-a-product-manager-job",
       "title": "How to Get a Product Manager Job in 2026 (Even Without a PM Title Yet)",
       "target_keyword": "how to get a product manager job",
-      "secondary_keywords": ["how to become a product manager", "product manager resume tips", "PM job search tips", "breaking into product management"],
+      "secondary_keywords": [
+        "how to become a product manager",
+        "product manager resume tips",
+        "PM job search tips",
+        "breaking into product management"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 6200,
       "competition": "medium",
@@ -793,7 +948,12 @@
       "slug": "what-to-do-when-rejected-from-job",
       "title": "Rejected From a Job? Here's What to Do Next (Step by Step)",
       "target_keyword": "what to do after being rejected from a job",
-      "secondary_keywords": ["job rejection tips", "how to handle job rejection", "job application rejected what next", "rejection after job interview"],
+      "secondary_keywords": [
+        "job rejection tips",
+        "how to handle job rejection",
+        "job application rejected what next",
+        "rejection after job interview"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 4800,
       "competition": "low",
@@ -817,7 +977,12 @@
       "slug": "ats-resume-format",
       "title": "ATS Resume Format: The Exact Layout That Gets You Past the Robots",
       "target_keyword": "ATS resume format",
-      "secondary_keywords": ["ATS friendly resume format", "best resume format for ATS", "ATS compatible resume", "ATS resume template 2026"],
+      "secondary_keywords": [
+        "ATS friendly resume format",
+        "best resume format for ATS",
+        "ATS compatible resume",
+        "ATS resume template 2026"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 7400,
       "competition": "medium",
@@ -842,7 +1007,12 @@
       "slug": "how-many-jobs-to-apply-to",
       "title": "How Many Jobs Should You Apply to Per Week? The Answer Might Surprise You",
       "target_keyword": "how many jobs should I apply to",
-      "secondary_keywords": ["how many job applications per week", "job application volume strategy", "how many jobs to apply for per day", "job search numbers"],
+      "secondary_keywords": [
+        "how many job applications per week",
+        "job application volume strategy",
+        "how many jobs to apply for per day",
+        "job search numbers"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 3900,
       "competition": "low",
@@ -866,7 +1036,12 @@
       "slug": "zety-alternative",
       "title": "Zety Alternative in 2026: When You Need More Than a Resume Builder",
       "target_keyword": "zety alternative",
-      "secondary_keywords": ["zety vs worthapply", "better than zety", "zety competitors", "zety free alternative"],
+      "secondary_keywords": [
+        "zety vs worthapply",
+        "better than zety",
+        "zety competitors",
+        "zety free alternative"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 1600,
       "competition": "low",
@@ -889,7 +1064,12 @@
       "slug": "how-to-get-data-science-job",
       "title": "How to Get a Data Science Job in 2026: What Employers Actually Want",
       "target_keyword": "how to get a data science job",
-      "secondary_keywords": ["data scientist job search tips", "data science resume tips", "how to break into data science", "data science job requirements"],
+      "secondary_keywords": [
+        "data scientist job search tips",
+        "data science resume tips",
+        "how to break into data science",
+        "data science job requirements"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 7100,
       "competition": "medium",
@@ -913,7 +1093,12 @@
       "slug": "job-ghosting-after-applying",
       "title": "Getting Ghosted After Applying? Here's the Real Reason (and the Fix)",
       "target_keyword": "ghosted after job application",
-      "secondary_keywords": ["why companies ghost job applicants", "no response after job application", "job application ghosting 2026", "employer ghosting candidates"],
+      "secondary_keywords": [
+        "why companies ghost job applicants",
+        "no response after job application",
+        "job application ghosting 2026",
+        "employer ghosting candidates"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 5300,
       "competition": "low",
@@ -938,7 +1123,12 @@
       "slug": "resume-keywords-how-to-find-them",
       "title": "How to Find the Right Resume Keywords for Any Job Description",
       "target_keyword": "resume keywords",
-      "secondary_keywords": ["how to find resume keywords", "keywords to put on resume", "resume keywords from job description", "resume keyword optimization"],
+      "secondary_keywords": [
+        "how to find resume keywords",
+        "keywords to put on resume",
+        "resume keywords from job description",
+        "resume keyword optimization"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 13500,
       "competition": "high",
@@ -964,7 +1154,12 @@
       "slug": "how-to-get-marketing-job",
       "title": "How to Get a Marketing Job in 2026: What the Hiring Market Actually Wants",
       "target_keyword": "how to get a marketing job",
-      "secondary_keywords": ["marketing job search tips", "marketing resume tips 2026", "how to break into marketing", "digital marketing job tips"],
+      "secondary_keywords": [
+        "marketing job search tips",
+        "marketing resume tips 2026",
+        "how to break into marketing",
+        "digital marketing job tips"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 5900,
       "competition": "medium",
@@ -989,7 +1184,12 @@
       "slug": "applicant-tracking-system-explained",
       "title": "How Applicant Tracking Systems Work (And How to Beat Them)",
       "target_keyword": "how does applicant tracking system work",
-      "secondary_keywords": ["what is ATS system", "applicant tracking system explained", "how ATS ranks resumes", "ATS resume screening"],
+      "secondary_keywords": [
+        "what is ATS system",
+        "applicant tracking system explained",
+        "how ATS ranks resumes",
+        "ATS resume screening"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 6800,
       "competition": "medium",
@@ -1005,7 +1205,7 @@
         "Why ATS scores don't equal human scores",
         "Common ATS systems and how they differ: Greenhouse, Lever, Workday, iCIMS",
         "How to optimize for ATS without gaming the system",
-        "What ATS cannot see — your hidden advantages",
+        "What ATS cannot see â your hidden advantages",
         "FAQ"
       ]
     },
@@ -1014,7 +1214,12 @@
       "slug": "job-search-tips-2026",
       "title": "Job Search Tips That Actually Work in 2026 (A Realistic Guide)",
       "target_keyword": "job search tips 2026",
-      "secondary_keywords": ["how to find a job in 2026", "job hunting tips 2026", "modern job search strategies", "job search advice"],
+      "secondary_keywords": [
+        "how to find a job in 2026",
+        "job hunting tips 2026",
+        "modern job search strategies",
+        "job search advice"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 9200,
       "competition": "medium",
@@ -1032,7 +1237,7 @@
         "Tip 5: The follow-up sequence that gets responses",
         "Tip 6: Use AI tools that don't fabricate your experience",
         "Tip 7: Track your pipeline like a sales funnel",
-        "Tip 8: Protect your mental energy — job search is a marathon",
+        "Tip 8: Protect your mental energy â job search is a marathon",
         "FAQ"
       ]
     },
@@ -1041,7 +1246,11 @@
       "slug": "enhancv-alternative",
       "title": "Enhancv Alternative in 2026: Beyond Visual Resume Design",
       "target_keyword": "enhancv alternative",
-      "secondary_keywords": ["enhancv vs worthapply", "better than enhancv", "enhancv competitors"],
+      "secondary_keywords": [
+        "enhancv vs worthapply",
+        "better than enhancv",
+        "enhancv competitors"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 700,
       "competition": "very low",
@@ -1063,7 +1272,12 @@
       "slug": "how-to-get-ux-design-job",
       "title": "How to Get a UX Design Job in 2026: Portfolio, Resume, and What Hiring Managers Look For",
       "target_keyword": "how to get a UX design job",
-      "secondary_keywords": ["UX designer job search tips", "UX portfolio tips", "how to break into UX design", "UX design resume tips"],
+      "secondary_keywords": [
+        "UX designer job search tips",
+        "UX portfolio tips",
+        "how to break into UX design",
+        "UX design resume tips"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 4700,
       "competition": "medium",
@@ -1088,7 +1302,12 @@
       "slug": "how-to-ask-for-referral-job",
       "title": "How to Ask for a Job Referral Without Making It Weird",
       "target_keyword": "how to ask for a job referral",
-      "secondary_keywords": ["job referral tips", "how to get a referral for a job", "asking someone for a referral", "employee referral job tips"],
+      "secondary_keywords": [
+        "job referral tips",
+        "how to get a referral for a job",
+        "asking someone for a referral",
+        "employee referral job tips"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 3600,
       "competition": "low",
@@ -1113,7 +1332,12 @@
       "slug": "job-interview-preparation-guide",
       "title": "How to Prepare for a Job Interview: A Step-by-Step Guide for 2026",
       "target_keyword": "how to prepare for a job interview",
-      "secondary_keywords": ["job interview preparation tips", "how to prepare for interview 2026", "interview prep checklist", "before a job interview"],
+      "secondary_keywords": [
+        "job interview preparation tips",
+        "how to prepare for interview 2026",
+        "interview prep checklist",
+        "before a job interview"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 27000,
       "competition": "high",
@@ -1139,7 +1363,12 @@
       "slug": "linkedin-easy-apply-tips",
       "title": "LinkedIn Easy Apply: When to Use It and When to Avoid It",
       "target_keyword": "LinkedIn Easy Apply tips",
-      "secondary_keywords": ["does LinkedIn Easy Apply work", "LinkedIn Easy Apply strategy", "should I use LinkedIn Easy Apply", "LinkedIn one click apply"],
+      "secondary_keywords": [
+        "does LinkedIn Easy Apply work",
+        "LinkedIn Easy Apply strategy",
+        "should I use LinkedIn Easy Apply",
+        "LinkedIn one click apply"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 4400,
       "competition": "low",
@@ -1163,7 +1392,12 @@
       "slug": "how-to-get-finance-job",
       "title": "How to Get a Finance Job in 2026: Resume, Credentials, and Strategy",
       "target_keyword": "how to get a finance job",
-      "secondary_keywords": ["finance job search tips", "finance resume tips", "breaking into finance", "how to get a job in investment banking"],
+      "secondary_keywords": [
+        "finance job search tips",
+        "finance resume tips",
+        "breaking into finance",
+        "how to get a job in investment banking"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 5100,
       "competition": "medium",
@@ -1187,7 +1421,12 @@
       "slug": "overqualified-for-a-job",
       "title": "Overqualified for a Job? How to Get Hired Anyway",
       "target_keyword": "overqualified for a job",
-      "secondary_keywords": ["how to get hired when overqualified", "overqualified job application tips", "what to do when told overqualified", "overqualified for position advice"],
+      "secondary_keywords": [
+        "how to get hired when overqualified",
+        "overqualified job application tips",
+        "what to do when told overqualified",
+        "overqualified for position advice"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 3800,
       "competition": "low",
@@ -1211,7 +1450,12 @@
       "slug": "job-application-tracker-free",
       "title": "The Best Free Job Application Tracker in 2026 (Spreadsheet vs. App)",
       "target_keyword": "job application tracker",
-      "secondary_keywords": ["free job application tracker", "job search tracker spreadsheet", "how to track job applications", "job application organizer"],
+      "secondary_keywords": [
+        "free job application tracker",
+        "job search tracker spreadsheet",
+        "how to track job applications",
+        "job application organizer"
+      ],
       "search_intent": "commercial",
       "estimated_monthly_searches": 6500,
       "competition": "medium",
@@ -1235,7 +1479,12 @@
       "slug": "how-to-get-healthcare-job",
       "title": "How to Get a Healthcare Job in 2026: Credentials, Resume, and Application Tips",
       "target_keyword": "how to get a job in healthcare",
-      "secondary_keywords": ["healthcare job search tips", "healthcare resume tips", "how to find healthcare jobs", "hospital job application tips"],
+      "secondary_keywords": [
+        "healthcare job search tips",
+        "healthcare resume tips",
+        "how to find healthcare jobs",
+        "hospital job application tips"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 4300,
       "competition": "low",
@@ -1259,7 +1508,12 @@
       "slug": "resume-action-verbs",
       "title": "150 Resume Action Verbs That Make Your Bullets Sound Impressive (Not Hollow)",
       "target_keyword": "resume action verbs",
-      "secondary_keywords": ["strong action verbs for resume", "power words for resume", "action words for resume", "best verbs to use on resume"],
+      "secondary_keywords": [
+        "strong action verbs for resume",
+        "power words for resume",
+        "action words for resume",
+        "best verbs to use on resume"
+      ],
       "search_intent": "informational",
       "estimated_monthly_searches": 18500,
       "competition": "high",
