@@ -252,24 +252,6 @@ export default function LoginPage() {
             </Link>
           </p>
         </motion.div>
-
-        {/* Footer Links */}
-        <footer className="mt-10 flex justify-center gap-6 text-xs text-on-surface-variant/60">
-          <Link href="/privacy" className="hover:text-secondary transition-colors">
-            Privacy
-          </Link>
-          <span>•</span>
-          <Link href="/terms" className="hover:text-secondary transition-colors">
-            Terms
-          </Link>
-          <span>•</span>
-          <Link
-            href="mailto:hello@worthapply.com"
-            className="hover:text-secondary transition-colors"
-          >
-            Contact
-          </Link>
-        </footer>
       </main>
     </div>
   );
