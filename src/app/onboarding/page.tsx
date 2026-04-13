@@ -15,7 +15,7 @@ export default function OnboardingPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<string | null>(null);
-  const [step, setStep] = useState<'upload' | 'job_description'>('upload');
+  const [step, setStep] = useState<'upload' | 'job_description' | 'analyzing' | 'success'>('upload');
   const [jobDescription, setJobDescription] = useState('');
 
   useEffect(() => {
@@ -47,6 +47,33 @@ export default function OnboardingPage() {
       setUploading(false);
       setUploadedFile(file.name);
     }, 1500);
+  };
+
+  const handleAnalyzeJobFit = async () => {
+    if (jobDescription.trim().length < 50) {
+      alert('Please enter at least 50 characters for the job description.');
+      return;
+    }
+    
+    setStep('analyzing');
+    
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ job_description: jobDescription }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Analysis failed');
+      }
+      
+      setStep('success');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to analyze job fit. Please try again.');
+      setStep('job_description');
+    }
   };
 
   return (
@@ -187,7 +214,7 @@ export default function OnboardingPage() {
                   </div>
                 </div>
               </motion.div>
-            ) : (
+            ) : step === 'job_description' ? (
               <motion.div
                 key="job_description"
                 initial={{ opacity: 0, x: 20 }}
@@ -216,12 +243,52 @@ export default function OnboardingPage() {
                   <button onClick={() => setStep('upload')} className="text-stone-500 font-bold hover:text-black">
                     Back
                   </button>
-                  <button className="px-8 py-3 bg-black text-white rounded-xl font-bold hover:bg-neutral-800 transition-colors flex items-center gap-2">
+                  <button onClick={handleAnalyzeJobFit} className="px-8 py-3 bg-black text-white rounded-xl font-bold hover:bg-neutral-800 transition-colors flex items-center gap-2">
                     Analyze Job Fit <ArrowRight size={18} />
                   </button>
                 </div>
               </motion.div>
-            )}
+            ) : step === 'analyzing' ? (
+              <motion.div
+                key="analyzing"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex flex-col items-center justify-center py-20"
+              >
+                <div className="w-16 h-16 border-4 border-[#895110] border-t-transparent rounded-full animate-spin mb-8" />
+                <h1 className="text-3xl font-extrabold text-black tracking-tighter mb-4">
+                  Analyzing Your Fit...
+                </h1>
+                <p className="text-stone-600 text-center max-w-md">
+                  We are comparing your Evidence Bank against the requirements of the job. This usually takes about 10-15 seconds.
+                </p>
+              </motion.div>
+            ) : step === 'success' ? (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex flex-col items-center justify-center py-10"
+              >
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-8">
+                  <CheckCircle className="w-10 h-10 text-green-600" />
+                </div>
+                <h1 className="text-3xl md:text-5xl font-extrabold text-black tracking-tighter mb-4 text-center">
+                  You&apos;re all set!
+                </h1>
+                <p className="text-lg text-stone-600 text-center max-w-lg mb-10">
+                  Your Evidence Bank is initialized and your first analysis is complete. Let&apos;s head over to the Dashboard to review your personalized strategy.
+                </p>
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="px-8 py-4 bg-black text-white rounded-xl font-bold hover:bg-neutral-800 transition-colors flex items-center gap-2"
+                >
+                  Go to Dashboard <ArrowRight size={18} />
+                </button>
+              </motion.div>
+            ) : null}
           </AnimatePresence>
         </div>
       </main>
