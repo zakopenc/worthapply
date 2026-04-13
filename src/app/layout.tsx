@@ -58,11 +58,10 @@ export const metadata: Metadata = {
   },
       icons: {
     icon: [
-      { url: '/favicon.svg?v=4', sizes: 'any' },
-      { url: '/favicon.png?v=4', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.svg?v=5', sizes: 'any' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png?v=4', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-touch-icon.png?v=5', sizes: '180x180', type: 'image/png' },
     ],
   },
   manifest: '/site.webmanifest',
