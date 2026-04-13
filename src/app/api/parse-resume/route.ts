@@ -47,9 +47,21 @@ const MAGIC_BYTES: Record<string, number[]> = {
 
 function validateMagicBytes(bytes: Uint8Array, contentType: string): boolean {
   const expected = MAGIC_BYTES[contentType];
-  if (!expected) return false;
+  if (!expected) return true; // Allow unknown types (already validated by extension/MIME)
   if (bytes.length < expected.length) return false;
-  return expected.every((byte, i) => bytes[i] === byte);
+
+  // Check exact position first (most files)
+  if (expected.every((byte, i) => bytes[i] === byte)) return true;
+
+  // For PDFs: scan first 1024 bytes (some have BOM or whitespace before %PDF)
+  if (contentType === 'application/pdf') {
+    const scanLimit = Math.min(bytes.length, 1024);
+    for (let offset = 1; offset <= scanLimit - expected.length; offset++) {
+      if (expected.every((byte, i) => bytes[offset + i] === byte)) return true;
+    }
+  }
+
+  return false;
 }
 
 async function cleanupUploadedFile(supabase: Awaited<ReturnType<typeof createClient>>, storagePath: string) {
