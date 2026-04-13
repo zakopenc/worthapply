@@ -181,9 +181,6 @@ export default function SignupPage() {
             <h1 className="text-3xl font-extrabold text-on-surface tracking-tight mb-2">
               Create your account
             </h1>
-            <p className="text-on-surface-variant/70 text-sm font-medium">
-              Start applying smarter in under 2 minutes
-            </p>
           </div>
 
           {/* Error Message */}
