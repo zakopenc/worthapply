@@ -42,11 +42,12 @@ export async function updateSession(request: NextRequest) {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       const expiresAt = session.expires_at ? session.expires_at * 1000 : 0;
-      const createdAt = session.created_at ? new Date(session.created_at).getTime() : 0;
       const SIX_HOURS = 6 * 60 * 60 * 1000;
       
-      // If session is older than 6 hours, force sign out
-      if (Date.now() - createdAt > SIX_HOURS) {
+      // If session is older than 6 hours based on expires_at (token duration)
+      // or if session.expires_at is missing, fallback to standard session check.
+      // Note: Supabase session.expires_at is a Unix timestamp in seconds.
+      if (session.expires_at && (Date.now() > (session.expires_at * 1000) - (24 * 60 * 60 * 1000 - SIX_HOURS))) {
         await supabase.auth.signOut();
         const url = request.nextUrl.clone();
         url.pathname = '/login';
