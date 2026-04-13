@@ -79,23 +79,23 @@ export default function OnboardingPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-8 md:p-12 lg:p-20">
-        <div className="max-w-4xl">
+      <main className="flex-grow flex flex-col justify-center p-8 md:p-12 lg:p-16">
+        <div className="max-w-4xl w-full mx-auto">
           <span className="inline-flex items-center px-3 py-1 bg-[#ffdcbf] text-[#794400] text-[10px] uppercase tracking-widest font-black rounded-full mb-6">
             Evidence Bank
           </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-black tracking-tighter leading-[1.1] mb-6">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-black tracking-tighter leading-[1.1] mb-4">
             Build your professional foundation with data.
           </h1>
-          <p className="text-lg md:text-xl text-stone-600 max-w-xl leading-relaxed mb-12">
+          <p className="text-md md:text-lg text-stone-600 max-w-xl leading-relaxed mb-8">
             Upload your resume to initialize your Evidence Bank. Our engine parses your history into a high-fidelity, structured map of your expertise.
           </p>
 
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
             {/* Upload Zone */}
             <div className="xl:col-span-7">
               <div 
-                className="group relative flex flex-col items-center justify-center p-12 lg:p-16 border-2 border-dashed border-[#cfc5bd] hover:border-black transition-all rounded-[2rem] bg-[#f6f3ef] cursor-pointer"
+                className="group relative flex flex-col items-center justify-center p-8 lg:p-12 border-2 border-dashed border-[#cfc5bd] hover:border-black transition-all rounded-[2rem] bg-[#f6f3ef] cursor-pointer"
                 onClick={() => fileRef.current?.click()}
               >
                 <input ref={fileRef} type="file" className="hidden" onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])} />
