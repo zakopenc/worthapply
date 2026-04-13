@@ -20,6 +20,9 @@ import { useRouter } from 'next/navigation';
 export default function OnboardingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -35,10 +38,6 @@ export default function OnboardingPage() {
   }, [router]);
 
   if (loading) return null;
-
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
 
   const handleUpload = async (file: File) => {
     if (!file) return;
