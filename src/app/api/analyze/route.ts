@@ -89,26 +89,28 @@ export async function POST(request: NextRequest) {
 
     try {
       // Use admin client to bypass RLS on usage_tracking table
-      let { data: usage, error: usageError } = await adminClient
+      const usageResult = await adminClient
         .from('usage_tracking')
         .select('analyses_count')
         .eq('user_id', user.id)
         .eq('month', currentMonth)
         .single();
 
-      if (usageError && usageError.code === 'PGRST116') {
+      let usageCount = usageResult.data?.analyses_count ?? 0;
+
+      if (usageResult.error && usageResult.error.code === 'PGRST116') {
         // Row doesn't exist, insert it
         const { error: insertError } = await adminClient
           .from('usage_tracking')
           .insert({ user_id: user.id, month: currentMonth, analyses_count: 0 });
         
         if (insertError) throw insertError;
-        usage = { analyses_count: 0 };
-      } else if (usageError) {
-        throw usageError;
+        usageCount = 0;
+      } else if (usageResult.error) {
+        throw usageResult.error;
       }
 
-      usedAnalyses = usage?.analyses_count || 0;
+      usedAnalyses = usageCount;
 
       if (limits.analyses_per_month !== null && usedAnalyses >= limits.analyses_per_month) {
         return NextResponse.json(
@@ -131,9 +133,10 @@ export async function POST(request: NextRequest) {
 
       if (updateError) throw updateError;
       usedAnalyses += 1;
-    } catch (usageError: any) {
+    } catch (usageError) {
       console.error('Usage management error:', usageError);
-      return NextResponse.json({ error: 'Failed to manage usage: ' + usageError.message }, { status: 500 });
+      const msg = usageError instanceof Error ? usageError.message : 'Unknown error';
+      return NextResponse.json({ error: 'Failed to manage usage: ' + msg }, { status: 500 });
     }
 
     const releaseReservedUsage = async () => {
