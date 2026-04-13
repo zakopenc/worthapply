@@ -1,12 +1,16 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: resume, error } = await supabase
     .from('resumes')
     .select('parse_status, parsed_data, items_extracted')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !resume) {
