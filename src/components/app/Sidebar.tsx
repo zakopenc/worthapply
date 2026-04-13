@@ -15,22 +15,11 @@ import {
   Settings,
   Sparkles,
   HelpCircle,
-import {
-  LayoutDashboard,
-  Target,
-  FileText,
-  WandSparkles,
-  NotebookPen,
-  BriefcaseBusiness,
-  FileSearch,
-  ReceiptText,
-  Settings,
-  Sparkles,
-  HelpCircle,
   TrendingUp,
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
+// Force cache invalidation
 interface SidebarProps {
   userName: string | null;
   plan: string;
@@ -54,7 +43,7 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 h-full w-64 z-50 flex flex-col bg-[#fcf9f5] border-r border-[#cfc5bd]/20 overflow-y-auto no-scrollbar">
       {/* Brand */}
-        <Link href="/dashboard" className={styles.brand} aria-label="WorthApply dashboard home">
+        <Link href="/dashboard" className="block px-6 py-5" aria-label="WorthApply dashboard home">
           <div className="flex items-center gap-3">
             <Image 
               src="/logo.svg" 
