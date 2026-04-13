@@ -116,7 +116,7 @@ export default function LoginPage() {
           transition={{ duration: 0.5, ease: [0.25, 0.4, 0, 1] }}
           className="bg-surface-container-lowest rounded-[16px] shadow-[0px_12px_32px_rgba(28,28,26,0.06)] p-10 flex flex-col items-center">
           {/* Logo Section */}
-          </div>
+          <div className="mb-10"></div>
 
           {/* Header Section */}
           <div className="w-full mb-8 text-center">
