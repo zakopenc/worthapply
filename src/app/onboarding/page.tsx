@@ -54,20 +54,42 @@ export default function OnboardingPage() {
       alert('Please enter at least 50 characters for the job description.');
       return;
     }
-    
+
+    if (!user) {
+      alert('Please sign in again.');
+      router.push('/login');
+      return;
+    }
+
     setStep('analyzing');
-    
+
     try {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ job_description: jobDescription }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Analysis failed');
       }
-      
+
+      const supabase = createClient();
+      const { error: profileError } = await supabase.from('profiles').upsert(
+        {
+          id: user.id,
+          onboarding_complete: true,
+        },
+        {
+          onConflict: 'id',
+          ignoreDuplicates: false,
+        }
+      );
+
+      if (profileError) {
+        throw profileError;
+      }
+
       setStep('success');
     } catch (err) {
       console.error(err);
