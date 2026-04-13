@@ -224,9 +224,9 @@ function normalizeExtractedSkills(parsed: ParsedData | null) {
 
   if (!tools.length) return skillGroups;
 
-  return [...skillGroups, { category: 'Tools', items: tools }];
-}
+import { useState, useRef, useCallback, useEffect } from 'react';
 
+// Inside ResumeClient component
 export default function ResumeClient({ initialResume, initialParsedData, itemsExtracted }: ResumeClientProps) {
   const [resume, setResume] = useState<Resume | null>(initialResume);
   const [parsed, setParsed] = useState<ParsedData | null>(initialParsedData);
@@ -235,6 +235,27 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Add polling for status updates
+  useEffect(() => {
+    if (resume?.parse_status === 'pending' || resume?.parse_status === 'processing') {
+      const interval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/resume/status/${resume.id}`);
+          if (!res.ok) return;
+          const data = await res.json();
+          if (data.parse_status === 'completed') {
+            setResume(prev => prev ? { ...prev, parse_status: 'complete' } : null);
+            setParsed(data.parsed_data);
+            setItems(data.items_extracted);
+          }
+        } catch (e) {
+          console.error('Polling error', e);
+        }
+      }, 3000); // Poll every 3s
+      return () => clearInterval(interval);
+    }
+  }, [resume?.parse_status, resume?.id]);
 
   const handleUpload = useCallback(async (file: File) => {
     if (!file) return;

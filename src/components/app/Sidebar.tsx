@@ -31,7 +31,14 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
       <div className={styles.chrome}>
         <Link href="/dashboard" className={styles.brand} aria-label="WorthApply dashboard home">
           <span className={styles.logoMark}>
-            <Image src="/logo.png" alt="WorthApply" width={160} height={87} priority />
+            <Image 
+              src="/logo.svg" 
+              alt="WorthApply" 
+              width={160} 
+              height={40} 
+              priority 
+              className={styles.logoImage}
+            />
           </span>
         </Link>
 

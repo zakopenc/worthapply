@@ -1,10 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { processResumeExtraction } from '@/lib/resume-parser';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+// ... rest of the file
+
 const STORAGE_BUCKET = 'resumes';
-const PARSER_UNAVAILABLE_MESSAGE =
-  'Resume uploaded successfully, but structured resume extraction is not configured in this environment yet.';
+
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const MIME_TYPE_BY_EXTENSION: Record<string, string> = {
   pdf: 'application/pdf',
@@ -180,18 +183,21 @@ export async function POST(request: NextRequest) {
       console.error('Signed URL error:', signed.error);
     }
 
+    // Trigger background extraction
+    processResumeExtraction(insertedResume.id).catch(console.error);
+
     return NextResponse.json({
       data: {
         resume: {
           id: insertedResume.id,
           filename: insertedResume.filename,
           uploaded_at: insertedResume.created_at,
-          parse_status: insertedResume.parse_status,
+          parse_status: 'pending',
           file_url: signed.data?.signedUrl || '',
         },
-        parsed_data: insertedResume.parsed_data,
-        items_extracted: insertedResume.items_extracted || 0,
-        warnings: [PARSER_UNAVAILABLE_MESSAGE],
+        parsed_data: null,
+        items_extracted: 0,
+        warnings: ['Resume uploaded successfully, extraction is processing.'],
       },
     });
   } catch (error) {
