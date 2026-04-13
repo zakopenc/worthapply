@@ -1,342 +1,19 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { StatCard } from "@/components/ui/StatCard";
-import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/server";
+import {
+  Target,
+  TrendingUp,
+  Clock,
+  Calendar,
+  ArrowRight,
+  Zap,
+  CheckCircle,
+  Activity,
+  WandSparkles,
+  Inbox,
+} from "lucide-react";
 
-export default async function DashboardPage() {
-  const supabase = await createClient();
-  
-  // Get authenticated user
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  
-  if (userError || !user) {
-    redirect("/login");
-  }
-
-  // Fetch applications data
-  const { data: applications } = await supabase
-    .from("applications")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
-
-  // Fetch job analyses
-  const { data: analyses } = await supabase
-    .from("job_analyses")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(10);
-
-  // Calculate statistics
-  const activeApplications = applications?.filter(app => 
-    ["applied", "interviewing", "screening"].includes(app.status)
-  ).length || 0;
-
-  const totalApplications = applications?.length || 0;
-  const interviewCount = applications?.filter(app => 
-    app.status === "interviewing"
-  ).length || 0;
-  
-  const successRate = totalApplications > 0 
-    ? Math.round((interviewCount / totalApplications) * 100)
-    : 0;
-
-  const scheduledInterviews = applications?.filter(app => 
-    app.interview_date && new Date(app.interview_date) > new Date()
-  ).length || 0;
-
-  // Calculate average response time
-  const respondedApps = applications?.filter(app => 
-    app.response_date && app.created_at
-  ) || [];
-  
-  const avgResponseDays = respondedApps.length > 0
-    ? Math.round(
-        respondedApps.reduce((sum, app) => {
-          const diff = new Date(app.response_date).getTime() - new Date(app.created_at).getTime();
-          return sum + (diff / (1000 * 60 * 60 * 24));
-        }, 0) / respondedApps.length
-      )
-    : 0;
-
-  // Get recent activities (analyses + applications)
-  const recentActivities = [
-    ...(analyses?.slice(0, 5).map(analysis => ({
-      type: "analysis",
-      title: `Analyzed ${analysis.job_title || "Job"}`,
-      subtitle: `Match Score: ${analysis.match_score}% • ${getTimeAgo(analysis.created_at)}`,
-      company: analysis.company_name,
-      icon: "analytics",
-      iconColor: "primary",
-      timestamp: new Date(analysis.created_at),
-    })) || []),
-    ...(applications?.slice(0, 5).map(app => ({
-      type: "application",
-      title: app.status === "interviewing" ? "Interview scheduled" : "Application submitted",
-      subtitle: `${app.company_name} • ${getTimeAgo(app.created_at)}`,
-      company: app.company_name,
-      icon: app.status === "interviewing" ? "videocam" : "send",
-      iconColor: app.status === "interviewing" ? "green" : "secondary",
-      timestamp: new Date(app.created_at),
-    })) || []),
-  ]
-    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-    .slice(0, 5);
-
-  // Get next steps based on real data
-  const pendingAnalyses = analyses?.filter(a => !a.completed).length || 0;
-  const incompleteApplications = applications?.filter(app => 
-    app.status === "draft"
-  ).length || 0;
-
-  return (
-    <>
-      <div className="p-4 sm:p-6 lg:p-12">
-        {/* Header & Breadcrumbs */}
-        <header className="mb-8 lg:mb-12">
-          <nav className="flex items-center gap-2 mb-4 text-xs font-label uppercase tracking-widest text-secondary">
-            <span>WorthApply</span>
-            <span className="material-symbols-outlined text-[10px]">
-              chevron_right
-            </span>
-            <span className="text-on-surface/40">Dashboard</span>
-          </nav>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-on-surface">
-            Dashboard
-          </h1>
-        </header>
-
-        {/* Bento Stats Grid */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8 lg:mb-12">
-          <StatCard
-            label="Active Applications"
-            value={activeApplications.toString()}
-            icon="folder_shared"
-            variant="primary"
-          />
-          <StatCard
-            label="Success Rate"
-            value={`${successRate}%`}
-            icon="trending_up"
-            trend={successRate > 30 ? { value: "Good", direction: "up" } : undefined}
-          />
-          <StatCard
-            label="Avg Response Time"
-            value={avgResponseDays > 0 ? `${avgResponseDays} days` : "N/A"}
-            icon="schedule"
-          />
-          <Card className="p-6 flex flex-col justify-between min-h-[160px] border-l-4 border-secondary">
-            <span className="text-xs uppercase tracking-widest text-secondary font-bold">
-              Scheduled
-            </span>
-            <div className="flex items-end justify-between">
-              <span className="text-4xl font-bold text-on-surface">{scheduledInterviews}</span>
-              <span className="material-symbols-outlined text-secondary">
-                event_available
-              </span>
-            </div>
-          </Card>
-        </section>
-
-        {/* Main Layout Split */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* Activity Feed */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
-            <Card className="p-4 sm:p-6 lg:p-8">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-xl font-bold text-on-surface">
-                  Recent Activity
-                </h2>
-                <Link 
-                  href="/applications"
-                  className="text-xs uppercase tracking-widest text-secondary font-bold hover:opacity-70 transition-opacity"
-                >
-                  View All
-                </Link>
-              </div>
-              <div className="space-y-6">
-                {recentActivities.length === 0 ? (
-                  <div className="text-center py-12">
-                    <span className="material-symbols-outlined text-on-surface/20 text-6xl mb-4">
-                      inbox
-                    </span>
-                    <p className="text-on-surface/40">No activity yet. Start by analyzing a job!</p>
-                  </div>
-                ) : (
-                  recentActivities.map((activity, index) => (
-                    <div 
-                      key={index}
-                      className={`flex items-start gap-4 p-4 rounded-lg ${
-                        index === 0 
-                          ? "bg-surface-container-low/50 border-l-2 border-primary" 
-                          : "hover:bg-surface-container-low transition-colors"
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full ${
-                        activity.iconColor === "primary" ? "bg-primary/5" :
-                        activity.iconColor === "green" ? "bg-green-100" :
-                        "bg-secondary/10"
-                      } flex items-center justify-center shrink-0`}>
-                        <span className={`material-symbols-outlined ${
-                          activity.iconColor === "primary" ? "text-primary" :
-                          activity.iconColor === "green" ? "text-green-600" :
-                          "text-secondary"
-                        } text-xl`}>
-                          {activity.icon}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-on-surface font-medium">
-                          {activity.title}
-                        </p>
-                        <p className="text-sm text-on-surface/40 mt-1">
-                          {activity.subtitle}
-                        </p>
-                      </div>
-                      {index === 0 && (
-                        <span className="material-symbols-outlined text-on-surface/20">
-                          more_horiz
-                        </span>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </Card>
-
-            {/* Featured CTA */}
-            <Card className="relative min-h-[180px] lg:h-48 bg-primary-container overflow-hidden group">
-              <div
-                className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)]"
-                style={{ backgroundSize: "20px 20px" }}
-              ></div>
-              <div className="relative h-full flex flex-col justify-center px-6 sm:px-8 lg:px-12 py-6">
-                <h3 className="text-white text-2xl font-bold mb-2">
-                  {totalApplications === 0 
-                    ? "Start your job search journey"
-                    : "Keep the momentum going"
-                  }
-                </h3>
-                <p className="text-white/60 text-sm max-w-md">
-                  {totalApplications === 0
-                    ? "Upload your resume and analyze your first job to see how well you match."
-                    : `You've analyzed ${analyses?.length || 0} jobs. Ready to find more opportunities?`
-                  }
-                </p>
-                <a 
-                  href="/analyzer"
-                  className="mt-6 w-fit px-6 py-2 bg-secondary text-white rounded-full text-xs font-bold uppercase tracking-widest hover:scale-105 transition-transform"
-                >
-                  {totalApplications === 0 ? "Analyze First Job" : "Explore Opportunities"}
-                </a>
-              </div>
-            </Card>
-          </div>
-
-          {/* Next Steps & Contextual Sidebar */}
-          <div className="flex flex-col gap-6">
-            <Card className="p-4 sm:p-6 lg:p-8 border-t-4 border-secondary">
-              <h2 className="text-lg font-bold text-on-surface mb-6">
-                Next Steps
-              </h2>
-              <div className="space-y-4">
-                {pendingAnalyses > 0 && (
-                  <a 
-                    href="/analyzer"
-                    className="block p-4 rounded-xl bg-secondary-container/30 border border-secondary/10 flex flex-col gap-3 group cursor-pointer hover:bg-secondary-container/40 transition-colors"
-                  >
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm font-bold text-on-secondary-container">
-                        Complete {pendingAnalyses} pending {pendingAnalyses === 1 ? "analysis" : "analyses"}
-                      </span>
-                      <span className="material-symbols-outlined text-on-secondary-container text-sm">
-                        arrow_forward
-                      </span>
-                    </div>
-                    <p className="text-xs text-on-secondary-container/70 leading-relaxed">
-                      Finish analyzing jobs to see your match scores.
-                    </p>
-                  </a>
-                )}
-                
-                {incompleteApplications > 0 && (
-                  <Link 
-                    href="/applications"
-                    className="block p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 flex flex-col gap-3 group cursor-pointer hover:bg-surface-container-high transition-colors"
-                  >
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm font-bold text-on-surface">
-                        Complete {incompleteApplications} draft {incompleteApplications === 1 ? "application" : "applications"}
-                      </span>
-                      <span className="material-symbols-outlined text-on-surface/30 text-sm">
-                        arrow_forward
-                      </span>
-                    </div>
-                    <p className="text-xs text-on-surface/40 leading-relaxed">
-                      Finish and submit your pending applications.
-                    </p>
-                  </Link>
-                )}
-
-                {pendingAnalyses === 0 && incompleteApplications === 0 && (
-                  <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-center">
-                    <span className="material-symbols-outlined text-green-600 text-2xl mb-2">
-                      check_circle
-                    </span>
-                    <p className="text-sm font-medium text-green-800">
-                      All caught up!
-                    </p>
-                    <p className="text-xs text-green-600 mt-1">
-                      Great work staying on top of your applications.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </Card>
-
-            {/* Pro Tip */}
-            <Card className="p-4 sm:p-6 lg:p-8 border-2 border-dashed border-outline-variant/30 flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-4">
-                <span className="material-symbols-outlined text-secondary">
-                  bolt
-                </span>
-              </div>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-secondary font-black mb-2">
-                Pro Tip
-              </span>
-              <p className="text-sm italic text-on-surface/60">
-                &ldquo;Resumes tailored with specific outcome-based evidence see a 40%
-                higher response rate.&rdquo;
-              </p>
-            </Card>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <footer className="mt-12 lg:mt-20 pt-8 lg:pt-12 border-t border-[#cfc5bd]/15 flex flex-col md:flex-row justify-between items-center gap-4 lg:gap-6">
-          <span className="text-[#1c1c1a]/40 dark:text-[#fcf9f5]/40 text-xs uppercase tracking-widest text-center md:text-left">
-            © 2024 WorthApply. All rights reserved.
-          </span>
-          <div className="flex flex-wrap justify-center gap-4 lg:gap-8">
-            <a href="/privacy" className="text-[#1c1c1a]/40 dark:text-[#fcf9f5]/40 text-xs uppercase tracking-widest hover:text-[#84523c] transition-colors">
-              Privacy Policy
-            </a>
-            <a href="/terms" className="text-[#1c1c1a]/40 dark:text-[#fcf9f5]/40 text-xs uppercase tracking-widest hover:text-[#84523c] transition-colors">
-              Terms of Service
-            </a>
-            <a href="mailto:support@worthapply.com" className="text-[#1c1c1a]/40 dark:text-[#fcf9f5]/40 text-xs uppercase tracking-widest hover:text-[#84523c] transition-colors">
-              Contact Us
-            </a>
-          </div>
-        </footer>
-      </div>
-    </>
-  );
-}
-
-// Helper function to get human-readable time ago
 function getTimeAgo(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
@@ -346,10 +23,404 @@ function getTimeAgo(dateString: string): string {
   const diffDays = Math.floor(diffMs / 86400000);
 
   if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? "minute" : "minutes"} ago`;
-  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} ${Math.floor(diffDays / 7) === 1 ? "week" : "weeks"} ago`;
-  return `${Math.floor(diffDays / 30)} ${Math.floor(diffDays / 30) === 1 ? "month" : "months"} ago`;
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+  applied: { label: "Applied", color: "text-blue-700", bg: "bg-blue-50 border-blue-200" },
+  interviewing: { label: "Interviewing", color: "text-green-700", bg: "bg-green-50 border-green-200" },
+  screening: { label: "Screening", color: "text-purple-700", bg: "bg-purple-50 border-purple-200" },
+  offer: { label: "Offer", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
+  rejected: { label: "Rejected", color: "text-red-700", bg: "bg-red-50 border-red-200" },
+  draft: { label: "Draft", color: "text-gray-600", bg: "bg-gray-50 border-gray-200" },
+  wishlist: { label: "Wishlist", color: "text-amber-700", bg: "bg-amber-50 border-amber-200" },
+};
+
+export default async function DashboardPage() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, plan")
+    .eq("id", user.id)
+    .single();
+
+  const { data: applications } = await supabase
+    .from("applications")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  const { data: analyses } = await supabase
+    .from("job_analyses")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  const firstName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
+  const totalApplications = applications?.length || 0;
+  const activeApplications = applications?.filter((app) =>
+    ["applied", "interviewing", "screening"].includes(app.status)
+  ).length || 0;
+  const interviewCount = applications?.filter((app) => app.status === "interviewing").length || 0;
+  const successRate = totalApplications > 0 ? Math.round((interviewCount / totalApplications) * 100) : 0;
+  const scheduledInterviews = applications?.filter(
+    (app) => app.interview_date && new Date(app.interview_date) > new Date()
+  ).length || 0;
+  const incompleteApplications = applications?.filter((app) => app.status === "draft").length || 0;
+
+  const recentAnalyses = analyses?.slice(0, 5) || [];
+  const recentApplications = applications?.slice(0, 5) || [];
+
+  const pipelineStages = [
+    { label: "Wishlist", count: applications?.filter((a) => a.status === "wishlist").length || 0, color: "bg-amber-400" },
+    { label: "Applied", count: applications?.filter((a) => a.status === "applied").length || 0, color: "bg-blue-500" },
+    { label: "Screening", count: applications?.filter((a) => a.status === "screening").length || 0, color: "bg-purple-500" },
+    { label: "Interviewing", count: applications?.filter((a) => a.status === "interviewing").length || 0, color: "bg-green-500" },
+    { label: "Offer", count: applications?.filter((a) => a.status === "offer").length || 0, color: "bg-emerald-500" },
+  ];
+
+  return (
+    <div className="min-h-screen p-6 lg:p-10">
+      {/* Header */}
+      <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-black uppercase tracking-widest text-secondary mb-2">
+            WorthApply / Dashboard
+          </p>
+          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-on-surface">
+            Good morning, {firstName} 👋
+          </h1>
+          <p className="text-on-surface-variant mt-1 text-base">
+            {totalApplications === 0
+              ? "Ready to start your job search? Let's analyze your first role."
+              : `You have ${activeApplications} active application${activeApplications !== 1 ? "s" : ""} in progress.`}
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Link
+            href="/analyzer"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#1c1c1a] text-white rounded-xl text-sm font-bold hover:bg-[#1c1c1a]/90 active:scale-95 transition-all shadow-lg"
+          >
+            <Target className="w-4 h-4" />
+            Analyze a Job
+          </Link>
+          <Link
+            href="/resume"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white text-on-surface rounded-xl text-sm font-bold border border-outline-variant/30 hover:bg-surface-container-low active:scale-95 transition-all"
+          >
+            <WandSparkles className="w-4 h-4 text-secondary" />
+            Tailor Resume
+          </Link>
+        </div>
+      </header>
+
+      {/* Stats Bento Grid */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Active Applications */}
+        <div className="bg-[#1c1c1a] text-white rounded-2xl p-6 flex flex-col justify-between min-h-[140px]">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-black uppercase tracking-widest text-white/50">
+              Active
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+              <Activity className="w-4 h-4 text-white/70" />
+            </div>
+          </div>
+          <div>
+            <span className="text-4xl font-black">{activeApplications}</span>
+            <p className="text-sm text-white/50 mt-1">Applications</p>
+          </div>
+        </div>
+
+        {/* Success Rate */}
+        <div className="bg-white rounded-2xl p-6 border border-outline-variant/20 flex flex-col justify-between min-h-[140px]">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-black uppercase tracking-widest text-secondary">
+              Success Rate
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-secondary" />
+            </div>
+          </div>
+          <div>
+            <span className="text-4xl font-black text-on-surface">{successRate}%</span>
+            <p className="text-sm text-on-surface-variant mt-1">Interview rate</p>
+          </div>
+        </div>
+
+        {/* Analyses Run */}
+        <div className="bg-white rounded-2xl p-6 border border-outline-variant/20 flex flex-col justify-between min-h-[140px]">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+              Analyses
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center">
+              <Target className="w-4 h-4 text-on-surface-variant" />
+            </div>
+          </div>
+          <div>
+            <span className="text-4xl font-black text-on-surface">{analyses?.length || 0}</span>
+            <p className="text-sm text-on-surface-variant mt-1">Jobs analyzed</p>
+          </div>
+        </div>
+
+        {/* Scheduled Interviews */}
+        <div className="bg-white rounded-2xl p-6 border border-secondary/20 flex flex-col justify-between min-h-[140px]">
+          <div className="flex justify-between items-start">
+            <span className="text-[10px] font-black uppercase tracking-widest text-secondary">
+              Upcoming
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-secondary" />
+            </div>
+          </div>
+          <div>
+            <span className="text-4xl font-black text-on-surface">{scheduledInterviews}</span>
+            <p className="text-sm text-on-surface-variant mt-1">Interviews</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        {/* Left Column */}
+        <div className="xl:col-span-8 flex flex-col gap-6">
+
+          {/* Pipeline Overview */}
+          {totalApplications > 0 && (
+            <div className="bg-white rounded-2xl p-6 border border-outline-variant/20">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-on-surface">Pipeline Overview</h2>
+                <Link
+                  href="/tracker"
+                  className="text-xs font-bold text-secondary uppercase tracking-widest flex items-center gap-1 hover:opacity-70 transition-opacity"
+                >
+                  Full Pipeline <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+              <div className="flex gap-2 mb-4">
+                {pipelineStages.map((stage) => (
+                  <div key={stage.label} className="flex-1 text-center">
+                    <div className={`h-2 rounded-full ${stage.count > 0 ? stage.color : "bg-surface-container"} mb-2`} />
+                    <span className="text-lg font-black text-on-surface">{stage.count}</span>
+                    <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mt-0.5">{stage.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Job Analyses */}
+          <div className="bg-white rounded-2xl border border-outline-variant/20">
+            <div className="flex justify-between items-center p-6 pb-4">
+              <h2 className="text-lg font-bold text-on-surface">Recent Analyses</h2>
+              <Link
+                href="/analyzer"
+                className="text-xs font-bold text-secondary uppercase tracking-widest flex items-center gap-1 hover:opacity-70 transition-opacity"
+              >
+                New Analysis <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+            <div className="divide-y divide-outline-variant/10">
+              {recentAnalyses.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center mb-4">
+                    <Inbox className="w-6 h-6 text-on-surface-variant" />
+                  </div>
+                  <p className="font-bold text-on-surface mb-1">No analyses yet</p>
+                  <p className="text-sm text-on-surface-variant mb-6 max-w-xs">
+                    Paste a job description to see how well you match and get actionable insights.
+                  </p>
+                  <Link
+                    href="/analyzer"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-[#1c1c1a] text-white rounded-xl text-sm font-bold active:scale-95 transition-all"
+                  >
+                    <Target className="w-4 h-4" /> Analyze Your First Job
+                  </Link>
+                </div>
+              ) : (
+                recentAnalyses.map((analysis, index) => {
+                  const score = analysis.match_score || analysis.overall_score || 0;
+                  const scoreColor = score >= 80 ? "text-green-700 bg-green-50 border-green-200" :
+                    score >= 60 ? "text-blue-700 bg-blue-50 border-blue-200" :
+                    "text-amber-700 bg-amber-50 border-amber-200";
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center gap-4 px-6 py-4 hover:bg-surface-container-low/50 transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
+                        <Target className="w-5 h-5 text-on-surface-variant" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-on-surface text-sm truncate">
+                          {analysis.job_title || "Job Analysis"}
+                        </p>
+                        <p className="text-xs text-on-surface-variant mt-0.5">
+                          {analysis.company_name} · {getTimeAgo(analysis.created_at)}
+                        </p>
+                      </div>
+                      {score > 0 && (
+                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-black border ${scoreColor} shrink-0`}>
+                          {score}% Match
+                        </span>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Recent Applications */}
+          {recentApplications.length > 0 && (
+            <div className="bg-white rounded-2xl border border-outline-variant/20">
+              <div className="flex justify-between items-center p-6 pb-4">
+                <h2 className="text-lg font-bold text-on-surface">Recent Applications</h2>
+                <Link
+                  href="/applications"
+                  className="text-xs font-bold text-secondary uppercase tracking-widest flex items-center gap-1 hover:opacity-70 transition-opacity"
+                >
+                  View All <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+              <div className="divide-y divide-outline-variant/10">
+                {recentApplications.map((app, index) => {
+                  const cfg = statusConfig[app.status] || statusConfig.draft;
+                  return (
+                    <Link
+                      key={index}
+                      href={`/applications/${app.id}`}
+                      className="flex items-center gap-4 px-6 py-4 hover:bg-surface-container-low/50 transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
+                        <span className="text-sm font-black text-on-surface-variant uppercase">
+                          {(app.company || "?")[0]}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-on-surface text-sm truncate">
+                          {app.job_title}
+                        </p>
+                        <p className="text-xs text-on-surface-variant mt-0.5">
+                          {app.company} · {getTimeAgo(app.created_at)}
+                        </p>
+                      </div>
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${cfg.bg} ${cfg.color} shrink-0`}>
+                        {cfg.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column */}
+        <div className="xl:col-span-4 flex flex-col gap-6">
+
+          {/* Action CTA */}
+          <div className="bg-[#1c1c1a] rounded-2xl p-6 relative overflow-hidden">
+            <div className="absolute right-0 top-0 opacity-[0.04] pointer-events-none">
+              <Zap className="w-40 h-40 -mr-8 -mt-8" />
+            </div>
+            <div className="relative">
+              <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-3">
+                Recommended
+              </p>
+              <h3 className="text-white text-xl font-bold mb-2 leading-snug">
+                {totalApplications === 0
+                  ? "Analyze your first role today"
+                  : "Keep momentum going"}
+              </h3>
+              <p className="text-white/50 text-sm leading-relaxed mb-5">
+                {totalApplications === 0
+                  ? "Upload your resume and paste a job description to see your match score instantly."
+                  : `You've run ${analyses?.length || 0} analyses. Your evidence bank is ready for tailoring.`}
+              </p>
+              <Link
+                href="/analyzer"
+                className="flex items-center gap-2 w-fit px-5 py-2.5 bg-secondary text-white rounded-xl text-sm font-black uppercase tracking-wide hover:opacity-90 active:scale-95 transition-all"
+              >
+                <Target className="w-4 h-4" />
+                {totalApplications === 0 ? "Get Started" : "New Analysis"}
+              </Link>
+            </div>
+          </div>
+
+          {/* Next Steps */}
+          <div className="bg-white rounded-2xl p-6 border border-outline-variant/20">
+            <h2 className="text-lg font-bold text-on-surface mb-5 flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-secondary" />
+              Next Steps
+            </h2>
+            <div className="flex flex-col gap-3">
+              {incompleteApplications > 0 && (
+                <Link
+                  href="/applications"
+                  className="flex items-center justify-between p-4 rounded-xl bg-secondary/5 border border-secondary/15 hover:bg-secondary/10 transition-colors group"
+                >
+                  <div>
+                    <p className="text-sm font-bold text-on-surface">
+                      {incompleteApplications} draft{incompleteApplications !== 1 ? "s" : ""} pending
+                    </p>
+                    <p className="text-xs text-on-surface-variant mt-0.5">Submit your applications</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-secondary group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              )}
+
+              <Link
+                href="/resume"
+                className="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors group"
+              >
+                <div>
+                  <p className="text-sm font-bold text-on-surface">Tailor your resume</p>
+                  <p className="text-xs text-on-surface-variant mt-0.5">Boost match scores by 20%+</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+
+              <Link
+                href="/cover-letter"
+                className="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors group"
+              >
+                <div>
+                  <p className="text-sm font-bold text-on-surface">Write a cover letter</p>
+                  <p className="text-xs text-on-surface-variant mt-0.5">AI-generated from your evidence</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Pro Tip */}
+          <div className="bg-white rounded-2xl p-6 border-2 border-dashed border-secondary/20 flex flex-col items-center text-center">
+            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-3">
+              <Clock className="w-5 h-5 text-secondary" />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2">
+              Did You Know
+            </p>
+            <p className="text-sm text-on-surface-variant leading-relaxed italic">
+              &ldquo;Tailored resumes with specific outcome-based evidence see a 40% higher response rate.&rdquo;
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
