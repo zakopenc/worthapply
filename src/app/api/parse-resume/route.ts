@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
         filename: file.name,
         storage_path: storagePath,
         is_active: false,
-        parse_status: 'failed',
+        parse_status: 'pending',
         raw_text: null,
         parsed_data: null,
         items_extracted: 0,

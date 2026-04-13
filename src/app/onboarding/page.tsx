@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, CheckCircle, Briefcase, User, Sparkles, ArrowRight, Settings } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -8,13 +8,21 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
+type UploadedResume = {
+  id: string;
+  filename: string;
+  parse_status: 'pending' | 'processing' | 'complete' | 'failed';
+  file_url?: string;
+};
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const [uploadedResume, setUploadedResume] = useState<UploadedResume | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [step, setStep] = useState<'upload' | 'job_description' | 'analyzing' | 'success'>('upload');
   const [jobDescription, setJobDescription] = useState('');
 
@@ -37,17 +45,69 @@ export default function OnboardingPage() {
     checkUser();
   }, [router]);
 
-  if (loading) return null;
+  useEffect(() => {
+    if (!uploadedResume || uploadedResume.parse_status === 'complete' || uploadedResume.parse_status === 'failed') {
+      return;
+    }
 
-  const handleUpload = (file: File) => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/resume/status/${uploadedResume.id}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        setUploadedResume((current) => {
+          if (!current || current.id !== uploadedResume.id) return current;
+          return {
+            ...current,
+            parse_status: data.parse_status,
+          };
+        });
+      } catch (error) {
+        console.error('Resume status polling failed', error);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [uploadedResume]);
+
+  const handleUpload = useCallback(async (file: File) => {
     if (!file) return;
-    setUploading(true);
 
-    setTimeout(() => {
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/parse-resume', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to upload resume');
+      }
+
+      const payload = data.data || data;
+      if (!payload.resume) {
+        throw new Error('Resume upload did not return a persisted record');
+      }
+
+      setUploadedResume(payload.resume);
+    } catch (error) {
+      console.error(error);
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload resume');
+      setUploadedResume(null);
+    } finally {
       setUploading(false);
-      setUploadedFile(file.name);
-    }, 1500);
-  };
+    }
+  }, []);
+
+  if (loading) return null;
 
   const handleAnalyzeJobFit = async () => {
     if (jobDescription.trim().length < 50) {
@@ -61,13 +121,22 @@ export default function OnboardingPage() {
       return;
     }
 
+    if (!uploadedResume) {
+      alert('Please upload your resume first.');
+      setStep('upload');
+      return;
+    }
+
     setStep('analyzing');
 
     try {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ job_description: jobDescription }),
+        body: JSON.stringify({
+          job_description: jobDescription,
+          resume_id: uploadedResume?.id,
+        }),
       });
 
       if (!response.ok) {
@@ -183,6 +252,7 @@ export default function OnboardingPage() {
                       <input
                         ref={fileRef}
                         type="file"
+                        accept=".pdf,.doc,.docx"
                         className="hidden"
                         onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
                       />
@@ -190,13 +260,22 @@ export default function OnboardingPage() {
                       {uploading ? (
                         <div className="text-center">
                           <div className="animate-spin w-10 h-10 border-4 border-black/20 border-t-black rounded-full mb-4 mx-auto" />
-                          <p className="font-bold">Parsing your resume...</p>
+                          <p className="font-bold">Uploading your resume...</p>
                         </div>
-                      ) : uploadedFile ? (
+                      ) : uploadedResume ? (
                         <div className="text-center">
                           <CheckCircle className="w-12 h-12 text-green-600 mb-4 mx-auto" />
-                          <p className="font-bold">{uploadedFile}</p>
-                          <p className="text-sm text-stone-500 mb-6">Ready for job-fit analysis.</p>
+                          <p className="font-bold">{uploadedResume.filename}</p>
+                          <p className="text-sm text-stone-500 mb-2">
+                            {uploadedResume.parse_status === 'complete'
+                              ? 'Resume persisted and evidence extraction completed.'
+                              : uploadedResume.parse_status === 'failed'
+                                ? 'Resume saved, but structured extraction failed. You can still continue.'
+                                : 'Resume persisted. Evidence extraction is still processing in the background.'}
+                          </p>
+                          <p className="text-xs text-stone-400 uppercase tracking-wider mb-6">
+                            Status: {uploadedResume.parse_status}
+                          </p>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -213,7 +292,8 @@ export default function OnboardingPage() {
                             <Upload className="w-8 h-8 text-[#895110]" />
                           </div>
                           <h3 className="text-xl font-bold mb-2">Drop your resume here</h3>
-                          <p className="text-stone-500 mb-8">PDF, DOCX, TXT. Up to 10MB.</p>
+                          <p className="text-stone-500 mb-3">PDF, DOC, or DOCX. Up to 10MB.</p>
+                          {uploadError ? <p className="text-sm text-red-600 mb-5">{uploadError}</p> : null}
                           <button className="px-8 py-3 bg-black text-white rounded-xl font-bold hover:bg-neutral-800 transition-colors">
                             Select File
                           </button>
