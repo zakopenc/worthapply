@@ -174,13 +174,7 @@ export default function SignupPage() {
           transition={{ duration: 0.5, ease: [0.25, 0.4, 0, 1] }}
           className="bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(28,28,26,0.06)] p-6 md:p-10 flex flex-col items-center w-full max-w-sm">
           {/* Logo Section */}
-          <Link href="/" className="mb-10 flex items-center justify-center gap-3">
-            <img src="/logo.svg" alt="WorthApply" className="w-10 h-10" />
-            <div className="flex flex-col text-left">
-              <span className="text-2xl font-black text-on-surface tracking-tighter">WorthApply</span>
-              <span className="text-[10px] font-semibold text-[#84523c] uppercase tracking-[0.2em]">Master Your Job Search</span>
-            </div>
-          </Link>
+          <div className="mb-10"></div>
 
           {/* Header Section */}
           <div className="text-center mb-8">
