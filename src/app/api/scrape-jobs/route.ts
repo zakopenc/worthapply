@@ -285,22 +285,27 @@ async function scrapeLinkedInJobs(criteria: SearchCriteria): Promise<LinkedInJob
     const run = await response.json();
     const runId = run.data.id;
 
-    // Wait for run to complete (with timeout)
-    let attempts = 0;
-    while (attempts < 30) {
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    // Poll for completion with exponential backoff (max ~45s total)
+    const MAX_POLL_TIME_MS = 45_000;
+    const startTime = Date.now();
+    let delay = 2000; // Start at 2s, increase with backoff
+
+    while (Date.now() - startTime < MAX_POLL_TIME_MS) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      delay = Math.min(delay * 1.5, 8000); // Cap at 8s between polls
 
       const statusResponse = await fetch(`https://api.apify.com/v2/acts/runs/${runId}`, {
         headers: { 'Authorization': `Bearer ${apifyToken}` },
+        signal: AbortSignal.timeout(10_000),
       });
 
       const statusData = await statusResponse.json();
 
       if (statusData.data.status === 'SUCCEEDED') {
-        // Get results
         const datasetId = statusData.data.defaultDatasetId;
         const resultsResponse = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items`, {
           headers: { 'Authorization': `Bearer ${apifyToken}` },
+          signal: AbortSignal.timeout(10_000),
         });
 
         const results = await resultsResponse.json();
@@ -322,12 +327,9 @@ async function scrapeLinkedInJobs(criteria: SearchCriteria): Promise<LinkedInJob
         console.error('Apify run failed');
         return generateMockJobs(criteria);
       }
-
-      attempts++;
     }
 
-    // Timeout - return mock data
-    console.error('Apify scrape timeout');
+    console.error('Apify scrape timeout after 45s');
     return generateMockJobs(criteria);
   } catch (error) {
     console.error('Apify scrape error:', error);

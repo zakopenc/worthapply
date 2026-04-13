@@ -38,6 +38,20 @@ function getNormalizedContentType(file: File) {
   return inferredType || null;
 }
 
+// Magic byte signatures for file type validation
+const MAGIC_BYTES: Record<string, number[]> = {
+  'application/pdf': [0x25, 0x50, 0x44, 0x46], // %PDF
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [0x50, 0x4B, 0x03, 0x04], // PK (ZIP/DOCX)
+  'application/msword': [0xD0, 0xCF, 0x11, 0xE0], // DOC (OLE2)
+};
+
+function validateMagicBytes(bytes: Uint8Array, contentType: string): boolean {
+  const expected = MAGIC_BYTES[contentType];
+  if (!expected) return false;
+  if (bytes.length < expected.length) return false;
+  return expected.every((byte, i) => bytes[i] === byte);
+}
+
 async function cleanupUploadedFile(supabase: Awaited<ReturnType<typeof createClient>>, storagePath: string) {
   const { error } = await supabase.storage.from(STORAGE_BUCKET).remove([storagePath]);
 
@@ -113,6 +127,14 @@ export async function POST(request: NextRequest) {
     const previousActiveIds = (previousActiveResponse.data || []).map((resume) => resume.id);
     const storagePath = buildStoragePath(user.id, file.name);
     const fileBytes = new Uint8Array(await file.arrayBuffer());
+
+    // Validate file content matches declared type (magic bytes)
+    if (!validateMagicBytes(fileBytes, contentType)) {
+      return NextResponse.json(
+        { error: 'File content does not match its type. Please upload a valid PDF or Word document.' },
+        { status: 400 }
+      );
+    }
 
     const { error: uploadError } = await supabase.storage.from(STORAGE_BUCKET).upload(storagePath, fileBytes, {
       contentType,

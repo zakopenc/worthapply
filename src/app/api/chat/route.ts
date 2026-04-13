@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getGeminiClient } from '@/lib/gemini/client';
 import { WORTHAPPLY_KNOWLEDGE } from '@/lib/gemini/knowledge-base';
+import { checkRateLimit as checkRedisRateLimit } from '@/lib/ratelimit';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -85,15 +86,8 @@ Would you like to start with our free plan? You can sign up at worthapply.com/si
 
 Remember: Be helpful, professional, and focused ONLY on WorthApply!`;
 
-// ---- Simple abuse protection (launch hardening) ----
-// In-memory per-IP rate limit. Best-effort on serverless (each cold instance
-// gets a fresh map), but still caps runaway abuse. Swap for Upstash Redis
-// post-launch for a real distributed limiter.
-const RATE_LIMIT_MAX = 15;         // requests
-const RATE_LIMIT_WINDOW_MS = 60_000; // per minute
 const MAX_MESSAGE_LENGTH = 1000;     // chars
 const MAX_HISTORY_ITEMS = 20;
-const ipHits = new Map<string, { count: number; resetAt: number }>();
 
 function getClientIp(req: NextRequest): string {
   const fwd = req.headers.get('x-forwarded-for');
@@ -101,18 +95,10 @@ function getClientIp(req: NextRequest): string {
   return req.headers.get('x-real-ip') || 'unknown';
 }
 
-function checkRateLimit(ip: string): { allowed: boolean; retryAfter?: number } {
-  const now = Date.now();
-  const entry = ipHits.get(ip);
-  if (!entry || now >= entry.resetAt) {
-    ipHits.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return { allowed: true };
-  }
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return { allowed: false, retryAfter: Math.ceil((entry.resetAt - now) / 1000) };
-  }
-  entry.count += 1;
-  return { allowed: true };
+async function checkChatRateLimit(ip: string): Promise<{ allowed: boolean }> {
+  // Use Redis-backed distributed rate limiter (shared with other routes)
+  const result = await checkRedisRateLimit(`chat:${ip}`);
+  return { allowed: result.success };
 }
 
 function isAllowedOrigin(req: NextRequest): boolean {
@@ -141,15 +127,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Rate limit per IP
+    // Rate limit per IP (Redis-backed distributed limiter)
     const ip = getClientIp(request);
-    const rl = checkRateLimit(ip);
+    const rl = await checkChatRateLimit(ip);
     if (!rl.allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Please slow down.' },
         {
           status: 429,
-          headers: { 'Retry-After': String(rl.retryAfter ?? 60) },
+          headers: { 'Retry-After': '60' },
         }
       );
     }
