@@ -1,4 +1,5 @@
-:root {
+/* Sidebar Redesign: Professional Light Mode */
+.sidebar {
   --sidebar-bg: #ffffff;
   --sidebar-border: #e2e8f0;
   --text-primary: #0f172a;
@@ -7,9 +8,6 @@
   --accent-bg: #eff6ff;
   --card-bg: #f8fafc;
   --radius-xl: 12px;
-}
-
-.sidebar {
   position: fixed;
   inset: 0 auto 0 0;
   width: 260px;

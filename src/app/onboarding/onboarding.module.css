@@ -1,5 +1,5 @@
 /* Onboarding Redesign: Clean Professional Light Mode */
-:root {
+.wizard {
   --app-bg: #f8fafc;
   --card-bg: #ffffff;
   --card-border: #e2e8f0;
@@ -7,6 +7,13 @@
   --text-secondary: #64748b;
   --accent-blue: #3b82f6;
   --radius-lg: 16px;
+  width: 100%;
+  max-width: 600px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  overflow: hidden;
 }
 
 .page {
@@ -15,16 +22,6 @@
   place-items: center;
   padding: 48px 24px;
   background: var(--app-bg);
-}
-
-.wizard {
-  width: 100%;
-  max-width: 600px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-  overflow: hidden;
 }
 
 .progressBar {

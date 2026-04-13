@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   Upload, Download, Trash2, FileText, Award, Wrench,
   Briefcase, GraduationCap, Users, Clock, CheckCircle2,
@@ -224,9 +224,9 @@ function normalizeExtractedSkills(parsed: ParsedData | null) {
 
   if (!tools.length) return skillGroups;
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+  return [...skillGroups, { category: 'Tools', items: tools }];
+}
 
-// Inside ResumeClient component
 export default function ResumeClient({ initialResume, initialParsedData, itemsExtracted }: ResumeClientProps) {
   const [resume, setResume] = useState<Resume | null>(initialResume);
   const [parsed, setParsed] = useState<ParsedData | null>(initialParsedData);
@@ -278,6 +278,10 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
     } catch {
       // handled silently until toast system is added
     } finally {
+      setUploading(false);
+    }
+  }, []);
+
       setUploading(false);
     }
   }, []);
