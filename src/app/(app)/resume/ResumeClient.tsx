@@ -244,7 +244,7 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
           const res = await fetch(`/api/resume/status/${resume.id}`);
           if (!res.ok) return;
           const data = await res.json();
-          if (data.parse_status === 'completed') {
+          if (data.parse_status === 'complete') {
             setResume(prev => prev ? { ...prev, parse_status: 'complete' } : null);
             setParsed(data.parsed_data);
             setItems(data.items_extracted);

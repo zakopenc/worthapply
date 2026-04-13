@@ -1,6 +1,6 @@
 
 import { createClient } from '@/lib/supabase/server';
-import * as pdfParse from 'pdf-parse';
+import { PDFParse } from 'pdf-parse';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -33,8 +33,10 @@ export async function processResumeExtraction(resumeId: string) {
 
   // 3. Extract text from PDF
   const buffer = Buffer.from(await fileData.arrayBuffer());
-  const pdfData = await pdfParse(buffer);
+  const parser = new PDFParse({ data: buffer });
+  const pdfData = await parser.getText();
   const rawText = pdfData.text;
+  await parser.destroy();
 
   // 4. Extract structured data using Gemini
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -60,7 +62,7 @@ export async function processResumeExtraction(resumeId: string) {
   await supabase
     .from('resumes')
     .update({ 
-      parse_status: 'completed',
+      parse_status: 'complete',
       raw_text: rawText,
       parsed_data: parsedData,
       items_extracted: Object.keys(parsedData).length

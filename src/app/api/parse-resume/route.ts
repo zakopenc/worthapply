@@ -1,13 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { processResumeExtraction } from '@/lib/resume-parser';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const STORAGE_BUCKET = 'resumes';
-
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const MIME_TYPE_BY_EXTENSION: Record<string, string> = {
   pdf: 'application/pdf',
