@@ -1,9 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { processResumeExtraction } from '@/lib/resume-parser';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// ... rest of the file
-
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const STORAGE_BUCKET = 'resumes';
 
 // Initialize Gemini
