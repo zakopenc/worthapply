@@ -7,10 +7,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { motion } from 'framer-motion';
 
-// Extend Stripe type to include redirectToCheckout
-interface StripeWithRedirect extends Stripe {
-  redirectToCheckout: (options: { sessionId: string }) => Promise<{ error?: Error }>;
-}
+// Extend Stripe type is no longer needed
+// interface StripeWithRedirect extends Stripe {
+//   redirectToCheckout: (options: { sessionId: string }) => Promise<{ error?: Error }>;
+// }
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -102,23 +102,17 @@ export default function PricingCard({
       });
 
       const data = await response.json();
+      console.log('Checkout response data:', data); // Added log
 
       if (!response.ok) {
         throw new Error(data.error || 'Something went wrong');
       }
 
       // Redirect to Stripe checkout
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error('Stripe failed to load');
-      }
-
-      const { error } = await (stripe as StripeWithRedirect).redirectToCheckout({
-        sessionId: data.sessionId,
-      });
-
-      if (error) {
-        throw error;
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No redirect URL provided by server');
       }
     } catch (error) {
       console.error('Checkout error:', error);

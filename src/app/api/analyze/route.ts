@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateJSON } from '@/lib/gemini/client';
 import { buildAnalysisPrompt } from '@/lib/gemini/prompts/analyze';
 import { getFeatureAccess, getPlanLimits, type Plan } from '@/lib/plans';
@@ -7,6 +8,15 @@ import { analyzeJobSchema } from '@/lib/validations';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
+
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Supabase admin env vars are not set');
+  return createSupabaseClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,10 +85,11 @@ export async function POST(request: NextRequest) {
     const features = getFeatureAccess(plan);
 
     let usedAnalyses = 0;
+    const adminClient = getSupabaseAdmin();
 
     try {
-      // Direct approach: check or initialize the user's usage row manually to bypass potential RPC authorization issues
-      let { data: usage, error: usageError } = await supabase
+      // Use admin client to bypass RLS on usage_tracking table
+      let { data: usage, error: usageError } = await adminClient
         .from('usage_tracking')
         .select('analyses_count')
         .eq('user_id', user.id)
@@ -86,8 +97,8 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (usageError && usageError.code === 'PGRST116') {
-        // Row doesn't exist, try to insert it
-        const { error: insertError } = await supabase
+        // Row doesn't exist, insert it
+        const { error: insertError } = await adminClient
           .from('usage_tracking')
           .insert({ user_id: user.id, month: currentMonth, analyses_count: 0 });
         
@@ -112,7 +123,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Increment directly
-      const { error: updateError } = await supabase
+      const { error: updateError } = await adminClient
         .from('usage_tracking')
         .update({ analyses_count: usedAnalyses + 1 })
         .eq('user_id', user.id)
