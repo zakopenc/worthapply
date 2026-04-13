@@ -23,19 +23,29 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
+          cookiesToSet.forEach(({ name, value, options }) =>
             request.cookies.set(name, value)
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, { ...options, sameSite: 'lax', secure: true })
           );
         },
       },
     }
   );
+
+  // Explicitly refresh session if expired or near expiry
+  try {
+    const { data: { session }, error: refreshError } = await supabase.auth.getSession();
+    if (session) {
+      await supabase.auth.getUser(); // Triggers refresh if token is expired
+    }
+  } catch (e) {
+    console.error('Session refresh error:', e);
+  }
 
   let user = null;
   try {
@@ -43,7 +53,6 @@ export async function updateSession(request: NextRequest) {
     user = data.user;
   } catch (error) {
     console.error('Supabase auth error:', error);
-    // Continue without user - will be treated as unauthenticated
   }
 
   const pathname = request.nextUrl.pathname;

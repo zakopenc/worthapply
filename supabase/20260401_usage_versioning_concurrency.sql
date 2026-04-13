@@ -28,8 +28,9 @@ BEGIN
 
   INSERT INTO public.usage_tracking (user_id, month)
   VALUES (current_user_id, p_month)
-  ON CONFLICT (user_id, month) DO NOTHING;
+  ON CONFLICT (user_id, month) DO UPDATE SET updated_at = now();
 
+  -- Get current count, defaulting to 0 if the row was just inserted
   SELECT CASE
     WHEN p_feature = 'analyses' THEN analyses_count
     WHEN p_feature = 'tailoring' THEN tailoring_count
@@ -38,8 +39,7 @@ BEGIN
   INTO current_count
   FROM public.usage_tracking
   WHERE user_id = current_user_id
-    AND month = p_month
-  FOR UPDATE;
+    AND month = p_month;
 
   IF p_limit IS NOT NULL AND current_count >= p_limit THEN
     RETURN QUERY SELECT false, current_count;

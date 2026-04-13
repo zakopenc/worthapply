@@ -77,23 +77,52 @@ export async function POST(request: NextRequest) {
     let usedAnalyses = 0;
 
     try {
-      const usageReservation = await reserveMonthlyUsage(supabase, 'analyses', limits.analyses_per_month, currentMonth);
-      usedAnalyses = usageReservation.used;
+      // Direct approach: check or initialize the user's usage row manually to bypass potential RPC authorization issues
+      let { data: usage, error: usageError } = await supabase
+        .from('usage_tracking')
+        .select('analyses_count')
+        .eq('user_id', user.id)
+        .eq('month', currentMonth)
+        .single();
 
-      if (!usageReservation.allowed) {
+      if (usageError && usageError.code === 'PGRST116') {
+        // Row doesn't exist, try to insert it
+        const { error: insertError } = await supabase
+          .from('usage_tracking')
+          .insert({ user_id: user.id, month: currentMonth, analyses_count: 0 });
+        
+        if (insertError) throw insertError;
+        usage = { analyses_count: 0 };
+      } else if (usageError) {
+        throw usageError;
+      }
+
+      usedAnalyses = usage?.analyses_count || 0;
+
+      if (limits.analyses_per_month !== null && usedAnalyses >= limits.analyses_per_month) {
         return NextResponse.json(
           {
             error: `Free plan limit reached (${limits.analyses_per_month} analyses/month). Upgrade to Pro for unlimited.`,
             upgrade_required: true,
             limit: limits.analyses_per_month,
-            used: usageReservation.used,
+            used: usedAnalyses,
           },
           { status: 403 }
         );
       }
-    } catch (usageError) {
-      console.error('Usage reservation error:', usageError);
-      return NextResponse.json({ error: 'Failed to reserve usage' }, { status: 500 });
+
+      // Increment directly
+      const { error: updateError } = await supabase
+        .from('usage_tracking')
+        .update({ analyses_count: usedAnalyses + 1 })
+        .eq('user_id', user.id)
+        .eq('month', currentMonth);
+
+      if (updateError) throw updateError;
+      usedAnalyses += 1;
+    } catch (usageError: any) {
+      console.error('Usage management error:', usageError);
+      return NextResponse.json({ error: 'Failed to manage usage: ' + usageError.message }, { status: 500 });
     }
 
     const releaseReservedUsage = async () => {
