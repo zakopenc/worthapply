@@ -1,4 +1,7 @@
-import { Suspense } from 'react';\nimport Link from 'next/link';\nimport Image from 'next/image';\nimport styles from './layout.module.css';
+import { Suspense } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './layout.module.css';
 
 export const metadata = {
   title: 'WorthApply — Account',
@@ -35,13 +38,20 @@ export default function AuthLayout({
           </div>
         </div>
 
-      <main className={styles.card}>
-        <div className={styles.cardInner}>
-          <Suspense fallback={<div className=\"flex items-center justify-center min-h-screen\"><div className=\"flex flex-col items-center gap-4\"><div className=\"w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin\"></div><p className=\"text-sm text-on-surface-variant\">Loading...</p></div></div>}>
-            {children}
-          </Suspense>
-        </div>
-      </main>
+        <main className={styles.card}>
+          <div className={styles.cardInner}>
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-screen">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-on-surface-variant">Loading...</p>
+                </div>
+              </div>
+            }>
+              {children}
+            </Suspense>
+          </div>
+        </main>
       </div>
 
       <footer className={styles.globalFooter}>
