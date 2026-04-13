@@ -119,7 +119,7 @@ export default function LoginPage() {
           <div className="mb-10"></div>
 
           {/* Header Section */}
-          <div className="w-full mb-8 text-center">
+          <div className="w-full mb-8 text-left">
             <h1 className="text-[2rem] font-bold text-on-surface leading-tight tracking-tight mb-2">
               Welcome back
             </h1>
