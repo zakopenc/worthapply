@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { getPlanLimits, isPaidPlan, type Plan } from '@/lib/plans';
+import { getPlanLimits, isPaidPlan, getEffectivePlan, type Plan } from '@/lib/plans';
 import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { checkRateLimit } from '@/lib/ratelimit';
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     // Get user profile and plan
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('plan')
+      .select('plan, subscription_status')
       .eq('id', user.id)
       .single();
 
@@ -74,7 +74,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to load plan details' }, { status: 500 });
     }
 
-    const plan = (profile?.plan || 'free') as Plan;
+    const rawPlan = (profile?.plan || 'free') as Plan;
+    const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
     const hasScrapeAccess = isPaidPlan(plan);
 

@@ -2,12 +2,16 @@ import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getAppUrl } from '@/lib/billing/config';
+import { checkRateLimit } from '@/lib/ratelimit';
 
 export async function POST() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const rateLimit = await checkRateLimit(user.id);
+    if (!rateLimit.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });

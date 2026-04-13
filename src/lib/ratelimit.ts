@@ -16,9 +16,14 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
  * Checks if the given identifier has exceeded the rate limit.
  * Falls back to success if Redis is not configured.
  */
+let warnedNoRedis = false;
+
 export async function checkRateLimit(identifier: string) {
   if (!ratelimit) {
-    // Graceful fallback if Upstash is not yet configured by the user
+    if (!warnedNoRedis) {
+      console.warn('[ratelimit] Upstash Redis not configured — rate limiting is DISABLED. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.');
+      warnedNoRedis = true;
+    }
     return { success: true, limit: 0, remaining: 0, reset: 0 };
   }
   return await ratelimit.limit(identifier);

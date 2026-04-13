@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { profileUpdateSchema } from '@/lib/validations';
+import { checkRateLimit } from '@/lib/ratelimit';
 
 export async function GET() {
   try {
@@ -14,7 +15,10 @@ export async function GET() {
       .eq('id', user.id)
       .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error('Profile error:', error);
+      return NextResponse.json({ error: 'Failed to load profile' }, { status: 500 });
+    }
     return NextResponse.json({ data });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -26,6 +30,9 @@ export async function PATCH(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const rateLimit = await checkRateLimit(user.id);
+    if (!rateLimit.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
     const body = await request.json();
     const parsed = profileUpdateSchema.safeParse(body);
@@ -46,7 +53,10 @@ export async function PATCH(request: NextRequest) {
       .select()
       .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error('Profile error:', error);
+      return NextResponse.json({ error: 'Failed to load profile' }, { status: 500 });
+    }
     return NextResponse.json({ data });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

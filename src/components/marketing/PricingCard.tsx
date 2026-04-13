@@ -2,17 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { CheckCircle, ArrowRight, CircleNotch } from '@phosphor-icons/react';
-import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { motion } from 'framer-motion';
-
-// Extend Stripe type is no longer needed
-// interface StripeWithRedirect extends Stripe {
-//   redirectToCheckout: (options: { sessionId: string }) => Promise<{ error?: Error }>;
-// }
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface PricingCardProps {
   name: string;
@@ -90,7 +82,7 @@ export default function PricingCard({
       }
 
       // Create checkout session
-      const response = await fetch('/api/create-checkout-session', {
+      const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

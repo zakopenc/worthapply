@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { bookmarkUpdateSchema } from '@/lib/validations';
+import { checkRateLimit } from '@/lib/ratelimit';
 
 export async function POST(
   request: NextRequest,
@@ -14,6 +15,9 @@ export async function POST(
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const rateLimit = await checkRateLimit(user.id);
+    if (!rateLimit.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
     const body = await request.json();
     const parsed = bookmarkUpdateSchema.safeParse(body);
@@ -33,7 +37,8 @@ export async function POST(
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error('Digest bookmark error:', error);
+      return NextResponse.json({ error: 'Failed to update bookmark' }, { status: 500 });
     }
 
     return NextResponse.json({ data });

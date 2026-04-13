@@ -192,6 +192,27 @@ export function isPaidPlan(plan: Plan): boolean {
   return plan === 'pro' || plan === 'premium' || plan === 'lifetime';
 }
 
+/**
+ * Returns the effective plan after checking subscription status.
+ * Lifetime plans are never downgraded (no recurring subscription).
+ * For subscription-based plans, only 'active' and 'trialing' are valid.
+ */
+export function getEffectivePlan(
+  plan: Plan,
+  subscriptionStatus: string | null | undefined
+): Plan {
+  // Free and lifetime plans don't depend on subscription status
+  if (plan === 'free' || plan === 'lifetime') return plan;
+
+  // For subscription-based plans, check status
+  const validStatuses = ['active', 'trialing'];
+  if (!subscriptionStatus || !validStatuses.includes(subscriptionStatus)) {
+    return 'free';
+  }
+
+  return plan;
+}
+
 export function isPremiumPlan(plan: Plan): boolean {
   return plan === 'premium' || plan === 'lifetime';
 }

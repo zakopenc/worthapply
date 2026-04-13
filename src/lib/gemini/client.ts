@@ -34,9 +34,18 @@ function extractJsonPayload(text: string) {
   return trimmed;
 }
 
+const GEMINI_TIMEOUT_MS = 60_000; // 60 seconds
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`Gemini API timed out after ${ms}ms`)), ms);
+    promise.then(resolve, reject).finally(() => clearTimeout(timer));
+  });
+}
+
 export async function generateJSON<T>(prompt: string): Promise<T> {
   const model = getModel();
-  const result = await model.generateContent(prompt);
+  const result = await withTimeout(model.generateContent(prompt), GEMINI_TIMEOUT_MS);
   const text = extractJsonPayload(result.response.text());
 
   try {
@@ -50,6 +59,6 @@ export async function generateJSON<T>(prompt: string): Promise<T> {
 
 export async function generateText(prompt: string): Promise<string> {
   const model = getModel();
-  const result = await model.generateContent(prompt);
+  const result = await withTimeout(model.generateContent(prompt), GEMINI_TIMEOUT_MS);
   return result.response.text();
 }

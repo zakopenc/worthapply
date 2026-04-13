@@ -1,22 +1,12 @@
 import { createClient } from '@/lib/supabase/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { generateJSON } from '@/lib/gemini/client';
 import { buildAnalysisPrompt } from '@/lib/gemini/prompts/analyze';
-import { getFeatureAccess, getPlanLimits, type Plan } from '@/lib/plans';
+import { getFeatureAccess, getPlanLimits, getEffectivePlan, type Plan } from '@/lib/plans';
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeJobSchema } from '@/lib/validations';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
-
-function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('Supabase admin env vars are not set');
-  return createSupabaseClient(url, key, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,7 +37,7 @@ export async function POST(request: NextRequest) {
     const [profileResponse, resumeResponse] = await Promise.all([
       supabase
         .from('profiles')
-        .select('plan')
+        .select('plan, subscription_status')
         .eq('id', user.id)
         .single(),
       resume_id
@@ -80,63 +70,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to load resume details' }, { status: 500 });
     }
 
-    const plan = (profile?.plan || 'free') as Plan;
+    const rawPlan = (profile?.plan || 'free') as Plan;
+    const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
     const features = getFeatureAccess(plan);
 
     let usedAnalyses = 0;
-    const adminClient = getSupabaseAdmin();
 
     try {
-      // Use admin client to bypass RLS on usage_tracking table
-      const usageResult = await adminClient
-        .from('usage_tracking')
-        .select('analyses_count')
-        .eq('user_id', user.id)
-        .eq('month', currentMonth)
-        .single();
+      const usageReservation = await reserveMonthlyUsage(supabase, 'analyses', limits.analyses_per_month, currentMonth);
+      usedAnalyses = usageReservation.used;
 
-      let usageCount = usageResult.data?.analyses_count ?? 0;
-
-      if (usageResult.error && usageResult.error.code === 'PGRST116') {
-        // Row doesn't exist, insert it
-        const { error: insertError } = await adminClient
-          .from('usage_tracking')
-          .insert({ user_id: user.id, month: currentMonth, analyses_count: 0 });
-        
-        if (insertError) throw insertError;
-        usageCount = 0;
-      } else if (usageResult.error) {
-        throw usageResult.error;
-      }
-
-      usedAnalyses = usageCount;
-
-      if (limits.analyses_per_month !== null && usedAnalyses >= limits.analyses_per_month) {
+      if (!usageReservation.allowed) {
         return NextResponse.json(
           {
             error: `Free plan limit reached (${limits.analyses_per_month} analyses/month). Upgrade to Pro for unlimited.`,
             upgrade_required: true,
             limit: limits.analyses_per_month,
-            used: usedAnalyses,
+            used: usageReservation.used,
           },
           { status: 403 }
         );
       }
-
-      // Increment directly
-      const { error: updateError } = await adminClient
-        .from('usage_tracking')
-        .update({ analyses_count: usedAnalyses + 1 })
-        .eq('user_id', user.id)
-        .eq('month', currentMonth);
-
-      if (updateError) throw updateError;
-      usedAnalyses += 1;
     } catch (usageError) {
       console.error('Usage management error:', usageError);
-      const msg = usageError instanceof Error ? usageError.message : 'Unknown error';
-      return NextResponse.json({ error: 'Failed to manage usage: ' + msg }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to manage usage' }, { status: 500 });
     }
 
     const releaseReservedUsage = async () => {

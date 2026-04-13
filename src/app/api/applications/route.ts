@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { applicationCreateSchema, applicationUpdateSchema } from '@/lib/validations';
+import { checkRateLimit } from '@/lib/ratelimit';
 
 export async function GET() {
   try {
@@ -14,7 +15,10 @@ export async function GET() {
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error('Applications fetch error:', error);
+      return NextResponse.json({ error: 'Failed to load applications' }, { status: 500 });
+    }
     return NextResponse.json({ data });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -26,6 +30,9 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const rateLimit = await checkRateLimit(user.id);
+    if (!rateLimit.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
     const body = await request.json();
     const parsed = applicationCreateSchema.safeParse(body);
@@ -64,7 +71,10 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error('Application create error:', error);
+      return NextResponse.json({ error: 'Failed to create application' }, { status: 500 });
+    }
     return NextResponse.json({ data }, { status: 201 });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -76,6 +86,9 @@ export async function PATCH(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const rateLimit = await checkRateLimit(user.id);
+    if (!rateLimit.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
     const body = await request.json();
     const parsed = applicationUpdateSchema.safeParse(body);
@@ -94,7 +107,10 @@ export async function PATCH(request: NextRequest) {
       .select()
       .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error('Application update error:', error);
+      return NextResponse.json({ error: 'Failed to update application' }, { status: 500 });
+    }
     return NextResponse.json({ data });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

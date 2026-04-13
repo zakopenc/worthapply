@@ -100,9 +100,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook handler error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: errorMessage },
+      { error: 'Webhook processing failed' },
       { status: 500 }
     );
   }
@@ -119,10 +118,37 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
     return;
   }
 
+  // Lifetime purchases (mode: 'payment') have no subscription
+  if (!session.subscription) {
+    // One-time payment (lifetime plan)
+    const { error } = await supabaseAdmin
+      .from('profiles')
+      .update({
+        plan: plan || 'lifetime',
+        stripe_customer_id: session.customer as string,
+        subscription_status: 'lifetime',
+      })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating profile after lifetime checkout:', error);
+    } else {
+      console.log(`Lifetime plan activated for user ${userId}`);
+      await captureServer(userId, 'paid_conversion', {
+        plan: plan || 'lifetime',
+        stripe_customer_id: session.customer,
+        amount_total: session.amount_total,
+        currency: session.currency,
+        source: 'stripe_webhook',
+      });
+    }
+    return;
+  }
+
   const subscriptionResponse = await stripe.subscriptions.retrieve(
     session.subscription as string
   );
-  
+
   // Cast to SubscriptionWithPeriod to access current_period_end
   const subscription = subscriptionResponse as unknown as SubscriptionWithPeriod;
 
@@ -145,8 +171,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
   } else {
     console.log(`Subscription activated for user ${userId}: ${plan}`);
 
-    // Marky P0: fire paid_conversion from the webhook (not client redirect)
-    // so we never lose a conversion to a closed tab.
     await captureServer(userId, 'paid_conversion', {
       plan: plan || 'pro',
       stripe_customer_id: session.customer,
@@ -246,7 +270,18 @@ async function handleInvoicePaymentFailed(invoice: InvoiceWithSubscription, stri
     return;
   }
 
-  console.log(`Payment failed for user ${userId}`);
+  // Mark subscription as past_due so feature gating downgrades to free
+  const supabaseAdmin = getSupabaseAdmin();
+  const { error } = await supabaseAdmin
+    .from('profiles')
+    .update({
+      subscription_status: subscription.status, // 'past_due' from Stripe
+    })
+    .eq('id', userId);
 
-  // TODO: Send email notification to user about failed payment
+  if (error) {
+    console.error('Error updating subscription status on payment failure:', error);
+  } else {
+    console.log(`Payment failed for user ${userId}, status set to ${subscription.status}`);
+  }
 }
