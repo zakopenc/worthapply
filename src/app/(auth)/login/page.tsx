@@ -129,9 +129,6 @@ export default function LoginPage() {
             <h1 className="text-[2rem] font-bold text-on-surface leading-tight tracking-tight mb-2">
               Welcome back
             </h1>
-            <p className="text-on-surface-variant font-medium opacity-70">
-              Sign in to your WorthApply workspace
-            </p>
           </div>
 
           {/* Error Message */}
