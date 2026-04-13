@@ -16,7 +16,7 @@ export default function ViralHook() {
     <div className="w-[1080px] h-[1920px] bg-zinc-950 text-white p-10 flex flex-col justify-center items-center">
       <motion.div variants={container} initial="hidden" animate="show" className="text-center">
         <motion.h1 variants={item} className="text-8xl font-bold mb-10">Stop Spraying & Praying</motion.h1>
-        <motion.p variants={item} className="text-5xl text-zinc-400">Bulk applying isn't a strategy, it's a vanity metric.</motion.p>
+        <motion.p variants={item} className="text-5xl text-zinc-400">Bulk applying isn&apos;t a strategy, it&apos;s a vanity metric.</motion.p>
       </motion.div>
     </div>
   );
