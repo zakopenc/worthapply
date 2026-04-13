@@ -41,18 +41,22 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 h-full w-64 z-50 flex flex-col bg-[#fcf9f5] border-r border-[#cfc5bd]/20 overflow-y-auto no-scrollbar">
       {/* Brand */}
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-[#cfc5bd]/15">
-        <div className="flex items-center gap-2.5">
-          <Image
-            src="/logo.svg"
-            alt="WorthApply"
-            width={130}
-            height={32}
-            priority
-            className="logoImage"
-          />
-        </div>
-      </div>
+        <Link href="/dashboard" className={styles.brand} aria-label="WorthApply dashboard home">
+          <div className="flex items-center gap-3">
+            <Image 
+              src="/logo.svg" 
+              alt="WorthApply" 
+              width={32} 
+              height={32} 
+              priority 
+              className={styles.logoImage}
+            />
+            <div className="flex flex-col">
+              <span className="text-[15px] font-bold tracking-tight text-[#1c1c1a]">WorthApply</span>
+              <span className="text-[9px] font-semibold text-[#84523c] uppercase tracking-widest">Master Your Job Search</span>
+            </div>
+          </div>
+        </Link>
 
       {/* User Card */}
       <div className="px-4 pt-5 pb-3">
