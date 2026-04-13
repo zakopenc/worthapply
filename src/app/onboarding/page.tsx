@@ -2,13 +2,13 @@
 
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   Upload, 
   CheckCircle, 
   Briefcase, 
   User, 
   Sparkles, 
-  Schema, 
+  LayoutGrid, 
   ArrowRight,
   ShieldCheck,
   Building2
@@ -129,7 +129,7 @@ export default function OnboardingPage() {
               
               <div className="p-8 bg-white rounded-3xl border border-[#cfc5bd]/20 shadow-sm">
                 <div className="w-12 h-12 bg-[#ece0d8] rounded-xl flex items-center justify-center mb-6">
-                  <Schema className="w-6 h-6 text-[#4c463f]" />
+                  <LayoutGrid className="w-6 h-6 text-[#4c463f]" />
                 </div>
                 <h4 className="text-lg font-bold mb-2">Knowledge Graph</h4>
                 <p className="text-sm text-stone-600 leading-relaxed">
