@@ -282,10 +282,6 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
     }
   }, []);
 
-      setUploading(false);
-    }
-  }, []);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleUpload(file);
@@ -314,6 +310,7 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
   const extractedEducation = normalizeEducation(parsed);
   const extractedSkills = normalizeExtractedSkills(parsed);
   const contactEntries = Object.entries(contactInfo).filter(([, value]) => Boolean(value));
+
 
   if (!resume) {
     return (
