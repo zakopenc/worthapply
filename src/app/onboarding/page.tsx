@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, CheckCircle, Briefcase, User, Sparkles, ArrowRight, Settings } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export default function OnboardingPage() {
@@ -94,10 +95,9 @@ export default function OnboardingPage() {
               <p className="text-xs font-bold truncate">{user?.email}</p>
             </div>
           </div>
-
-          <button className="flex items-center gap-2 w-full py-2 px-4 text-xs font-bold text-stone-500 hover:text-black mb-2">
+          <Link href="/settings" className="flex items-center gap-2 w-full py-2 px-4 text-xs font-bold text-stone-500 hover:text-black mb-2 transition-colors">
             <Settings size={14} /> Settings
-          </button>
+          </Link>
           <button className="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-neutral-800 transition-all">
             Save Progress
           </button>
