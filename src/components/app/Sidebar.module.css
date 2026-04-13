@@ -36,11 +36,13 @@
 .logoImage {
   width: auto;
   height: 32px;
-  filter: invert(1);
+  filter: invert(0);
 }
-@media (prefers-color-scheme: light) {
+
+[data-theme='dark'] .logoImage,
+@media (prefers-color-scheme: dark) {
   .logoImage {
-    filter: none;
+    filter: invert(1);
   }
 }
 
