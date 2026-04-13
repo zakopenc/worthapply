@@ -15,8 +15,21 @@ import {
   Settings,
   Sparkles,
   HelpCircle,
+import {
+  LayoutDashboard,
+  Target,
+  FileText,
+  WandSparkles,
+  NotebookPen,
+  BriefcaseBusiness,
+  FileSearch,
+  ReceiptText,
+  Settings,
+  Sparkles,
+  HelpCircle,
   TrendingUp,
 } from 'lucide-react';
+import styles from './Sidebar.module.css';
 
 interface SidebarProps {
   userName: string | null;
