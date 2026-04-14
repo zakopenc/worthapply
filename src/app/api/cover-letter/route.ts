@@ -5,6 +5,7 @@ import { getPlanLimits, isPaidPlan, getEffectivePlan, type Plan } from '@/lib/pl
 import { analysisActionSchema } from '@/lib/validations';
 import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
+import { createCoverLetterVersionRecord } from '@/lib/versioned-workspace-records';
 import { checkRateLimit } from '@/lib/ratelimit';
 
 export async function POST(request: NextRequest) {
@@ -145,17 +146,17 @@ export async function POST(request: NextRequest) {
             key_points_addressed: [],
           };
 
-      const { data: coverLetter, error } = await supabase
-        .rpc('create_cover_letter_version', {
-          p_application_id: application_id,
-          p_analysis_id: analysis_id,
-          p_recommendation: result.recommendation,
-          p_content: hasFullCoverLetterAccess ? result.content : null,
-        })
-        .single();
+      let coverLetter;
 
-      if (error || !coverLetter) {
-        console.error('Cover letter save error:', error);
+      try {
+        coverLetter = await createCoverLetterVersionRecord(supabase, {
+          applicationId: application_id,
+          analysisId: analysis_id,
+          recommendation: result.recommendation,
+          content: hasFullCoverLetterAccess ? result.content : null,
+        });
+      } catch (saveError) {
+        console.error('Cover letter save error:', saveError);
         await releaseReservedUsage();
         return NextResponse.json({ error: 'Failed to save cover letter' }, { status: 500 });
       }

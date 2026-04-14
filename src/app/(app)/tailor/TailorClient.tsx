@@ -279,12 +279,12 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
       const [applicationResponse, analysisResponse, tailoredResponse] = await Promise.all([
         supabase
           .from('applications')
-          .select('id, job_title, company, location, analysis_id, overall_score')
+          .select('id, job_title, company, location, analysis_id')
           .eq('id', selectedApplicationId)
           .single(),
         supabase
           .from('job_analyses')
-          .select('overall_score, verdict, matched_skills, skill_gaps, ats_keywords, recruiter_concerns')
+          .select('overall_score, verdict, matched_skills, skill_gaps, recruiter_concerns')
           .eq('id', selectedOption.analysis_id)
           .single(),
         supabase

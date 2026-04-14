@@ -5,6 +5,11 @@ const CURRENT_MONTH = () => new Date().toISOString().slice(0, 7) + '-01';
 type UsageFeature = 'analyses' | 'tailoring' | 'cover_letters' | 'job_scrapes';
 type LegacyUsageColumn = 'analyses_count';
 
+type FeatureCountFallback = {
+  kind: 'table_count';
+  table: 'tailored_resumes' | 'cover_letters';
+};
+
 interface ReserveMonthlyUsageResult {
   allowed: boolean;
   used: number;
@@ -17,6 +22,28 @@ function getLegacyUsageColumn(feature: UsageFeature): LegacyUsageColumn | null {
     default:
       return null;
   }
+}
+
+function getTableCountFallback(feature: UsageFeature): FeatureCountFallback | null {
+  switch (feature) {
+    case 'tailoring':
+      return { kind: 'table_count', table: 'tailored_resumes' };
+    case 'cover_letters':
+      return { kind: 'table_count', table: 'cover_letters' };
+    default:
+      return null;
+  }
+}
+
+function getMonthBounds(month: string) {
+  const start = new Date(month);
+  const next = new Date(start);
+  next.setUTCMonth(next.getUTCMonth() + 1);
+
+  return {
+    start: start.toISOString(),
+    end: next.toISOString(),
+  };
 }
 
 async function getAuthenticatedUserId(supabase: SupabaseClient): Promise<string> {
@@ -34,6 +61,28 @@ async function getAuthenticatedUserId(supabase: SupabaseClient): Promise<string>
   }
 
   return user.id;
+}
+
+async function countFeatureRowsForMonth(
+  supabase: SupabaseClient,
+  table: FeatureCountFallback['table'],
+  month: string
+): Promise<number> {
+  const userId = await getAuthenticatedUserId(supabase);
+  const { start, end } = getMonthBounds(month);
+
+  const { count, error } = await supabase
+    .from(table)
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .gte('created_at', start)
+    .lt('created_at', end);
+
+  if (error) {
+    throw error;
+  }
+
+  return Number(count ?? 0);
 }
 
 async function reserveMonthlyUsageLegacy(
@@ -144,6 +193,27 @@ async function releaseMonthlyUsageLegacy(
   return Number(updatedRow?.[column] ?? nextValue);
 }
 
+async function reserveMonthlyUsageByRowCount(
+  supabase: SupabaseClient,
+  fallback: FeatureCountFallback,
+  limit: number | null,
+  month: string
+): Promise<ReserveMonthlyUsageResult> {
+  const currentCount = await countFeatureRowsForMonth(supabase, fallback.table, month);
+
+  if (limit !== null && currentCount >= limit) {
+    return {
+      allowed: false,
+      used: currentCount,
+    };
+  }
+
+  return {
+    allowed: true,
+    used: currentCount + 1,
+  };
+}
+
 export async function reserveMonthlyUsage(
   supabase: SupabaseClient,
   feature: UsageFeature,
@@ -154,6 +224,12 @@ export async function reserveMonthlyUsage(
 
   if (legacyColumn) {
     return reserveMonthlyUsageLegacy(supabase, legacyColumn, limit, month);
+  }
+
+  const tableCountFallback = getTableCountFallback(feature);
+
+  if (tableCountFallback) {
+    return reserveMonthlyUsageByRowCount(supabase, tableCountFallback, limit, month);
   }
 
   const { data, error } = await supabase.rpc('reserve_monthly_usage', {
@@ -189,6 +265,12 @@ export async function releaseMonthlyUsage(
     return releaseMonthlyUsageLegacy(supabase, legacyColumn, month);
   }
 
+  const tableCountFallback = getTableCountFallback(feature);
+
+  if (tableCountFallback) {
+    return countFeatureRowsForMonth(supabase, tableCountFallback.table, month);
+  }
+
   const { data, error } = await supabase.rpc('release_monthly_usage', {
     p_feature: feature,
     p_month: month,
@@ -201,4 +283,4 @@ export async function releaseMonthlyUsage(
   return Number(data ?? 0);
 }
 
-export { CURRENT_MONTH };
+export { CURRENT_MONTH, countFeatureRowsForMonth };

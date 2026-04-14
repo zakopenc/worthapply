@@ -5,6 +5,7 @@ import { getPlanLimits, getEffectivePlan, type Plan } from '@/lib/plans';
 import { analysisActionSchema } from '@/lib/validations';
 import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
+import { createTailoredResumeVersionRecord } from '@/lib/versioned-workspace-records';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { z } from 'zod';
 
@@ -151,20 +152,20 @@ export async function POST(request: NextRequest) {
         estimated_score_improvement: number;
       }>(buildTailoringPrompt(resume.parsed_data as Record<string, unknown>, analysis));
 
-      const { data: tailored, error } = await supabase
-        .rpc('create_tailored_resume_version', {
-          p_application_id: application_id,
-          p_analysis_id: analysis_id,
-          p_content: result,
-          p_original_score: analysis.overall_score,
-          p_tailored_score: Math.min(100, analysis.overall_score + result.estimated_score_improvement),
-          p_ats_check: result.ats_check,
-          p_tone_check: result.tone_check,
-        })
-        .single();
+      let tailored;
 
-      if (error || !tailored) {
-        console.error('Tailored resume save error:', error);
+      try {
+        tailored = await createTailoredResumeVersionRecord(supabase, {
+          applicationId: application_id,
+          analysisId: analysis_id,
+          content: result,
+          originalScore: analysis.overall_score,
+          tailoredScore: Math.min(100, analysis.overall_score + result.estimated_score_improvement),
+          atsCheck: result.ats_check,
+          toneCheck: result.tone_check,
+        });
+      } catch (saveError) {
+        console.error('Tailored resume save error:', saveError);
         await releaseReservedUsage();
         return NextResponse.json({ error: 'Failed to save tailored resume' }, { status: 500 });
       }
@@ -206,20 +207,20 @@ export async function PATCH(request: NextRequest) {
 
     const { application_id, analysis_id, content, original_score, tailored_score, ats_check, tone_check } = parsed.data;
 
-    const { data: tailored, error } = await supabase
-      .rpc('create_tailored_resume_version', {
-        p_application_id: application_id,
-        p_analysis_id: analysis_id,
-        p_content: content,
-        p_original_score: original_score,
-        p_tailored_score: tailored_score,
-        p_ats_check: ats_check || {},
-        p_tone_check: tone_check || {},
-      })
-      .single();
+    let tailored;
 
-    if (error || !tailored) {
-      console.error('Tailored resume save error:', error);
+    try {
+      tailored = await createTailoredResumeVersionRecord(supabase, {
+        applicationId: application_id,
+        analysisId: analysis_id,
+        content,
+        originalScore: original_score,
+        tailoredScore: tailored_score,
+        atsCheck: ats_check || {},
+        toneCheck: tone_check || {},
+      });
+    } catch (saveError) {
+      console.error('Tailored resume save error:', saveError);
       return NextResponse.json({ error: 'Failed to save tailored resume' }, { status: 500 });
     }
 
