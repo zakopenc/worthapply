@@ -74,14 +74,12 @@ export async function processResumeExtraction(resumeId: string) {
     const buffer = Buffer.from(await fileData.arrayBuffer());
     const ext = getFileExtension(resume.filename || '');
 
-    // Extract text based on file type
     let rawText: string;
     if (ext === 'pdf') {
       rawText = await extractTextFromPdf(buffer);
     } else if (ext === 'docx') {
       rawText = await extractTextFromDocx(buffer);
     } else if (ext === 'doc') {
-      // .doc (legacy Word) — fall back to Gemini extraction like PDF
       const model = getGeminiClient().getGenerativeModel({ model: 'gemini-2.0-flash' });
       const base64 = buffer.toString('base64');
       const result = await model.generateContent([
@@ -102,7 +100,6 @@ export async function processResumeExtraction(resumeId: string) {
       throw new Error('Resume text extraction returned empty content');
     }
 
-    // Use Gemini to structure the extracted text
     const model = getGeminiClient().getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `Extract structured information from this resume text.
 

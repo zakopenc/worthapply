@@ -93,8 +93,8 @@ export async function POST(request: NextRequest) {
         );
       }
     } catch (usageError) {
-      console.error('Usage management error:', usageError);
-      return NextResponse.json({ error: 'Failed to manage usage' }, { status: 500 });
+      console.error('Analysis usage reservation error:', usageError);
+      return NextResponse.json({ error: 'Failed to reserve usage' }, { status: 500 });
     }
 
     const releaseReservedUsage = async () => {

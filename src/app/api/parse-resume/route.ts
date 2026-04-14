@@ -7,7 +7,6 @@ const STORAGE_BUCKET = 'resumes';
 
 const MIME_TYPE_BY_EXTENSION: Record<string, string> = {
   pdf: 'application/pdf',
-  doc: 'application/msword',
   docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 };
 
@@ -122,7 +121,7 @@ export async function POST(request: NextRequest) {
     const contentType = getNormalizedContentType(file);
 
     if (!contentType) {
-      return NextResponse.json({ error: 'Only PDF and Word files are supported' }, { status: 400 });
+      return NextResponse.json({ error: 'Only PDF and DOCX files are supported' }, { status: 400 });
     }
 
     const previousActiveResponse = await supabase
