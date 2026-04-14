@@ -2,6 +2,8 @@
 // WorthApply Type Definitions
 // ============================================
 
+import type { ApplicationStatus } from '@/lib/application-status';
+
 // Profile
 export interface Profile {
   id: string;
@@ -144,7 +146,7 @@ export interface Application {
   job_title: string;
   company: string;
   location: string;
-  status: 'saved' | 'applied' | 'interview' | 'offer' | 'rejected';
+  status: ApplicationStatus;
   applied_date: string | null;
   source: string | null;
   notes: string | null;
@@ -235,4 +237,4 @@ export interface ApiResponse<T = unknown> {
 export type Verdict = 'apply' | 'low-priority' | 'skip';
 
 // Application Status
-export type ApplicationStatus = 'saved' | 'applied' | 'interview' | 'offer' | 'rejected';
+export type { ApplicationStatus } from '@/lib/application-status';

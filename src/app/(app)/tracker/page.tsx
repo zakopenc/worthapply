@@ -2,26 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
+import {
+  APPLICATION_STATUS_META,
+  APPLICATION_STATUS_VALUES,
+  type ApplicationStatus,
+} from '@/lib/application-status';
 
 interface Application {
   id: string;
   job_title: string;
   company: string;
-  status: string;
+  status: ApplicationStatus;
   location?: string;
   salary_info?: string;
   applied_date?: string;
   notes?: string;
   created_at: string;
 }
-
-const STATUSES = [
-  { id: 'wishlist', label: 'Wishlist', icon: 'bookmark', color: 'bg-gray-50' },
-  { id: 'applied', label: 'Applied', icon: 'send', color: 'bg-blue-50' },
-  { id: 'interview', label: 'Interview', icon: 'calendar_month', color: 'bg-purple-50' },
-  { id: 'offer', label: 'Offer', icon: 'celebration', color: 'bg-green-50' },
-  { id: 'rejected', label: 'Rejected', icon: 'close', color: 'bg-red-50' },
-];
 
 export default function TrackerPage() {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -52,7 +49,7 @@ export default function TrackerPage() {
     }
   }
 
-  async function updateApplicationStatus(appId: string, newStatus: string) {
+  async function updateApplicationStatus(appId: string, newStatus: ApplicationStatus) {
     try {
       const response = await fetch(`/api/applications/${appId}/status`, {
         method: 'PATCH',
@@ -83,17 +80,17 @@ export default function TrackerPage() {
     e.preventDefault();
   }
 
-  function handleDrop(status: string) {
+  function handleDrop(status: ApplicationStatus) {
     if (draggedCard) {
       updateApplicationStatus(draggedCard, status);
       setDraggedCard(null);
     }
   }
 
-  const applicationsByStatus = STATUSES.reduce((acc, status) => {
-    acc[status.id] = applications.filter((app) => app.status === status.id);
+  const applicationsByStatus = APPLICATION_STATUS_VALUES.reduce((acc, status) => {
+    acc[status] = applications.filter((app) => app.status === status);
     return acc;
-  }, {} as Record<string, Application[]>);
+  }, {} as Record<ApplicationStatus, Application[]>);
 
   return (
     <>
@@ -126,29 +123,32 @@ export default function TrackerPage() {
         {/* Kanban Board */}
         {!loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {STATUSES.map((status) => (
-              <div
-                key={status.id}
-                className={`${status.color} rounded-2xl p-5 min-h-[500px]`}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(status.id)}
-              >
-                {/* Column Header */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[20px]">
-                      {status.icon}
-                    </span>
-                    <h3 className="font-bold text-on-surface">{status.label}</h3>
-                  </div>
-                  <div className="bg-white rounded-full px-3 py-1 text-sm font-semibold text-on-surface">
-                    {applicationsByStatus[status.id]?.length || 0}
-                  </div>
-                </div>
+            {APPLICATION_STATUS_VALUES.map((status) => {
+              const meta = APPLICATION_STATUS_META[status];
 
-                {/* Cards */}
-                <div className="space-y-3">
-                  {applicationsByStatus[status.id]?.map((app) => (
+              return (
+                <div
+                  key={status}
+                  className={`${meta.boardColor} rounded-2xl p-5 min-h-[500px]`}
+                  onDragOver={handleDragOver}
+                  onDrop={() => handleDrop(status)}
+                >
+                  {/* Column Header */}
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[20px]">
+                        {meta.icon}
+                      </span>
+                      <h3 className="font-bold text-on-surface">{meta.label}</h3>
+                    </div>
+                    <div className="bg-white rounded-full px-3 py-1 text-sm font-semibold text-on-surface">
+                      {applicationsByStatus[status]?.length || 0}
+                    </div>
+                  </div>
+
+                  {/* Cards */}
+                  <div className="space-y-3">
+                    {applicationsByStatus[status]?.map((app) => (
                     <div
                       key={app.id}
                       draggable
@@ -185,14 +185,15 @@ export default function TrackerPage() {
                     </div>
                   ))}
 
-                  {applicationsByStatus[status.id]?.length === 0 && (
-                    <div className="text-center py-10 text-on-surface/40 text-sm">
-                      No applications
-                    </div>
-                  )}
+                    {applicationsByStatus[status]?.length === 0 && (
+                      <div className="text-center py-10 text-on-surface/40 text-sm">
+                        No applications
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

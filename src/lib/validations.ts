@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { APPLICATION_STATUS_VALUES } from '@/lib/application-status';
 
 export const analyzeJobSchema = z.object({
   job_description: z.string().min(50, { message: 'Job description must be at least 50 characters long' }).trim(),
@@ -8,7 +9,7 @@ export const analyzeJobSchema = z.object({
 
 export type AnalyzeJobInput = z.infer<typeof analyzeJobSchema>;
 
-export const applicationStatusSchema = z.enum(['wishlist', 'saved', 'applied', 'interview', 'offer', 'rejected']);
+export const applicationStatusSchema = z.enum(APPLICATION_STATUS_VALUES);
 
 const optionalTrimmedString = (max: number, fieldName: string) =>
   z.union([

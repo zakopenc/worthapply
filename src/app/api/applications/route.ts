@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { applicationCreateSchema, applicationUpdateSchema } from '@/lib/validations';
+import { normalizeApplicationStatus } from '@/lib/application-status';
 import { checkRateLimit } from '@/lib/ratelimit';
 
 export async function GET() {
@@ -19,7 +20,13 @@ export async function GET() {
       console.error('Applications fetch error:', error);
       return NextResponse.json({ error: 'Failed to load applications' }, { status: 500 });
     }
-    return NextResponse.json({ data });
+
+    const normalizedData = (data || []).map((application) => ({
+      ...application,
+      status: normalizeApplicationStatus(application.status),
+    }));
+
+    return NextResponse.json({ data: normalizedData });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -42,6 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { job_title, company, location, status, source, analysis_id } = parsed.data;
+    const normalizedStatus = normalizeApplicationStatus(status);
 
     if (analysis_id) {
       const { data: analysis, error: analysisError } = await supabase
@@ -63,10 +71,10 @@ export async function POST(request: NextRequest) {
         job_title,
         company,
         location: location || null,
-        status: status || 'saved',
+        status: normalizedStatus,
         source: source || null,
         analysis_id: analysis_id || null,
-        applied_date: status === 'applied' ? new Date().toISOString().split('T')[0] : null,
+        applied_date: normalizedStatus === 'applied' ? new Date().toISOString().split('T')[0] : null,
       })
       .select()
       .single();
@@ -75,7 +83,7 @@ export async function POST(request: NextRequest) {
       console.error('Application create error:', error);
       return NextResponse.json({ error: 'Failed to create application' }, { status: 500 });
     }
-    return NextResponse.json({ data }, { status: 201 });
+    return NextResponse.json({ data: { ...data, status: normalizeApplicationStatus(data.status) } }, { status: 201 });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -111,7 +119,7 @@ export async function PATCH(request: NextRequest) {
       console.error('Application update error:', error);
       return NextResponse.json({ error: 'Failed to update application' }, { status: 500 });
     }
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: { ...data, status: normalizeApplicationStatus(data.status) } });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type BadgeVariant = "high" | "medium" | "low" | "applied" | "interview" | "offer" | "rejected" | "saved" | "default";
+type BadgeVariant = "high" | "medium" | "low" | "applied" | "interview" | "offer" | "rejected" | "wishlist" | "saved" | "default";
 
 interface BadgeProps {
   children: React.ReactNode;
@@ -16,6 +16,7 @@ const variantStyles: Record<BadgeVariant, string> = {
   interview: "bg-orange-500 text-white",
   offer: "bg-green-500 text-white",
   rejected: "bg-red-500 text-white",
+  wishlist: "bg-amber-500 text-white",
   saved: "bg-gray-400 text-white",
   default: "bg-surface-container text-on-surface",
 };

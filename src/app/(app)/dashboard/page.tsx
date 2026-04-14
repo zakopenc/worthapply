@@ -13,6 +13,13 @@ import {
   WandSparkles,
   Inbox,
 } from "lucide-react";
+import {
+  APPLICATION_STATUS_META,
+  normalizeApplicationStatus,
+  isActiveApplicationStatus,
+  isInterviewStageStatus,
+  type ApplicationStatus,
+} from '@/lib/application-status';
 
 function getTimeAgo(dateString: string): string {
   const date = new Date(dateString);
@@ -29,15 +36,6 @@ function getTimeAgo(dateString: string): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  applied: { label: "Applied", color: "text-blue-700", bg: "bg-blue-50 border-blue-200" },
-  interviewing: { label: "Interviewing", color: "text-green-700", bg: "bg-green-50 border-green-200" },
-  screening: { label: "Screening", color: "text-purple-700", bg: "bg-purple-50 border-purple-200" },
-  offer: { label: "Offer", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
-  rejected: { label: "Rejected", color: "text-red-700", bg: "bg-red-50 border-red-200" },
-  draft: { label: "Draft", color: "text-gray-600", bg: "bg-gray-50 border-gray-200" },
-  wishlist: { label: "Wishlist", color: "text-amber-700", bg: "bg-amber-50 border-amber-200" },
-};
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -68,27 +66,35 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false })
     .limit(10);
 
+  const normalizedApplications: Array<{
+    id: string;
+    job_title: string;
+    company: string;
+    created_at: string;
+    status: ApplicationStatus;
+    interview_date?: string | null;
+  }> = (applications || []).map((application) => ({
+    ...application,
+    status: normalizeApplicationStatus(application.status),
+  }));
+
   const firstName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
-  const totalApplications = applications?.length || 0;
-  const activeApplications = applications?.filter((app) =>
-    ["applied", "interviewing", "screening"].includes(app.status)
-  ).length || 0;
-  const interviewCount = applications?.filter((app) => app.status === "interviewing").length || 0;
+  const totalApplications = normalizedApplications.length;
+  const activeApplications = normalizedApplications.filter((app) => isActiveApplicationStatus(app.status)).length;
+  const interviewCount = normalizedApplications.filter((app) => isInterviewStageStatus(app.status)).length;
   const successRate = totalApplications > 0 ? Math.round((interviewCount / totalApplications) * 100) : 0;
-  const scheduledInterviews = applications?.filter(
-    (app) => app.interview_date && new Date(app.interview_date) > new Date()
-  ).length || 0;
-  const incompleteApplications = applications?.filter((app) => app.status === "draft").length || 0;
+  const scheduledInterviews = normalizedApplications.filter((app) => app.interview_date && new Date(app.interview_date) > new Date()).length;
+  const wishlistCount = normalizedApplications.filter((app) => app.status === "wishlist").length;
 
   const recentAnalyses = analyses?.slice(0, 5) || [];
-  const recentApplications = applications?.slice(0, 5) || [];
+  const recentApplications = normalizedApplications.slice(0, 5);
 
   const pipelineStages = [
-    { label: "Wishlist", count: applications?.filter((a) => a.status === "wishlist").length || 0, color: "bg-amber-400" },
-    { label: "Applied", count: applications?.filter((a) => a.status === "applied").length || 0, color: "bg-blue-500" },
-    { label: "Screening", count: applications?.filter((a) => a.status === "screening").length || 0, color: "bg-purple-500" },
-    { label: "Interviewing", count: applications?.filter((a) => a.status === "interviewing").length || 0, color: "bg-green-500" },
-    { label: "Offer", count: applications?.filter((a) => a.status === "offer").length || 0, color: "bg-emerald-500" },
+    { label: "Wishlist", count: normalizedApplications.filter((a) => a.status === "wishlist").length, color: "bg-amber-400" },
+    { label: "Applied", count: normalizedApplications.filter((a) => a.status === "applied").length, color: "bg-blue-500" },
+    { label: "Interview", count: normalizedApplications.filter((a) => a.status === "interview").length, color: "bg-purple-500" },
+    { label: "Offer", count: normalizedApplications.filter((a) => a.status === "offer").length, color: "bg-emerald-500" },
+    { label: "Rejected", count: normalizedApplications.filter((a) => a.status === "rejected").length, color: "bg-red-500" },
   ];
 
   return (
@@ -298,7 +304,7 @@ export default async function DashboardPage() {
               </div>
               <div className="divide-y divide-outline-variant/10">
                 {recentApplications.map((app, index) => {
-                  const cfg = statusConfig[app.status] || statusConfig.draft;
+                  const cfg = APPLICATION_STATUS_META[app.status];
                   return (
                     <Link
                       key={index}
@@ -318,7 +324,7 @@ export default async function DashboardPage() {
                           {app.company} · {getTimeAgo(app.created_at)}
                         </p>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${cfg.bg} ${cfg.color} shrink-0`}>
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${cfg.badgeBg} ${cfg.badgeBorder} ${cfg.badgeTextColor} shrink-0`}>
                         {cfg.label}
                       </span>
                     </Link>
@@ -368,16 +374,16 @@ export default async function DashboardPage() {
               Next Steps
             </h2>
             <div className="flex flex-col gap-3">
-              {incompleteApplications > 0 && (
+              {wishlistCount > 0 && (
                 <Link
                   href="/applications"
                   className="flex items-center justify-between p-4 rounded-xl bg-secondary/5 border border-secondary/15 hover:bg-secondary/10 transition-colors group"
                 >
                   <div>
                     <p className="text-sm font-bold text-on-surface">
-                      {incompleteApplications} draft{incompleteApplications !== 1 ? "s" : ""} pending
+                      {wishlistCount} wishlist item{wishlistCount !== 1 ? "s" : ""} ready
                     </p>
-                    <p className="text-xs text-on-surface-variant mt-0.5">Submit your applications</p>
+                    <p className="text-xs text-on-surface-variant mt-0.5">Move your best roles into active applications</p>
                   </div>
                   <ArrowRight className="w-4 h-4 text-secondary group-hover:translate-x-0.5 transition-transform" />
                 </Link>

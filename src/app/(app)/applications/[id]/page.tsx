@@ -22,6 +22,12 @@ import {
 } from 'lucide-react';
 import Topbar from '@/components/app/Topbar';
 import { createClient } from '@/lib/supabase/client';
+import {
+  APPLICATION_STATUS_META,
+  APPLICATION_STATUS_VALUES,
+  normalizeApplicationStatus,
+  type ApplicationStatus,
+} from '@/lib/application-status';
 import styles from './workspace.module.css';
 
 interface ApplicationRecord {
@@ -29,7 +35,7 @@ interface ApplicationRecord {
   job_title: string;
   company: string;
   location?: string | null;
-  status: 'saved' | 'applied' | 'interview' | 'offer' | 'rejected';
+  status: ApplicationStatus;
   applied_date: string | null;
   source: string | null;
   notes: string | null;
@@ -71,7 +77,7 @@ interface CoverLetterRecord {
 
 type TabKey = 'resume' | 'cover-letter' | 'analysis';
 
-const STATUS_OPTIONS: ApplicationRecord['status'][] = ['saved', 'applied', 'interview', 'offer', 'rejected'];
+const STATUS_OPTIONS: ApplicationStatus[] = [...APPLICATION_STATUS_VALUES];
 
 const TAB_ITEMS: { key: TabKey; label: string; icon: typeof FileText }[] = [
   { key: 'resume', label: 'Resume strategy', icon: FileText },
@@ -104,8 +110,8 @@ function getVerdictLabel(verdict?: string, score?: number | null) {
 
 function getNextStep(app: ApplicationRecord | null, isGhosted: boolean, hasTailored: boolean, hasCoverLetter: boolean) {
   if (!app) return 'Review the role details and decide whether it deserves more effort.';
-  if (app.status === 'saved' && !hasTailored) return 'Generate a tailored resume before you spend time applying.';
-  if (app.status === 'saved' && hasTailored && !hasCoverLetter) return 'Use the analysis to decide if a short note or full cover letter is worth it.';
+  if (app.status === 'wishlist' && !hasTailored) return 'Generate a tailored resume before you spend time applying.';
+  if (app.status === 'wishlist' && hasTailored && !hasCoverLetter) return 'Use the analysis to decide if a short note or full cover letter is worth it.';
   if (app.status === 'applied' && isGhosted) return 'Send a follow-up note or deprioritize this role and move on.';
   if (app.status === 'applied') return 'Keep momentum by preparing recruiter screen talking points.';
   if (app.status === 'interview') return 'Turn the strongest fit signals into STAR stories and proof points.';
@@ -152,7 +158,10 @@ export default function WorkspacePage() {
       return;
     }
 
-    const currentApp = appData as ApplicationRecord;
+    const currentApp = {
+      ...(appData as ApplicationRecord),
+      status: normalizeApplicationStatus(appData.status),
+    };
     setApp(currentApp);
     setNotes(currentApp.notes || '');
 
@@ -232,7 +241,7 @@ export default function WorkspacePage() {
     if (!response.ok) {
       setError(payload.error || 'Unable to save notes.');
     } else {
-      setApp(payload.data as ApplicationRecord);
+      setApp({ ...(payload.data as ApplicationRecord), status: normalizeApplicationStatus(payload.data.status) });
       setBannerMessage('Notes saved.');
     }
 
@@ -256,8 +265,8 @@ export default function WorkspacePage() {
     if (!response.ok) {
       setError(payload.error || 'Unable to update status.');
     } else {
-      setApp(payload.data as ApplicationRecord);
-      setBannerMessage(`Status updated to ${status}.`);
+      setApp({ ...(payload.data as ApplicationRecord), status: normalizeApplicationStatus(payload.data.status) });
+      setBannerMessage(`Status updated to ${APPLICATION_STATUS_META[status].label}.`);
     }
 
     setStatusUpdating(false);
@@ -451,7 +460,7 @@ export default function WorkspacePage() {
                   disabled={statusUpdating}
                   onClick={() => handleStatusChange(status)}
                 >
-                  {status}
+                  {APPLICATION_STATUS_META[status].label}
                 </button>
               ))}
             </div>

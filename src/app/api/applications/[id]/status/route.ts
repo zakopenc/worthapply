@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { normalizeApplicationStatus } from '@/lib/application-status';
 import { applicationStatusSchema } from '@/lib/validations';
 
 export async function PATCH(
@@ -18,7 +19,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
-    const status = parsed.data;
+    const status = normalizeApplicationStatus(parsed.data);
 
     const updates: Record<string, unknown> = {
       status,
@@ -38,7 +39,7 @@ export async function PATCH(
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: { ...data, status: normalizeApplicationStatus(data.status) } });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
