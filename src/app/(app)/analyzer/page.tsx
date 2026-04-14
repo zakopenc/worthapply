@@ -19,8 +19,9 @@ import {
 } from 'lucide-react';
 
 interface AnalysisResult {
+  id: string;
   overall_score: number;
-  verdict: 'high-priority' | 'worth-applying' | 'low-priority' | 'poor-fit';
+  verdict: 'apply' | 'low-priority' | 'skip';
   matched_skills: Array<{ skill: string; evidence_from_resume: string }>;
   skill_gaps: Array<{ skill: string; impact: string; suggestion: string }>;
   seniority_analysis: {
@@ -28,16 +29,13 @@ interface AnalysisResult {
     user_level: string;
     assessment: string;
   };
-  domain_experience: {
-    required_domains: string[];
-    user_domains: string[];
-    overlap: string[];
+  domain_experience?: {
+    overlap?: string[];
   };
-  application_id?: string;
 }
 
 const verdictConfig = {
-  'high-priority': {
+  apply: {
     label: 'Strong Match',
     sublabel: 'Apply immediately',
     scoreColor: 'text-green-700',
@@ -46,25 +44,16 @@ const verdictConfig = {
     ringColor: '#22c55e',
     badge: 'bg-green-100 text-green-800 border-green-200',
   },
-  'worth-applying': {
-    label: 'Good Fit',
-    sublabel: 'Worth applying with tailoring',
-    scoreColor: 'text-blue-700',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    ringColor: '#3b82f6',
-    badge: 'bg-blue-100 text-blue-800 border-blue-200',
-  },
   'low-priority': {
     label: 'Partial Match',
-    sublabel: 'Significant gaps to address',
+    sublabel: 'Worth tailoring before you apply',
     scoreColor: 'text-amber-700',
     bg: 'bg-amber-50',
     border: 'border-amber-200',
     ringColor: '#f59e0b',
     badge: 'bg-amber-100 text-amber-800 border-amber-200',
   },
-  'poor-fit': {
+  skip: {
     label: 'Poor Fit',
     sublabel: 'Role may not suit your profile',
     scoreColor: 'text-red-700',
@@ -138,7 +127,9 @@ export default function AnalyzerPage() {
       }
 
       const data = await response.json();
-      setResults(data);
+      setResults(data.data.analysis);
+      setJobTitle((current) => current || data.data.analysis.job_title || data.data.analysis.job_metadata?.title || '');
+      setCompany((current) => current || data.data.analysis.company || data.data.analysis.job_metadata?.company || '');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError((err as Error).message || 'Failed to analyze. Please try again.');
@@ -159,10 +150,9 @@ export default function AnalyzerPage() {
         body: JSON.stringify({
           job_title: jobTitle,
           company,
-          job_description: jobDescription,
-          job_url: jobUrl || undefined,
-          status: 'wishlist',
-          analysis: results,
+          status: 'saved',
+          source: jobUrl || undefined,
+          analysis_id: results.id,
         }),
       });
 
@@ -361,13 +351,13 @@ export default function AnalyzerPage() {
             )}
 
             {/* Domain Experience */}
-            {results.domain_experience?.overlap?.length > 0 && (
+            {(results.domain_experience?.overlap?.length ?? 0) > 0 && (
               <div className="bg-white rounded-2xl p-6 border border-outline-variant/20">
                 <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-4">
                   Domain Overlap
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {results.domain_experience.overlap.map((domain, idx) => (
+                  {results.domain_experience?.overlap?.map((domain, idx) => (
                     <span
                       key={idx}
                       className="px-3 py-1.5 bg-surface-container rounded-full text-xs font-bold text-on-surface border border-outline-variant/20"
