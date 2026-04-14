@@ -44,7 +44,7 @@ export default function TrackerPage() {
       }
 
       const data = await response.json();
-      setApplications(data.applications || []);
+      setApplications(data.data || data.applications || []);
     } catch (err) {
       setError((err as Error).message || 'Failed to load applications');
     } finally {
