@@ -41,8 +41,8 @@
         "The problem: most people either over-apply or under-apply",
         "The 5 things that actually determine if you're qualified",
         "How to read a job description honestly (not optimistically)",
-        "The 70% rule Ã¢ÂÂ what it really means",
-        "Skills vs. experience vs. culture fit Ã¢ÂÂ which matters most?",
+        "The 70% rule \u2014 what it really means",
+        "Skills vs. experience vs. culture fit \u2014 which matters most?",
         "A simple scoring framework you can use right now",
         "When to apply even if you're not 100% qualified",
         "When to skip even if you're technically qualified",
@@ -74,7 +74,7 @@
         "What Jobscan does well (honest assessment)",
         "Jobscan's key limitations in 2026",
         "The fundamental problem: optimizing without knowing if you should apply",
-        "WorthApply vs Jobscan Ã¢ÂÂ feature by feature table",
+        "WorthApply vs Jobscan \u2014 feature by feature table",
         "Pricing comparison",
         "Who should use Jobscan vs WorthApply",
         "Other alternatives worth considering: Teal, Rezi, Resume Worded",
@@ -100,9 +100,9 @@
       "word_count": 1500,
       "cta_type": "demo",
       "category": "guides",
-      "status": "pending",
+      "status": "published",
       "outline": [
-        "What is a job fit score Ã¢ÂÂ definition",
+        "What is a job fit score \u2014 definition",
         "Job fit score vs ATS score: what's the difference?",
         "The 4 dimensions of job fit: skills, experience, keywords, culture",
         "Why traditional ATS tools only measure one dimension",
@@ -167,7 +167,7 @@
         "What tailoring actually means vs what people think it means",
         "Step 1: Identify the 5-8 core requirements of the role",
         "Step 2: Map your real experience to each requirement",
-        "Step 3: Reframe, don't reinvent Ã¢ÂÂ language that surfaces hidden fit",
+        "Step 3: Reframe, don't reinvent \u2014 language that surfaces hidden fit",
         "Step 4: Quantify what's already there (not invent numbers)",
         "Step 5: Write a summary that speaks directly to the role",
         "Common tailoring mistakes that hurt you",
@@ -193,7 +193,7 @@
       "word_count": 1800,
       "cta_type": "demo",
       "category": "guides",
-      "status": "pending",
+      "status": "published",
       "outline": [
         "The mass-apply trap and why it feels productive",
         "Data: response rates for mass vs targeted applications",
@@ -290,11 +290,11 @@
       "outline": [
         "Why most advice about getting interviews is wrong",
         "The interview rate math: what's normal vs what's fixable",
-        "Factor 1: Fit Ã¢ÂÂ are you applying to the right roles?",
-        "Factor 2: Resume quality Ã¢ÂÂ are you communicating fit clearly?",
-        "Factor 3: ATS Ã¢ÂÂ is your resume even being read?",
-        "Factor 4: Volume vs quality Ã¢ÂÂ the right balance",
-        "Factor 5: Follow-up Ã¢ÂÂ what most people skip",
+        "Factor 1: Fit \u2014 are you applying to the right roles?",
+        "Factor 2: Resume quality \u2014 are you communicating fit clearly?",
+        "Factor 3: ATS \u2014 is your resume even being read?",
+        "Factor 4: Volume vs quality \u2014 the right balance",
+        "Factor 5: Follow-up \u2014 what most people skip",
         "A 2-week experiment: 10 targeted applications vs 50 generic ones",
         "Tools that actually help",
         "FAQ"
@@ -542,7 +542,7 @@
         "Resume summary vs. objective: which one to use",
         "The 3-sentence formula for a summary that works",
         "What to include: keywords, experience, value proposition",
-        "What to exclude: clichÃÂ©s, vague traits, filler phrases",
+        "What to exclude: clich\u00e9s, vague traits, filler phrases",
         "10 resume summary examples by role and level",
         "How to tailor your summary for each job without rewriting from scratch",
         "FAQ"
@@ -601,7 +601,7 @@
         "Do hiring managers actually read cover letters in 2026?",
         "When a cover letter matters most (and when to skip it)",
         "The cover letter structure that works: 4 paragraphs",
-        "Paragraph 1: The hook Ã¢ÂÂ don't start with 'I am applying for'",
+        "Paragraph 1: The hook \u2014 don't start with 'I am applying for'",
         "Paragraph 2: Why you're a strong fit (use specifics)",
         "Paragraph 3: Why this company, not just any company",
         "Paragraph 4: The close",
@@ -635,7 +635,7 @@
         "About section: tell a story, not a job description",
         "How to optimize your experience section for LinkedIn's algorithm",
         "Skills section: which ones to add and how to prioritize",
-        "Open to Work: banner vs. private signal Ã¢ÂÂ which is better?",
+        "Open to Work: banner vs. private signal \u2014 which is better?",
         "How to use LinkedIn to research job fit before applying",
         "Connecting with recruiters: what to say",
         "FAQ"
@@ -706,7 +706,7 @@
     {
       "id": 23,
       "slug": "job-search-burnout",
-      "title": "Job Search Burnout Is Real Ã¢ÂÂ Here's How to Recover and Search Smarter",
+      "title": "Job Search Burnout Is Real \u2014 Here's How to Recover and Search Smarter",
       "target_keyword": "job search burnout",
       "secondary_keywords": [
         "job hunting burnout",
@@ -1205,7 +1205,7 @@
         "Why ATS scores don't equal human scores",
         "Common ATS systems and how they differ: Greenhouse, Lever, Workday, iCIMS",
         "How to optimize for ATS without gaming the system",
-        "What ATS cannot see Ã¢ÂÂ your hidden advantages",
+        "What ATS cannot see \u2014 your hidden advantages",
         "FAQ"
       ]
     },
@@ -1237,7 +1237,7 @@
         "Tip 5: The follow-up sequence that gets responses",
         "Tip 6: Use AI tools that don't fabricate your experience",
         "Tip 7: Track your pipeline like a sales funnel",
-        "Tip 8: Protect your mental energy Ã¢ÂÂ job search is a marathon",
+        "Tip 8: Protect your mental energy \u2014 job search is a marathon",
         "FAQ"
       ]
     },
