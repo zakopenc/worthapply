@@ -150,7 +150,7 @@ export default function AnalyzerPage() {
         body: JSON.stringify({
           job_title: jobTitle,
           company,
-          status: 'saved',
+          status: 'wishlist',
           source: jobUrl || undefined,
           analysis_id: results.id,
         }),

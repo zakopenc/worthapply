@@ -8,7 +8,7 @@ export const analyzeJobSchema = z.object({
 
 export type AnalyzeJobInput = z.infer<typeof analyzeJobSchema>;
 
-export const applicationStatusSchema = z.enum(['saved', 'applied', 'interview', 'offer', 'rejected']);
+export const applicationStatusSchema = z.enum(['wishlist', 'saved', 'applied', 'interview', 'offer', 'rejected']);
 
 const optionalTrimmedString = (max: number, fieldName: string) =>
   z.union([
