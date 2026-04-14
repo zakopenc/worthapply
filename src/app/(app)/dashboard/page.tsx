@@ -36,6 +36,22 @@ function getTimeAgo(dateString: string): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+function coerceScore(...values: Array<number | string | null | undefined>): number | null {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.max(0, Math.min(100, Math.round(value)));
+    }
+
+    if (typeof value === 'string' && value.trim() !== '') {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) {
+        return Math.max(0, Math.min(100, Math.round(parsed)));
+      }
+    }
+  }
+
+  return null;
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -86,7 +102,11 @@ export default async function DashboardPage() {
   const scheduledInterviews = normalizedApplications.filter((app) => app.interview_date && new Date(app.interview_date) > new Date()).length;
   const wishlistCount = normalizedApplications.filter((app) => app.status === "wishlist").length;
 
-  const recentAnalyses = analyses?.slice(0, 5) || [];
+  const recentAnalyses = (analyses?.slice(0, 5) || []).map((analysis) => ({
+    ...analysis,
+    displayCompany: analysis.company || analysis.company_name || 'Company unavailable',
+    displayScore: coerceScore(analysis.overall_score, analysis.match_score),
+  }));
   const recentApplications = normalizedApplications.slice(0, 5);
 
   const pipelineStages = [
@@ -257,14 +277,14 @@ export default async function DashboardPage() {
                   </Link>
                 </div>
               ) : (
-                recentAnalyses.map((analysis, index) => {
-                  const score = analysis.match_score || analysis.overall_score || 0;
-                  const scoreColor = score >= 80 ? "text-green-700 bg-green-50 border-green-200" :
-                    score >= 60 ? "text-blue-700 bg-blue-50 border-blue-200" :
+                recentAnalyses.map((analysis) => {
+                  const score = analysis.displayScore;
+                  const scoreColor = (score ?? 0) >= 80 ? "text-green-700 bg-green-50 border-green-200" :
+                    (score ?? 0) >= 60 ? "text-blue-700 bg-blue-50 border-blue-200" :
                     "text-amber-700 bg-amber-50 border-amber-200";
                   return (
                     <div
-                      key={index}
+                      key={analysis.id}
                       className="flex items-center gap-4 px-6 py-4 hover:bg-surface-container-low/50 transition-colors"
                     >
                       <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
@@ -275,14 +295,12 @@ export default async function DashboardPage() {
                           {analysis.job_title || "Job Analysis"}
                         </p>
                         <p className="text-xs text-on-surface-variant mt-0.5">
-                          {analysis.company_name} · {getTimeAgo(analysis.created_at)}
+                          {analysis.displayCompany} · {getTimeAgo(analysis.created_at)}
                         </p>
                       </div>
-                      {score > 0 && (
-                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-black border ${scoreColor} shrink-0`}>
-                          {score}% Match
-                        </span>
-                      )}
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-black border ${scoreColor} shrink-0`}>
+                        {score === null ? 'Score pending' : `${score}% Match`}
+                      </span>
                     </div>
                   );
                 })
