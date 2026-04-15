@@ -22,6 +22,13 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import Topbar from '@/components/app/Topbar';
+import {
+  buildDownloadFilename,
+  buildParagraphDocxBlob,
+  buildSimplePdfBlob,
+  downloadBlob,
+  type ExportSection,
+} from '@/lib/client-document-export';
 import { createClient } from '@/lib/supabase/client';
 import {
   deriveTargetKeywords,
@@ -37,6 +44,7 @@ import {
   normalizeApplicationStatus,
   type ApplicationStatus,
 } from '@/lib/application-status';
+import { getEffectivePlan, getFeatureAccess, type Plan } from '@/lib/plans';
 import styles from './workspace.module.css';
 
 interface ApplicationRecord {
@@ -129,6 +137,29 @@ function getNextStep(app: ApplicationRecord | null, isGhosted: boolean, hasTailo
   return 'Stay consistent and move the strongest opportunities forward first.';
 }
 
+function buildTailoredResumeSections(app: ApplicationRecord, tailored: TailoredResumeRecord): ExportSection[] {
+  const sections: ExportSection[] = [
+    { heading: 'Target Role', body: `${app.job_title} — ${app.company}` },
+    { heading: 'Tailored Summary', body: tailored.content?.tailored_summary || 'No tailored summary available yet.' },
+  ];
+
+  if (tailored.content?.tailored_bullets?.length) {
+    sections.push({
+      heading: 'Tailored Experience Highlights',
+      body: tailored.content.tailored_bullets.map((item) => `• ${item.tailored}`).join('\n'),
+    });
+  }
+
+  if (tailored.content?.reordered_skills?.length) {
+    sections.push({
+      heading: 'Prioritized Skills',
+      body: tailored.content.reordered_skills.join(', '),
+    });
+  }
+
+  return sections;
+}
+
 export default function WorkspacePage() {
   const params = useParams();
   const appId = params.id as string;
@@ -147,6 +178,9 @@ export default function WorkspacePage() {
   const [copied, setCopied] = useState('');
   const [bannerMessage, setBannerMessage] = useState('');
   const [error, setError] = useState('');
+  const [canDownloadDocs, setCanDownloadDocs] = useState(false);
+  const [exportingResume, setExportingResume] = useState(false);
+  const [exportingCoverLetter, setExportingCoverLetter] = useState(false);
 
   const supabase = createClient();
 
@@ -154,17 +188,33 @@ export default function WorkspacePage() {
     setLoading(true);
     setError('');
 
-    const { data: appData, error: appError } = await supabase
-      .from('applications')
-      .select('*')
-      .eq('id', appId)
-      .single();
+    const [{ data: appData, error: appError }, authResponse] = await Promise.all([
+      supabase
+        .from('applications')
+        .select('*')
+        .eq('id', appId)
+        .single(),
+      supabase.auth.getUser(),
+    ]);
 
     if (appError || !appData) {
       setApp(null);
       setLoading(false);
       if (appError) setError(appError.message);
       return;
+    }
+
+    const userId = authResponse.data.user?.id;
+    if (userId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan, subscription_status')
+        .eq('id', userId)
+        .single();
+      const effectivePlan = getEffectivePlan((profile?.plan || 'free') as Plan, profile?.subscription_status);
+      setCanDownloadDocs(getFeatureAccess(effectivePlan).docx_download);
+    } else {
+      setCanDownloadDocs(false);
     }
 
     const currentApp = {
@@ -369,6 +419,97 @@ export default function WorkspacePage() {
     }
   };
 
+  const handleDownloadTailoredDocx = async () => {
+    if (!app || !tailored || !canDownloadDocs) return;
+    setExportingResume(true);
+    setError('');
+    setBannerMessage('');
+
+    try {
+      const blob = await buildParagraphDocxBlob(buildTailoredResumeSections(app, tailored));
+      downloadBlob(buildDownloadFilename([app.company, app.job_title], 'tailored-resume', 'docx'), blob);
+      setBannerMessage('Tailored resume DOCX downloaded.');
+    } catch {
+      setError('Unable to download the tailored resume DOCX on this device.');
+    } finally {
+      setExportingResume(false);
+    }
+  };
+
+  const handleDownloadTailoredPdf = async () => {
+    if (!app || !tailored || !canDownloadDocs) return;
+    setExportingResume(true);
+    setError('');
+    setBannerMessage('');
+
+    try {
+      const blob = await buildSimplePdfBlob(`${app.job_title} — ${app.company}`, buildTailoredResumeSections(app, tailored));
+      downloadBlob(buildDownloadFilename([app.company, app.job_title], 'tailored-resume', 'pdf'), blob);
+      setBannerMessage('Tailored resume PDF downloaded.');
+    } catch {
+      setError('Unable to download the tailored resume PDF on this device.');
+    } finally {
+      setExportingResume(false);
+    }
+  };
+
+  const handleDownloadCoverLetterTxt = async () => {
+    if (!app || !coverLetter || !coverLetter.content || !canDownloadDocs) return;
+    setExportingCoverLetter(true);
+    setError('');
+    setBannerMessage('');
+
+    try {
+      downloadBlob(
+        buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'txt'),
+        new Blob([coverLetter.content], { type: 'text/plain;charset=utf-8' })
+      );
+      setBannerMessage('Cover letter TXT downloaded.');
+    } catch {
+      setError('Unable to download the cover letter TXT on this device.');
+    } finally {
+      setExportingCoverLetter(false);
+    }
+  };
+
+  const handleDownloadCoverLetterDocx = async () => {
+    if (!app || !coverLetter || !coverLetter.content || !canDownloadDocs) return;
+    setExportingCoverLetter(true);
+    setError('');
+    setBannerMessage('');
+
+    try {
+      const blob = await buildParagraphDocxBlob([
+        { heading: 'Cover Letter', body: coverLetter.content },
+      ]);
+      downloadBlob(buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'docx'), blob);
+      setBannerMessage('Cover letter DOCX downloaded.');
+    } catch {
+      setError('Unable to download the cover letter DOCX on this device.');
+    } finally {
+      setExportingCoverLetter(false);
+    }
+  };
+
+  const handleDownloadCoverLetterPdf = async () => {
+    if (!app || !coverLetter || !coverLetter.content || !canDownloadDocs) return;
+    setExportingCoverLetter(true);
+    setError('');
+    setBannerMessage('');
+
+    try {
+      const blob = await buildSimplePdfBlob(`${app.job_title} — ${app.company}`, [
+        { heading: 'Cover Letter', body: coverLetter.content },
+      ]);
+      downloadBlob(buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'pdf'), blob);
+      setBannerMessage('Cover letter PDF downloaded.');
+    } catch {
+      setError('Unable to download the cover letter PDF on this device.');
+    } finally {
+      setExportingCoverLetter(false);
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -540,9 +681,21 @@ export default function WorkspacePage() {
                     <article className={styles.detailCard}>
                       <div className={styles.detailHeader}>
                         <h3>Tailored summary</h3>
-                        <button type="button" className={styles.copyButton} onClick={() => handleCopy(tailored.content?.tailored_summary || '', 'summary')}>
-                          <Copy size={14} /> {copied === 'summary' ? 'Copied' : 'Copy'}
-                        </button>
+                        <div className={styles.actionRow}>
+                          {canDownloadDocs ? (
+                            <>
+                              <button type="button" className={styles.copyButton} onClick={handleDownloadTailoredDocx} disabled={exportingResume}>
+                                <FileText size={14} /> Download tailored DOCX
+                              </button>
+                              <button type="button" className={styles.copyButton} onClick={handleDownloadTailoredPdf} disabled={exportingResume}>
+                                <FileText size={14} /> Download tailored PDF
+                              </button>
+                            </>
+                          ) : null}
+                          <button type="button" className={styles.copyButton} onClick={() => handleCopy(tailored.content?.tailored_summary || '', 'summary')}>
+                            <Copy size={14} /> {copied === 'summary' ? 'Copied' : 'Copy'}
+                          </button>
+                        </div>
                       </div>
                       <p>{tailored.content?.tailored_summary || 'No tailored summary available yet.'}</p>
                     </article>
@@ -615,9 +768,24 @@ export default function WorkspacePage() {
                     <article className={styles.detailCard}>
                       <div className={styles.detailHeader}>
                         <h3>Draft</h3>
-                        <button type="button" className={styles.copyButton} onClick={() => handleCopy(coverLetter.content, 'cover-letter')}>
-                          <Copy size={14} /> {copied === 'cover-letter' ? 'Copied' : 'Copy'}
-                        </button>
+                        <div className={styles.actionRow}>
+                          {canDownloadDocs && coverLetter.content ? (
+                            <>
+                              <button type="button" className={styles.copyButton} onClick={handleDownloadCoverLetterTxt} disabled={exportingCoverLetter}>
+                                <FileText size={14} /> Download cover letter TXT
+                              </button>
+                              <button type="button" className={styles.copyButton} onClick={handleDownloadCoverLetterDocx} disabled={exportingCoverLetter}>
+                                <FileText size={14} /> Download cover letter DOCX
+                              </button>
+                              <button type="button" className={styles.copyButton} onClick={handleDownloadCoverLetterPdf} disabled={exportingCoverLetter}>
+                                <FileText size={14} /> Download cover letter PDF
+                              </button>
+                            </>
+                          ) : null}
+                          <button type="button" className={styles.copyButton} onClick={() => handleCopy(coverLetter.content, 'cover-letter')}>
+                            <Copy size={14} /> {copied === 'cover-letter' ? 'Copied' : 'Copy'}
+                          </button>
+                        </div>
                       </div>
                       <div className={styles.coverLetterText}>{coverLetter.content || 'This role likely does not need a cover letter.'}</div>
                     </article>

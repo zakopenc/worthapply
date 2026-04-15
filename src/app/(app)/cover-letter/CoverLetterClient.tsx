@@ -3,8 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Document, Packer, Paragraph, TextRun } from 'docx';
 import { Download, FileText, Loader2, Lock, Sparkles } from 'lucide-react';
+import {
+  buildDownloadFilename,
+  buildParagraphDocxBlob,
+  buildSimplePdfBlob,
+  downloadBlob,
+} from '@/lib/client-document-export';
 import styles from './cover-letter.module.css';
 
 export interface CoverLetterWorkspaceOption {
@@ -70,17 +75,6 @@ function formatTimestamp(value?: string | null) {
   });
 }
 
-function downloadBlob(filename: string, blob: Blob) {
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(url);
-}
-
 export default function CoverLetterClient({ plan, options, analysis, initialCoverLetter }: CoverLetterClientProps) {
   const router = useRouter();
   const isPaid = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
@@ -135,36 +129,36 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
 
   const handleDownloadTxt = () => {
     if (!draft.trim() || !analysis) return;
-    const fileName = `${analysis.jobTitle}-${analysis.company}-cover-letter.txt`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-    downloadBlob(fileName, new Blob([draft], { type: 'text/plain;charset=utf-8' }));
+    downloadBlob(
+      buildDownloadFilename([analysis.jobTitle, analysis.company], 'cover-letter', 'txt'),
+      new Blob([draft], { type: 'text/plain;charset=utf-8' })
+    );
   };
 
   const handleDownloadDocx = async () => {
     if (!draft.trim() || !analysis) return;
 
-    const doc = new Document({
-      sections: [
-        {
-          properties: {},
-          children: draft.split(/\n{2,}/).map((block) =>
-            new Paragraph({
-              children: [new TextRun(block.replace(/\n/g, ' '))],
-              spacing: { after: 220 },
-            })
-          ),
-        },
-      ],
-    });
+    const blob = await buildParagraphDocxBlob(
+      draft.split(/\n{2,}/).map((block, index) => ({
+        heading: index === 0 ? 'Cover Letter' : undefined,
+        body: block.replace(/\n/g, ' '),
+      }))
+    );
 
-    const blob = await Packer.toBlob(doc);
-    const fileName = `${analysis.jobTitle}-${analysis.company}-cover-letter.docx`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-    downloadBlob(fileName, blob);
+    downloadBlob(buildDownloadFilename([analysis.jobTitle, analysis.company], 'cover-letter', 'docx'), blob);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!draft.trim() || !analysis) return;
+
+    const blob = await buildSimplePdfBlob(`${analysis.jobTitle} — ${analysis.company}`, [
+      {
+        heading: 'Cover Letter',
+        body: draft,
+      },
+    ]);
+
+    downloadBlob(buildDownloadFilename([analysis.jobTitle, analysis.company], 'cover-letter', 'pdf'), blob);
   };
 
   if (!options.length) {
@@ -257,6 +251,9 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
                 </button>
                 <button type="button" className={styles.secondaryButton} onClick={handleDownloadDocx} disabled={!draft.trim()}>
                   <Download size={16} /> Download DOCX
+                </button>
+                <button type="button" className={styles.secondaryButton} onClick={handleDownloadPdf} disabled={!draft.trim()}>
+                  <Download size={16} /> Download PDF
                 </button>
               </div>
             </div>

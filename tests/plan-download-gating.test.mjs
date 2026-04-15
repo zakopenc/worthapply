@@ -22,5 +22,19 @@ assert.ok(
   coverLetterClient.includes("const isPaid = plan === 'pro' || plan === 'premium' || plan === 'lifetime';"),
   'Cover letter client should unlock full draft + downloads for premium users as well as pro/lifetime users.'
 );
+assert.ok(
+  coverLetterClient.includes('Download PDF'),
+  'Cover letter workspace should offer PDF downloads for paid users.'
+);
+
+const applicationWorkspace = await read('src/app/(app)/applications/[id]/page.tsx');
+assert.ok(
+  applicationWorkspace.includes('Download tailored PDF'),
+  'Application workspace should expose tailored resume PDF downloads when tailored content exists.'
+);
+assert.ok(
+  applicationWorkspace.includes('Download cover letter PDF'),
+  'Application workspace should expose cover letter PDF downloads when cover letters exist.'
+);
 
 console.log('download gating checks passed');

@@ -16,8 +16,14 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
 import { createClient } from '@/lib/supabase/client';
+import {
+  buildDownloadFilename,
+  buildParagraphDocxBlob,
+  buildSimplePdfBlob,
+  type ExportSection,
+  downloadBlob,
+} from '@/lib/client-document-export';
 import styles from './tailor.module.css';
 
 interface ParsedWorkHistoryItem {
@@ -159,7 +165,7 @@ function normalizeSkills(skills: ParsedResumeData['skills']) {
 }
 
 function buildExportLines(detail: ApplicationDetail, summaryDecision: { value: string; state: SuggestionState }, bulletDecisions: BulletDecision[], skillsDecision: { value: string[]; state: SuggestionState }) {
-  const lines: { heading?: string; body?: string }[] = [];
+  const lines: ExportSection[] = [];
 
   lines.push({ heading: 'Target Role', body: `${detail.job_title} — ${detail.company}` });
 
@@ -424,38 +430,33 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
 
     try {
       const sections = buildExportLines(detail, summaryDecision, bulletDecisions, skillsDecision);
-      const doc = new Document({
-        sections: [
-          {
-            children: sections.flatMap((section) => {
-              const children: Paragraph[] = [];
-              if (section.heading) {
-                children.push(new Paragraph({ text: section.heading, heading: HeadingLevel.HEADING_2, spacing: { after: 120 } }));
-              }
-              if (section.body) {
-                children.push(
-                  ...section.body.split('\n').map((line) => new Paragraph({
-                    children: [new TextRun({ text: line })],
-                    spacing: { after: 120 },
-                  }))
-                );
-              }
-              return children;
-            }),
-          },
-        ],
-      });
-
-      const blob = await Packer.toBlob(doc);
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = `${detail.company}-${detail.job_title}-tailored-resume.docx`.replace(/\s+/g, '-').toLowerCase();
-      anchor.click();
-      URL.revokeObjectURL(url);
+      const blob = await buildParagraphDocxBlob(sections);
+      downloadBlob(buildDownloadFilename([detail.company, detail.job_title], 'tailored-resume', 'docx'), blob);
       setBanner('DOCX export downloaded.');
     } catch {
       setError('Unable to export the DOCX file on this device.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    if (!detail) return;
+    if (!initialData.features.docx_download) {
+      setError('PDF export is available on Pro, Premium, and Lifetime plans.');
+      return;
+    }
+
+    setExporting(true);
+    setError('');
+
+    try {
+      const sections = buildExportLines(detail, summaryDecision, bulletDecisions, skillsDecision);
+      const blob = await buildSimplePdfBlob(`${detail.job_title} — ${detail.company}`, sections);
+      downloadBlob(buildDownloadFilename([detail.company, detail.job_title], 'tailored-resume', 'pdf'), blob);
+      setBanner('PDF export downloaded.');
+    } catch {
+      setError('Unable to export the PDF file on this device.');
     } finally {
       setExporting(false);
     }
@@ -755,6 +756,10 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
             <div className={styles.footerActions}>
               <button type="button" className={styles.secondaryButton} onClick={() => window.location.reload()}>
                 <RefreshCw size={16} /> Refresh
+              </button>
+              <button type="button" className={styles.secondaryButton} onClick={handleExportPdf} disabled={exporting || acceptedCount === 0}>
+                {exporting ? <Loader2 size={16} className={styles.inlineSpin} /> : <Download size={16} />}
+                Export to PDF
               </button>
               <button type="button" className={styles.primaryButton} onClick={handleExportDocx} disabled={exporting || acceptedCount === 0}>
                 {exporting ? <Loader2 size={16} className={styles.inlineSpin} /> : <Download size={16} />}
