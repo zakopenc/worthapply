@@ -37,21 +37,63 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Explicitly check for session expiration (6 hours = 21600 seconds)
+  // Inactivity timeout: 30 minutes
+  const INACTIVITY_MS = 30 * 60 * 1000;
+  const LAST_ACTIVE_COOKIE = 'wa_last_active';
+  const pathname = request.nextUrl.pathname;
+
+  // Only enforce inactivity on protected routes (skip public/auth/api/admin)
+  const isProtectedAppRoute =
+    !pathname.startsWith('/api/') &&
+    !pathname.startsWith('/login') &&
+    !pathname.startsWith('/signup') &&
+    !pathname.startsWith('/forgot-password') &&
+    !pathname.startsWith('/reset-password') &&
+    !pathname.startsWith('/verify-email') &&
+    pathname !== '/' &&
+    !pathname.startsWith('/features') &&
+    !pathname.startsWith('/pricing') &&
+    !pathname.startsWith('/about') &&
+    !pathname.startsWith('/compare') &&
+    !pathname.startsWith('/tools') &&
+    !pathname.startsWith('/privacy') &&
+    !pathname.startsWith('/terms') &&
+    !pathname.startsWith('/suspended');
+
   try {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      const expiresAt = session.expires_at ? session.expires_at * 1000 : 0;
-      const SIX_HOURS = 6 * 60 * 60 * 1000;
-      
-      // If session is older than 6 hours
-      // Note: Supabase session.expires_at is a Unix timestamp in seconds.
-      if (session.expires_at && Date.now() > (session.expires_at * 1000)) {
+      // Check JWT expiry
+      if (session.expires_at && Date.now() > session.expires_at * 1000) {
         await supabase.auth.signOut();
         const url = request.nextUrl.clone();
         url.pathname = '/login';
         return NextResponse.redirect(url);
       }
+
+      // Check inactivity timeout on protected routes
+      if (isProtectedAppRoute) {
+        const lastActiveCookie = request.cookies.get(LAST_ACTIVE_COOKIE)?.value;
+        const lastActive = lastActiveCookie ? parseInt(lastActiveCookie, 10) : 0;
+        if (lastActive && Date.now() - lastActive > INACTIVITY_MS) {
+          await supabase.auth.signOut();
+          const url = request.nextUrl.clone();
+          url.pathname = '/login';
+          url.searchParams.set('reason', 'timeout');
+          return NextResponse.redirect(url);
+        }
+        // Refresh last-active timestamp
+        supabaseResponse.cookies.set(LAST_ACTIVE_COOKIE, String(Date.now()), {
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: true,
+          path: '/',
+          maxAge: 60 * 60 * 24, // 1 day max; inactivity check governs real expiry
+        });
+      }
+    } else if (isProtectedAppRoute) {
+      // No session — clear stale cookie if present
+      supabaseResponse.cookies.delete(LAST_ACTIVE_COOKIE);
     }
   } catch (e) {
     console.error('Session check error:', e);
@@ -64,8 +106,6 @@ export async function updateSession(request: NextRequest) {
   } catch (error) {
     console.error('Supabase auth error:', error);
   }
-
-  const pathname = request.nextUrl.pathname;
 
   // Public marketing routes - no auth needed
   const isMarketingRoute = pathname === '/' ||

@@ -16,7 +16,10 @@ import {
   Sparkles,
   HelpCircle,
   TrendingUp,
+  LogOut,
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 import styles from './Sidebar.module.css';
 
 // Force cache invalidation
@@ -38,8 +41,15 @@ const navItems = [
 
 export default function Sidebar({ userName, plan }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const isPaidPlan = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
   const planLabel = plan === 'premium' ? 'Premium' : plan === 'lifetime' ? 'Lifetime' : plan === 'pro' ? 'Pro' : 'Free Plan';
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/login');
+  }
 
   return (
     <>
@@ -161,6 +171,13 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
               <HelpCircle className="w-4 h-4 shrink-0" />
               <span>Support</span>
             </a>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#4c4640] hover:bg-red-50 hover:text-red-600 transition-all w-full text-left"
+            >
+              <LogOut className="w-4 h-4 shrink-0" />
+              <span>Sign Out</span>
+            </button>
           </div>
         </div>
       </aside>
@@ -185,6 +202,13 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
               </Link>
             );
           })}
+          <button
+            onClick={handleSignOut}
+            className="min-w-[84px] flex-1 rounded-2xl px-3 py-2.5 flex flex-col items-center justify-center gap-1.5 text-[11px] font-bold tracking-tight transition-all text-[#4c4640] bg-white/70 border border-[#cfc5bd]/15 hover:text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            <span className="text-center leading-tight">Sign Out</span>
+          </button>
         </nav>
       </aside>
     </>
