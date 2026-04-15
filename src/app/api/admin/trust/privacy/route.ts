@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
   const serviceClient = await createServiceClient();
 
   // Look up user_id from email
-  const { data: authUser } = await serviceClient.auth.admin.getUserByEmail(user_email);
-  const userId = authUser?.user?.id ?? null;
+  const { data: authList } = await serviceClient.auth.admin.listUsers({ perPage: 1000 });
+  const userId = authList?.users?.find(u => u.email?.toLowerCase() === user_email.toLowerCase())?.id ?? null;
 
   const { error } = await serviceClient.from('privacy_requests').insert({
     user_id: userId,

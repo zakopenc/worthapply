@@ -15,21 +15,22 @@ async function getUsers(query?: string): Promise<AdminUser[]> {
   const supabase = await createServiceClient();
 
   if (query?.includes('@')) {
-    // Search by exact email via auth admin API
-    const { data: authUser, error } = await supabase.auth.admin.getUserByEmail(query.trim());
-    if (error || !authUser?.user) return [];
+    // Search by email — listUsers + in-memory filter (getUserByEmail not available in this SDK version)
+    const { data: authList } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    const authUser = authList?.users?.find(u => u.email?.toLowerCase() === query.trim().toLowerCase());
+    if (!authUser) return [];
 
     const { data: profile } = await supabase
       .from('profiles')
       .select('full_name, plan, subscription_status, onboarding_complete, created_at')
-      .eq('id', authUser.user.id)
+      .eq('id', authUser.id)
       .single();
 
     if (!profile) return [];
 
     return [{
-      id: authUser.user.id,
-      email: authUser.user.email ?? '',
+      id: authUser.id,
+      email: authUser.email ?? '',
       full_name: profile.full_name,
       plan: profile.plan,
       subscription_status: profile.subscription_status,

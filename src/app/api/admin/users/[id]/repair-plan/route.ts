@@ -3,9 +3,6 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { verifyAdmin, writeAuditLog } from '@/lib/admin/service';
 import { z } from 'zod';
 
-const VALID_PLANS = ['free', 'pro', 'premium', 'lifetime'] as const;
-const VALID_STATUSES = ['active', 'trialing', 'past_due', 'canceled', null] as const;
-
 const schema = z.object({
   plan: z.enum(VALID_PLANS),
   subscription_status: z.enum(['active', 'trialing', 'past_due', 'canceled']).nullable(),
