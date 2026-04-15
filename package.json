@@ -17,7 +17,8 @@
     "test:http": "./tests/automated-production-test.sh",
     "test:database": "node tests/database-test.js",
     "test:onboarding": "node tests/onboarding-test.js",
-    "test:prereq": "npm install puppeteer @supabase/supabase-js dotenv --save-dev"
+    "test:prereq": "npm install puppeteer @supabase/supabase-js dotenv --save-dev",
+    "cleanup:qa-users": "node scripts/cleanup-qa-users.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

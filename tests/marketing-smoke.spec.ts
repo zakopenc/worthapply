@@ -3,27 +3,27 @@ import { expect, test } from '@playwright/test';
 const marketingPages = [
   {
     url: '/',
-    title: /WorthApply|AI job application copilot/i,
-    heading: 'Stop guessing which jobs are worth applying to.',
+    title: /Know if you're the right fit, before you apply/i,
+    heading: /Know if you're the right fit before you apply/i,
   },
   {
     url: '/features',
-    title: /Features/i,
-    heading: /Decide, tailor, and track applications/i,
+    title: /Features — Job Fit Analysis, Resume Tailoring & Application Tracking/i,
+    heading: /A fit-first platform for smarter applications/i,
   },
   {
     url: '/pricing',
-    title: /Pricing/i,
-    heading: /Start free\. Upgrade when better application decisions matter\./i,
+    title: /Pricing — Unlimited Job Fit Analyses at \$39\/mo/i,
+    heading: /Simple, Transparent Pricing/i,
   },
   {
     url: '/compare',
-    title: /Compare/i,
-    heading: /See how WorthApply compares with Jobscan, Teal, and Rezi\./i,
+    title: /WorthApply vs Jobscan vs Teal vs Rezi/i,
+    heading: /How WorthApply compares/i,
   },
   {
     url: '/about',
-    title: /About/i,
+    title: /About \| WorthApply/i,
     heading: /WorthApply exists to make job searching more strategic, less noisy, and more honest\./i,
   },
 ];
@@ -35,15 +35,15 @@ test.describe('marketing smoke', () => {
 
       await expect(page).toHaveTitle(pageConfig.title);
       await expect(page.getByRole('heading', { name: pageConfig.heading })).toBeVisible();
-      await expect(page.getByRole('link', { name: /sign in/i })).toBeVisible();
-      await expect(page.getByRole('link', { name: /get started/i })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Sign in', exact: true }).first()).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Get started', exact: true }).first()).toBeVisible();
     });
   }
 
   test('homepage primary hero CTA points to signup', async ({ page }) => {
     await page.goto('/');
 
-    const heroCta = page.getByRole('link', { name: /analyze a job free/i }).first();
+    const heroCta = page.locator('main').getByRole('link', { name: /Analyze Your Resume Free/i });
     await expect(heroCta).toBeVisible();
     await expect(heroCta).toHaveAttribute('href', '/signup');
   });

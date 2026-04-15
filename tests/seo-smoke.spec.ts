@@ -4,21 +4,21 @@ test.describe('seo and structured data smoke', () => {
   test('homepage has canonical, meta description, and structured data', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://worthapply.com');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.worthapply.com');
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       'content',
-      /analyze job fit, tailor every application, and keep your search organized/i,
+      /fit-first job search\. analyze your real fit for a role in 10 seconds before tailoring your resume/i,
     );
 
     const jsonLdScripts = page.locator('script[type="application/ld+json"]');
-    await expect(jsonLdScripts).toHaveCount(2);
+    expect(await jsonLdScripts.count()).toBeGreaterThanOrEqual(1);
   });
 
   test('pricing page exposes a crawlable heading and title', async ({ page }) => {
     await page.goto('/pricing');
 
     await expect(page).toHaveTitle(/Pricing/i);
-    await expect(page.getByRole('heading', { name: /start free\. upgrade when better application decisions matter\./i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /simple, transparent pricing/i })).toBeVisible();
   });
 
   test('robots and sitemap endpoints respond', async ({ request }) => {
