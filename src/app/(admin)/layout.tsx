@@ -21,6 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <nav className={styles.nav}>
           <a href="/admin" className={styles.navLink}>Users</a>
             <a href="/admin/ops" className={styles.navLink}>Ops</a>
+            <a href="/admin/trust" className={styles.navLink}>Trust</a>
         </nav>
         <span className={styles.role}>{role}</span>
       </header>

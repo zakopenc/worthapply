@@ -75,7 +75,8 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/compare') ||
     pathname.startsWith('/tools/ats-checker') ||
     pathname.startsWith('/privacy') ||
-    pathname.startsWith('/terms');
+    pathname.startsWith('/terms') ||
+    pathname.startsWith('/suspended');
 
   // Auth routes - redirect to dashboard if logged in
   const isAuthRoute = pathname.startsWith('/login') ||

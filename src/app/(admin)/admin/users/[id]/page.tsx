@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase/server';
-import { RepairPlanForm, ResetUsageForm } from './AdminActions';
+import { RepairPlanForm, ResetUsageForm, AccountStatusForm, DeleteUserForm } from './AdminActions';
 import styles from './page.module.css';
 
 type UsageRow = { resource_type: string; used: number; period: string };
@@ -18,7 +18,7 @@ async function getUserDetail(userId: string) {
   ] = await Promise.all([
     supabase.auth.admin.getUserById(userId),
     supabase.from('profiles')
-      .select('full_name, plan, subscription_status, onboarding_complete, created_at, stripe_customer_id')
+      .select('full_name, plan, subscription_status, onboarding_complete, created_at, stripe_customer_id, account_status')
       .eq('id', userId)
       .single(),
     supabase.from('monthly_usage')
@@ -53,6 +53,7 @@ async function getUserDetail(userId: string) {
     onboarding_complete: profile.onboarding_complete,
     created_at: profile.created_at,
     stripe_customer_id: profile.stripe_customer_id,
+    account_status: profile.account_status ?? 'active',
     usage: thisMonthUsage as UsageRow[],
     resume_count: resumeCount ?? 0,
     analysis_count: analysisCount ?? 0,
@@ -102,6 +103,11 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
               {user.subscription_status}
             </span>
           )}
+          {user.account_status !== 'active' && (
+            <span className={`${styles.badge} ${user.account_status === 'suspended' ? styles.badgePastDue : styles.badgeNeutral}`}>
+              {user.account_status}
+            </span>
+          )}
         </div>
       </div>
 
@@ -142,6 +148,8 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
             currentStatus={user.subscription_status}
           />
           <ResetUsageForm userId={user.id} />
+          <AccountStatusForm userId={user.id} currentStatus={user.account_status} />
+          <DeleteUserForm userId={user.id} userEmail={user.email} />
         </div>
       </section>
 

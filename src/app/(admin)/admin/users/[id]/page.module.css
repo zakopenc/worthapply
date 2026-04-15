@@ -47,8 +47,9 @@
 .badgeFree    { background: #f0f0f0; color: #555; }
 .badgePro     { background: #e8f0fe; color: #1a56db; }
 .badgePremium { background: #fef3c7; color: #92400e; }
-.badgeActive  { background: #dcfce7; color: #166534; }
-.badgePastDue { background: #fee2e2; color: #991b1b; }
+.badgeActive   { background: #dcfce7; color: #166534; }
+.badgePastDue  { background: #fee2e2; color: #991b1b; }
+.badgeNeutral  { background: #fef3c7; color: #92400e; }
 
 .section {
   margin-bottom: 36px;

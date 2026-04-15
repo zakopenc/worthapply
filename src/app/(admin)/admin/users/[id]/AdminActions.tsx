@@ -166,3 +166,148 @@ export function ResetUsageForm({ userId }: ResetUsageProps) {
     </form>
   );
 }
+
+type AccountStatus = 'active' | 'flagged' | 'suspended';
+
+interface AccountStatusProps {
+  userId: string;
+  currentStatus: string;
+}
+
+export function AccountStatusForm({ userId, currentStatus }: AccountStatusProps) {
+  const [status, setStatus] = useState<AccountStatus>(currentStatus as AccountStatus || 'active');
+  const [reason, setReason] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reason.trim()) { setResult({ ok: false, message: 'Reason is required.' }); return; }
+    if (status === 'suspended' && !confirm(`Suspend this account? The user will not be able to access the app.\n\nReason: ${reason}`)) return;
+
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch(`/api/admin/trust/set-account-status/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, reason }),
+      });
+      const data = await res.json();
+      setResult(res.ok ? { ok: true, message: 'Account status updated.' } : { ok: false, message: data.error || 'Failed.' });
+      if (res.ok) setReason('');
+    } catch {
+      setResult({ ok: false, message: 'Network error.' });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className={styles.actionForm}>
+      <h3 className={styles.actionTitle}>Account Status</h3>
+      <div className={styles.formRow}>
+        <label className={styles.label}>Status</label>
+        <select value={status} onChange={e => setStatus(e.target.value as AccountStatus)} className={styles.select}>
+          <option value="active">active — normal access</option>
+          <option value="flagged">flagged — admin review note</option>
+          <option value="suspended">suspended — blocked from app</option>
+        </select>
+      </div>
+      <div className={styles.formRow}>
+        <label className={styles.label}>Reason <span className={styles.required}>*</span></label>
+        <input
+          type="text"
+          value={reason}
+          onChange={e => setReason(e.target.value)}
+          placeholder="e.g. Abusive usage pattern"
+          className={styles.input}
+          maxLength={300}
+        />
+      </div>
+      {result && (
+        <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>
+      )}
+      <button type="submit" disabled={loading} className={styles.actionBtn}>
+        {loading ? 'Saving…' : 'Set Status'}
+      </button>
+    </form>
+  );
+}
+
+interface DeleteUserProps {
+  userId: string;
+  userEmail: string;
+}
+
+export function DeleteUserForm({ userId, userEmail }: DeleteUserProps) {
+  const [confirmEmail, setConfirmEmail] = useState('');
+  const [reason, setReason] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reason.trim()) { setResult({ ok: false, message: 'Reason is required.' }); return; }
+    if (!confirm(`PERMANENTLY DELETE this account and all data?\n\nThis cannot be undone.\n\nEmail: ${userEmail}\nReason: ${reason}`)) return;
+
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch(`/api/admin/trust/delete-user/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason, confirm_email: confirmEmail }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setResult({ ok: true, message: 'User deleted. Redirecting…' });
+        setTimeout(() => { window.location.href = '/admin'; }, 1500);
+      } else {
+        setResult({ ok: false, message: data.error || 'Failed.' });
+      }
+    } catch {
+      setResult({ ok: false, message: 'Network error.' });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className={styles.actionForm} style={{ borderColor: '#fee2e2' }}>
+      <h3 className={styles.actionTitle} style={{ color: '#991b1b' }}>Delete Account (GDPR)</h3>
+      <div className={styles.formRow}>
+        <label className={styles.label}>Confirm user email <span className={styles.required}>*</span></label>
+        <input
+          type="email"
+          value={confirmEmail}
+          onChange={e => setConfirmEmail(e.target.value)}
+          placeholder={userEmail}
+          className={styles.input}
+        />
+      </div>
+      <div className={styles.formRow}>
+        <label className={styles.label}>Reason <span className={styles.required}>*</span></label>
+        <input
+          type="text"
+          value={reason}
+          onChange={e => setReason(e.target.value)}
+          placeholder="e.g. GDPR deletion request"
+          className={styles.input}
+          maxLength={300}
+        />
+      </div>
+      {result && (
+        <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>
+      )}
+      <button
+        type="submit"
+        disabled={loading || confirmEmail.toLowerCase() !== userEmail.toLowerCase()}
+        className={styles.actionBtn}
+        style={{ background: '#991b1b' }}
+      >
+        {loading ? 'Deleting…' : 'Delete User Permanently'}
+      </button>
+    </form>
+  );
+}
