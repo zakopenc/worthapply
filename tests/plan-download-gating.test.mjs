@@ -36,5 +36,19 @@ assert.ok(
   applicationWorkspace.includes('Download cover letter PDF'),
   'Application workspace should expose cover letter PDF downloads when cover letters exist.'
 );
+assert.ok(
+  applicationWorkspace.includes('Download all assets'),
+  'Application workspace should expose a one-click asset pack download for paid users.'
+);
+
+const exportUtils = await read('src/lib/client-document-export.ts');
+assert.ok(
+  exportUtils.includes("const BRAND = {") && exportUtils.includes("name: 'WorthApply'"),
+  'Document export utility should apply branded WorthApply PDF styling.'
+);
+assert.ok(
+  exportUtils.includes('buildZipBlob'),
+  'Document export utility should support bundling multiple exports into a zip file.'
+);
 
 console.log('download gating checks passed');

@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Copy,
+  Download,
   FileText,
   Gauge,
   Ghost,
@@ -26,8 +27,10 @@ import {
   buildDownloadFilename,
   buildParagraphDocxBlob,
   buildSimplePdfBlob,
+  buildZipBlob,
   downloadBlob,
   type ExportSection,
+  type ZipEntry,
 } from '@/lib/client-document-export';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -160,6 +163,12 @@ function buildTailoredResumeSections(app: ApplicationRecord, tailored: TailoredR
   return sections;
 }
 
+function buildCoverLetterSections(coverLetter: CoverLetterRecord): ExportSection[] {
+  return [
+    { heading: 'Cover Letter', body: coverLetter.content || 'This role does not currently need a cover letter.' },
+  ];
+}
+
 export default function WorkspacePage() {
   const params = useParams();
   const appId = params.id as string;
@@ -181,6 +190,7 @@ export default function WorkspacePage() {
   const [canDownloadDocs, setCanDownloadDocs] = useState(false);
   const [exportingResume, setExportingResume] = useState(false);
   const [exportingCoverLetter, setExportingCoverLetter] = useState(false);
+  const [exportingBundle, setExportingBundle] = useState(false);
 
   const supabase = createClient();
 
@@ -479,9 +489,7 @@ export default function WorkspacePage() {
     setBannerMessage('');
 
     try {
-      const blob = await buildParagraphDocxBlob([
-        { heading: 'Cover Letter', body: coverLetter.content },
-      ]);
+      const blob = await buildParagraphDocxBlob(buildCoverLetterSections(coverLetter));
       downloadBlob(buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'docx'), blob);
       setBannerMessage('Cover letter DOCX downloaded.');
     } catch {
@@ -498,15 +506,66 @@ export default function WorkspacePage() {
     setBannerMessage('');
 
     try {
-      const blob = await buildSimplePdfBlob(`${app.job_title} — ${app.company}`, [
-        { heading: 'Cover Letter', body: coverLetter.content },
-      ]);
+      const blob = await buildSimplePdfBlob(`${app.job_title} — ${app.company}`, buildCoverLetterSections(coverLetter));
       downloadBlob(buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'pdf'), blob);
       setBannerMessage('Cover letter PDF downloaded.');
     } catch {
       setError('Unable to download the cover letter PDF on this device.');
     } finally {
       setExportingCoverLetter(false);
+    }
+  };
+
+  const handleDownloadAllAssets = async () => {
+    if (!app || !canDownloadDocs) return;
+
+    const entries: ZipEntry[] = [];
+
+    if (tailored) {
+      const sections = buildTailoredResumeSections(app, tailored);
+      entries.push({
+        filename: buildDownloadFilename([app.company, app.job_title], 'tailored-resume', 'docx'),
+        blob: await buildParagraphDocxBlob(sections),
+      });
+      entries.push({
+        filename: buildDownloadFilename([app.company, app.job_title], 'tailored-resume', 'pdf'),
+        blob: await buildSimplePdfBlob(`${app.job_title} — ${app.company}`, sections),
+      });
+    }
+
+    if (coverLetter?.content) {
+      const sections = buildCoverLetterSections(coverLetter);
+      entries.push({
+        filename: buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'txt'),
+        blob: new Blob([coverLetter.content], { type: 'text/plain;charset=utf-8' }),
+      });
+      entries.push({
+        filename: buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'docx'),
+        blob: await buildParagraphDocxBlob(sections),
+      });
+      entries.push({
+        filename: buildDownloadFilename([app.job_title, app.company], 'cover-letter', 'pdf'),
+        blob: await buildSimplePdfBlob(`${app.job_title} — ${app.company}`, sections),
+      });
+    }
+
+    if (!entries.length) {
+      setError('Generate a tailored resume or cover letter before downloading the full asset pack.');
+      return;
+    }
+
+    setExportingBundle(true);
+    setError('');
+    setBannerMessage('');
+
+    try {
+      const bundle = await buildZipBlob(entries);
+      downloadBlob(buildDownloadFilename([app.company, app.job_title], 'application-assets', 'zip'), bundle);
+      setBannerMessage('Application asset pack downloaded.');
+    } catch {
+      setError('Unable to bundle all application assets on this device.');
+    } finally {
+      setExportingBundle(false);
     }
   };
 
@@ -566,6 +625,16 @@ export default function WorkspacePage() {
             <button type="button" className={styles.secondaryButton} onClick={handleGenerateCoverLetter} disabled={coverLoading || !app.analysis_id}>
               {coverLoading ? <Loader2 size={16} className={styles.inlineSpin} /> : <FileText size={16} />} Generate cover letter
             </button>
+            {canDownloadDocs ? (
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={handleDownloadAllAssets}
+                disabled={exportingBundle || (!tailored && !coverLetter?.content)}
+              >
+                {exportingBundle ? <Loader2 size={16} className={styles.inlineSpin} /> : <Download size={16} />} Download all assets
+              </button>
+            ) : null}
           </div>
         </section>
 
