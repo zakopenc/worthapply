@@ -8,11 +8,13 @@ export type AdminRole = 'owner' | 'support';
  */
 export async function verifyAdmin(userId: string): Promise<AdminRole | null> {
   const supabase = await createServiceClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('admin_roles')
     .select('role')
     .eq('user_id', userId)
     .single();
+  if (error) console.error('[verifyAdmin] query error:', error.code, error.message);
+  if (!data) console.error('[verifyAdmin] no row found for userId:', userId);
   return data ? (data.role as AdminRole) : null;
 }
 
