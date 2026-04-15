@@ -7,14 +7,19 @@ export type AdminRole = 'owner' | 'support';
  * Uses the service client so RLS does not interfere.
  */
 export async function verifyAdmin(userId: string): Promise<AdminRole | null> {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey) {
+    console.error('[verifyAdmin] SUPABASE_SERVICE_ROLE_KEY is not set — cannot query admin_roles');
+    return null;
+  }
   const supabase = await createServiceClient();
   const { data, error } = await supabase
     .from('admin_roles')
     .select('role')
     .eq('user_id', userId)
     .single();
-  if (error) console.error('[verifyAdmin] query error:', error.code, error.message);
-  if (!data) console.error('[verifyAdmin] no row found for userId:', userId);
+  if (error) console.error('[verifyAdmin] query error:', error.code, error.message, '| userId:', userId);
+  if (!error && !data) console.error('[verifyAdmin] no row found for userId:', userId);
   return data ? (data.role as AdminRole) : null;
 }
 
