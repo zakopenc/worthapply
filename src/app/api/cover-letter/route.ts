@@ -83,16 +83,33 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    const { data: analysis, error: analysisError } = await supabase
-      .from('job_analyses')
-      .select('id, job_title, company, location, employment_type, overall_score, verdict, matched_skills, skill_gaps, recruiter_concerns, seniority_analysis, job_description_raw')
-      .eq('id', analysis_id)
-      .eq('user_id', user.id)
-      .single();
+    const [analysisResponse, resumeResponse] = await Promise.all([
+      supabase
+        .from('job_analyses')
+        .select('id, job_title, company, location, employment_type, overall_score, verdict, matched_skills, skill_gaps, recruiter_concerns, seniority_analysis, job_description_raw')
+        .eq('id', analysis_id)
+        .eq('user_id', user.id)
+        .single(),
+      supabase
+        .from('resumes')
+        .select('parsed_data')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .maybeSingle(),
+    ]);
+
+    const { data: analysis, error: analysisError } = analysisResponse;
+    const { data: resume, error: resumeError } = resumeResponse;
 
     if (analysisError || !analysis) {
       await releaseReservedUsage();
       return NextResponse.json({ error: 'Analysis not found' }, { status: 404 });
+    }
+
+    if (resumeError) {
+      console.error('Cover letter resume lookup error:', resumeError);
+      await releaseReservedUsage();
+      return NextResponse.json({ error: 'Failed to load active resume' }, { status: 500 });
     }
 
     const { data: application, error: applicationError } = await supabase
@@ -138,7 +155,7 @@ export async function POST(request: NextRequest) {
             reasoning: string;
             content: string;
             key_points_addressed: string[];
-          }>(buildCoverLetterTriagePrompt(analysis))
+          }>(buildCoverLetterTriagePrompt(analysis, (resume?.parsed_data as Record<string, unknown> | null) || null))
         : {
             recommendation: fallbackRecommendation,
             reasoning: fallbackReasoning,

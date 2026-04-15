@@ -8,7 +8,7 @@ import { checkRateLimit } from '@/lib/ratelimit';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
 
-const ANALYSIS_PROMPT_VERSION = 'analysis-v2';
+const ANALYSIS_PROMPT_VERSION = 'analysis-v3';
 const ANALYSIS_WEIGHTS = {
   skills: 40,
   experience: 35,
