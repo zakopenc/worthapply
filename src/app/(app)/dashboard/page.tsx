@@ -283,8 +283,9 @@ export default async function DashboardPage() {
                     (score ?? 0) >= 60 ? "text-blue-700 bg-blue-50 border-blue-200" :
                     "text-amber-700 bg-amber-50 border-amber-200";
                   return (
-                    <div
+                    <Link
                       key={analysis.id}
+                      href={`/analyses/${analysis.id}`}
                       className="flex items-center gap-4 px-6 py-4 hover:bg-surface-container-low/50 transition-colors"
                     >
                       <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
@@ -298,10 +299,13 @@ export default async function DashboardPage() {
                           {analysis.displayCompany} · {getTimeAgo(analysis.created_at)}
                         </p>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-black border ${scoreColor} shrink-0`}>
-                        {score === null ? 'Score pending' : `${score}% Match`}
-                      </span>
-                    </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-black border ${scoreColor}`}>
+                          {score === null ? 'Score pending' : `${score}% Match`}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-on-surface-variant" />
+                      </div>
+                    </Link>
                   );
                 })
               )}

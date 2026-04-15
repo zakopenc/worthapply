@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
@@ -23,6 +24,14 @@ import {
 import Topbar from '@/components/app/Topbar';
 import { createClient } from '@/lib/supabase/client';
 import {
+  deriveTargetKeywords,
+  normalizeMatchedSkills,
+  normalizeRecruiterConcerns,
+  normalizeScore,
+  normalizeScoreBreakdown,
+  normalizeSkillGaps,
+} from '@/lib/analysis-report';
+import {
   APPLICATION_STATUS_META,
   APPLICATION_STATUS_VALUES,
   normalizeApplicationStatus,
@@ -45,13 +54,13 @@ interface ApplicationRecord {
 }
 
 interface AnalysisRecord {
-  overall_score: number;
-  sub_scores: { skills: number; experience: number; domain: number };
+  overall_score: number | null;
+  sub_scores: { skills: number | null; experience: number | null; domain: number | null };
   verdict: 'apply' | 'low-priority' | 'skip';
   matched_skills: { skill: string; evidence_from_resume: string }[];
   skill_gaps: { skill: string; impact: string; suggestion: string }[];
   recruiter_concerns?: { concern: string; severity: string; mitigation: string }[];
-  ats_keywords: string[];
+  target_keywords: string[];
 }
 
 interface TailoredResumeRecord {
@@ -168,7 +177,7 @@ export default function WorkspacePage() {
     const analysisRequest = currentApp.analysis_id
       ? supabase
           .from('job_analyses')
-          .select('overall_score, sub_scores, verdict, matched_skills, skill_gaps, recruiter_concerns, ats_keywords')
+          .select('id, overall_score, skills_score, experience_score, domain_score, verdict, matched_skills, skill_gaps, recruiter_concerns')
           .eq('id', currentApp.analysis_id)
           .single()
       : Promise.resolve({ data: null, error: null });
@@ -195,7 +204,24 @@ export default function WorkspacePage() {
       coverRequest,
     ]);
 
-    setAnalysis(analysisResponse?.data || null);
+    const analysisData = analysisResponse?.data;
+
+    setAnalysis(
+      analysisData
+        ? {
+            overall_score: normalizeScore(analysisData.overall_score),
+            sub_scores: normalizeScoreBreakdown(analysisData as Record<string, unknown>),
+            verdict: analysisData.verdict,
+            matched_skills: normalizeMatchedSkills(analysisData.matched_skills),
+            skill_gaps: normalizeSkillGaps(analysisData.skill_gaps),
+            recruiter_concerns: normalizeRecruiterConcerns(analysisData.recruiter_concerns),
+            target_keywords: deriveTargetKeywords(
+              normalizeMatchedSkills(analysisData.matched_skills),
+              normalizeSkillGaps(analysisData.skill_gaps)
+            ),
+          }
+        : null
+    );
     setTailored(tailoredResponse?.data || null);
     setCoverLetter(coverResponse?.data || null);
     setLoading(false);
@@ -212,10 +238,10 @@ export default function WorkspacePage() {
   );
 
   const scoreCircumference = 2 * Math.PI * 54;
-  const fitScore = analysis?.overall_score ?? app?.overall_score ?? 0;
+  const fitScore = analysis?.overall_score ?? normalizeScore(app?.overall_score) ?? 0;
   const nextStep = getNextStep(app, isGhosted, Boolean(tailored), Boolean(coverLetter));
 
-  const keywords = useMemo(() => analysis?.ats_keywords || [], [analysis]);
+  const keywords = useMemo(() => analysis?.target_keywords || [], [analysis]);
 
   const matchedKeywordSet = useMemo(() => {
     const matches = new Set<string>();
@@ -388,6 +414,11 @@ export default function WorkspacePage() {
           </div>
 
           <div className={styles.heroActions}>
+            {app.analysis_id ? (
+              <Link href={`/analyses/${app.analysis_id}`} className={styles.secondaryButton}>
+                <Gauge size={16} /> Full report
+              </Link>
+            ) : null}
             <button type="button" className={styles.primaryButton} onClick={handleGenerateTailored} disabled={tailoringLoading || !app.analysis_id}>
               {tailoringLoading ? <Loader2 size={16} className={styles.inlineSpin} /> : <Sparkles size={16} />} Tailor resume
             </button>

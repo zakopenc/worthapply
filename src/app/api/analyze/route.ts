@@ -8,6 +8,18 @@ import { checkRateLimit } from '@/lib/ratelimit';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
 
+const ANALYSIS_PROMPT_VERSION = 'analysis-v2';
+const ANALYSIS_WEIGHTS = {
+  skills: 40,
+  experience: 35,
+  domain: 25,
+};
+const ANALYSIS_THRESHOLDS = {
+  apply_min: 70,
+  low_priority_min: 40,
+  skip_below: 40,
+};
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -107,7 +119,14 @@ export async function POST(request: NextRequest) {
 
     const resumeData = resume?.parsed_data || null;
     const usedResumeEvidence = Boolean(resume?.parsed_data);
-    const linkedResumeId = usedResumeEvidence ? resume?.id || resume_id || null : null;
+    const linkedResumeId = resume?.id || resume_id || null;
+    const resumeNote = usedResumeEvidence
+      ? 'This score was grounded in the parsed active resume.'
+      : resume?.parse_status === 'pending' || resume?.parse_status === 'processing'
+        ? 'Resume extraction was still processing, so this run relied mostly on the pasted job description.'
+        : resume?.parse_status === 'failed'
+          ? 'Resume extraction failed, so this run could not use structured resume evidence.'
+          : 'No parsed active resume was available, so this run relied mostly on the pasted job description.';
 
     const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
@@ -162,8 +181,16 @@ export async function POST(request: NextRequest) {
           analysis_metadata: {
             model: geminiKey ? 'gemini-3.1-pro-preview' : 'mock',
             timestamp: new Date().toISOString(),
+            prompt_version: ANALYSIS_PROMPT_VERSION,
             used_resume_evidence: usedResumeEvidence,
             resume_parse_status: resume?.parse_status || null,
+            resume_source: linkedResumeId ? 'active_resume' : 'none',
+            resume_note: resumeNote,
+            scoring_method: {
+              overall_formula: 'skills*0.40 + experience*0.35 + domain*0.25',
+              weights: ANALYSIS_WEIGHTS,
+              verdict_thresholds: ANALYSIS_THRESHOLDS,
+            },
           },
         })
         .select('id')

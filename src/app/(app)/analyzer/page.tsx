@@ -16,6 +16,7 @@ import {
   Link as LinkIcon,
   FileText,
   Loader2,
+  BrainCircuit,
 } from 'lucide-react';
 
 interface AnalysisResult {
@@ -28,6 +29,18 @@ interface AnalysisResult {
     role_level: string;
     user_level: string;
     assessment: string;
+  };
+  analysis_metadata?: {
+    used_resume_evidence?: boolean;
+    resume_parse_status?: string | null;
+    resume_note?: string | null;
+    scoring_method?: {
+      weights?: {
+        skills?: number;
+        experience?: number;
+        domain?: number;
+      };
+    };
   };
   domain_experience?: {
     overlap?: string[];
@@ -204,6 +217,12 @@ export default function AnalyzerPage() {
                 {saved ? 'Saved!' : 'Save to Applications'}
               </button>
               <Link
+                href={`/analyses/${results.id}`}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white text-on-surface rounded-xl text-sm font-bold border border-outline-variant/30 hover:bg-surface-container-low active:scale-95 transition-all"
+              >
+                <FileText className="w-4 h-4" /> Full Report
+              </Link>
+              <Link
                 href="/tailor"
                 className="flex items-center gap-2 px-5 py-2.5 bg-[#1c1c1a] text-white rounded-xl text-sm font-bold hover:bg-[#1c1c1a]/90 active:scale-95 transition-all shadow-lg"
               >
@@ -250,6 +269,20 @@ export default function AnalyzerPage() {
                 </div>
               </div>
             )}
+
+            <div className="mt-4 w-full p-4 bg-white/70 rounded-xl border border-outline-variant/20 text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <BrainCircuit className="w-4 h-4 text-secondary" />
+                <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">How the score works</p>
+              </div>
+              <p className="text-sm text-on-surface leading-relaxed">
+                WorthApply compares your resume against the pasted job description across skills, experience, and domain relevance.
+                The weighted formula is 40% skills, 35% experience, and 25% domain.
+              </p>
+              <p className="text-xs text-on-surface-variant mt-2 leading-relaxed">
+                {results.analysis_metadata?.resume_note || 'This run used the active parsed resume when available. If resume parsing was still pending, the score is less reliable until the resume finishes processing.'}
+              </p>
+            </div>
           </div>
 
           {/* Evidence Match */}
