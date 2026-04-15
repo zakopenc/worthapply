@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { createCoverLetterVersionRecord } from '@/lib/versioned-workspace-records';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { logAiError } from '@/lib/admin/log-ai-error';
 
 export async function POST(request: NextRequest) {
   try {
@@ -198,6 +199,7 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Cover letter error:', error);
+    logAiError({ route: '/api/cover-letter', error }).catch(() => {});
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

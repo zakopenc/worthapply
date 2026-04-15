@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { createTailoredResumeVersionRecord } from '@/lib/versioned-workspace-records';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { logAiError } from '@/lib/admin/log-ai-error';
 import { z } from 'zod';
 
 const tailoredResumeSaveSchema = z.object({
@@ -186,6 +187,7 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Tailor error:', error);
+    logAiError({ route: '/api/tailor', error }).catch(() => {});
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

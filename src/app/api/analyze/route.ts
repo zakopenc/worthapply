@@ -7,6 +7,7 @@ import { analyzeJobSchema } from '@/lib/validations';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
+import { logAiError } from '@/lib/admin/log-ai-error';
 
 const ANALYSIS_PROMPT_VERSION = 'analysis-v3';
 const ANALYSIS_WEIGHTS = {
@@ -243,6 +244,7 @@ export async function POST(request: NextRequest) {
     } catch (generationError) {
       console.error('Analysis generation error:', generationError);
       await releaseReservedUsage();
+      logAiError({ userId: user.id, route: '/api/analyze', error: generationError }).catch(() => {});
       return NextResponse.json({ error: 'Failed to generate analysis' }, { status: 500 });
     }
 

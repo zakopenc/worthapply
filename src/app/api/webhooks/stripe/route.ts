@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { captureServer } from '@/lib/analytics/posthog-server';
+import { logWebhookEvent } from '@/lib/admin/log-ai-error';
 
 // Extend Stripe types to include properties for beta API
 interface SubscriptionWithPeriod extends Stripe.Subscription {
@@ -95,11 +96,16 @@ export async function POST(request: NextRequest) {
 
       default:
         console.log(`Unhandled event type: ${event.type}`);
+        logWebhookEvent({ stripeEventId: event.id, type: event.type, status: 'ignored' }).catch(() => {});
+        return NextResponse.json({ received: true });
     }
 
+    logWebhookEvent({ stripeEventId: event.id, type: event.type, status: 'processed' }).catch(() => {});
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook handler error:', error);
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    logWebhookEvent({ stripeEventId: event.id, type: event.type, status: 'failed', errorMessage: errMsg }).catch(() => {});
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
