@@ -83,7 +83,8 @@ function downloadBlob(filename: string, blob: Blob) {
 
 export default function CoverLetterClient({ plan, options, analysis, initialCoverLetter }: CoverLetterClientProps) {
   const router = useRouter();
-  const isPro = plan === 'pro' || plan === 'lifetime';
+  const isPaid = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
+  const planLabel = plan === 'lifetime' ? 'Lifetime access' : plan === 'premium' ? 'Premium access' : plan === 'pro' ? 'Pro access' : 'Free verdict only';
   const [coverLetter, setCoverLetter] = useState<GeneratedCoverLetter | null>(initialCoverLetter);
   const [draft, setDraft] = useState(initialCoverLetter?.content || '');
   const [reasoning, setReasoning] = useState('');
@@ -128,7 +129,7 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
     setCoverLetter(nextCoverLetter);
     setDraft(nextCoverLetter.content || '');
     setReasoning(nextCoverLetter.reasoning || '');
-    setBanner(isPro ? 'Cover letter draft generated and saved.' : 'Verdict saved. Upgrade to unlock the full draft.');
+    setBanner(isPaid ? 'Cover letter draft generated and saved.' : 'Verdict saved. Upgrade to unlock the full draft.');
     setLoading(false);
   };
 
@@ -232,18 +233,18 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
           </div>
           <h3 className={styles.summaryTitle}>{recommendationLabel(coverLetter?.recommendation)}</h3>
           <p className={styles.summaryText}>
-            {reasoning || (isPro
+            {reasoning || (isPaid
               ? 'Generate a draft to get a role-aware recommendation and editable cover letter.'
               : 'Free plans can save the verdict only. Upgrade when you want the full generated letter.')}
           </p>
           <div className={styles.metaList}>
-            <div className={styles.metaRow}><span>Plan</span><strong>{isPro ? 'Pro access' : 'Free verdict only'}</strong></div>
+            <div className={styles.metaRow}><span>Plan</span><strong>{planLabel}</strong></div>
             <div className={styles.metaRow}><span>Saved version</span><strong>{coverLetter?.version ? `v${coverLetter.version}` : '—'}</strong></div>
             <div className={styles.metaRow}><span>Last updated</span><strong>{formatTimestamp(coverLetter?.createdAt)}</strong></div>
           </div>
         </article>
 
-        {isPro ? (
+        {isPaid ? (
           <article className={styles.editorCard}>
             <div className={styles.editorHeader}>
               <div>
@@ -269,10 +270,10 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
         ) : (
           <article className={styles.upgradeCard}>
             <div className={styles.lockWrap}><Lock size={20} /></div>
-            <div className={styles.sectionEyebrow}>Pro unlock</div>
+            <div className={styles.sectionEyebrow}>Paid unlock</div>
             <h3 className={styles.editorTitle}>Upgrade to generate the full letter</h3>
             <p className={styles.summaryText}>
-              Your free workspace can save the recommendation verdict, but the complete editable draft and download options are reserved for Pro.
+              Your free workspace can save the recommendation verdict, but the complete editable draft and download options are reserved for Pro, Premium, and Lifetime.
             </p>
             <div className={styles.actionRow}>
               <Link href="/pricing" className={styles.primaryButton}>Upgrade to generate full letter</Link>

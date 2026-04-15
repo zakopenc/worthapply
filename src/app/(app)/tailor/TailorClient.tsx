@@ -127,7 +127,9 @@ type BulletDecision = {
 
 function formatPlan(plan: TailorInitialData['plan']) {
   if (plan === 'lifetime') return 'Lifetime';
-  return plan === 'pro' ? 'Pro' : 'Free';
+  if (plan === 'premium') return 'Premium';
+  if (plan === 'pro') return 'Pro';
+  return 'Free';
 }
 
 function formatDate(value?: string | null) {
@@ -413,7 +415,7 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
   const handleExportDocx = async () => {
     if (!detail) return;
     if (!initialData.features.docx_download) {
-      setError('DOCX export is available on Pro and Lifetime plans.');
+      setError('DOCX export is available on Pro, Premium, and Lifetime plans.');
       return;
     }
 
@@ -766,7 +768,7 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
               <AlertTriangle size={18} />
               <div>
                 <strong>Free tailoring limit reached</strong>
-                <p>You have used {usage.used} of {usage.limit} tailorings this month. Pro and Lifetime plans unlock unlimited tailoring.</p>
+                <p>You have used {usage.used} of {usage.limit} tailorings this month. Pro, Premium, and Lifetime plans unlock unlimited tailoring.</p>
               </div>
               <Link href="/pricing" className={styles.inlineLink}>Upgrade</Link>
             </section>

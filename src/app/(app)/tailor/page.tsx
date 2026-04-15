@@ -48,7 +48,7 @@ export default async function TailorPage() {
   const usedTailoring = await countFeatureRowsForMonth(supabase, 'tailored_resumes', CURRENT_MONTH());
 
   const initialData: TailorInitialData = {
-    plan: plan === 'premium' ? 'pro' : plan,
+    plan,
     userName: profile?.full_name || user.email?.split('@')[0] || 'there',
     features: {
       before_after_score: features.before_after_score,
