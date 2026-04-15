@@ -98,6 +98,16 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Admin routes — must be logged in (role check happens in layout + API routes)
+  const isAdminRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
+
+  if (isAdminRoute && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
+    url.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(url);
+  }
+
   // Protected app routes
   const isAppRoute = pathname.startsWith('/dashboard') ||
     pathname.startsWith('/analyzer') ||

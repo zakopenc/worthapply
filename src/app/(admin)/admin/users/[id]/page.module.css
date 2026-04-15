@@ -1,0 +1,265 @@
+.backRow { margin-bottom: 20px; }
+
+.backLink {
+  font-size: 14px;
+  color: #555;
+  text-decoration: none;
+}
+
+.backLink:hover { color: #111; }
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px;
+}
+
+.email {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.headerMeta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badgeFree    { background: #f0f0f0; color: #555; }
+.badgePro     { background: #e8f0fe; color: #1a56db; }
+.badgePremium { background: #fef3c7; color: #92400e; }
+.badgeActive  { background: #dcfce7; color: #166534; }
+.badgePastDue { background: #fee2e2; color: #991b1b; }
+
+.section {
+  margin-bottom: 36px;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.statCard {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #888;
+}
+
+.usageGrid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.usageCard {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.usageCount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.usageLabel {
+  font-size: 12px;
+  color: #888;
+}
+
+.empty {
+  color: #888;
+  font-size: 14px;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .actionsGrid { grid-template-columns: 1fr; }
+}
+
+.actionForm {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.actionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.required { color: #e53e3e; }
+
+.select,
+.input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.select:focus,
+.input:focus {
+  border-color: #1a1a2e;
+}
+
+.actionBtn {
+  padding: 9px 18px;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.15s;
+}
+
+.actionBtn:hover:not(:disabled) { background: #2d2d4e; }
+
+.actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successMsg {
+  font-size: 13px;
+  color: #166534;
+  background: #dcfce7;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: #991b1b;
+  background: #fee2e2;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.tableWrapper {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table thead tr {
+  background: #f9f9f9;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table tbody tr:last-child { border-bottom: none; }
+
+.table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.actionCell { font-weight: 500; color: #111; }
+.muted { color: #888; }
