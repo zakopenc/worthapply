@@ -45,7 +45,7 @@
 .brandMark :global(img) {
   display: block;
   width: auto;
-  height: 144px;
+  height: 56px;
 }
 
 .desktopNav,

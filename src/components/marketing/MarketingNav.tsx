@@ -81,7 +81,7 @@ export default function MarketingNav() {
       <div className={`${styles.shell} ${isScrolled ? styles.shellScrolled : ''}`}>
         <Link href="/" className={styles.brand} aria-label="WorthApply home">
           <span className={styles.brandMark}>
-            <Image src="/logo.png" alt="WorthApply" width={1360} height={784} priority />
+            <Image src="/logo.png" alt="WorthApply" width={1080} height={1080} priority />
           </span>
         </Link>
 

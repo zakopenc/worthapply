@@ -1,15 +1,5 @@
 .logoImage {
   width: auto;
-  height: 28px;
-  filter: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .logoImage {
-    filter: brightness(0) invert(1);
-  }
-}
-
-[data-theme='dark'] .logoImage {
-  filter: brightness(0) invert(1);
+  height: 42px;
+  object-fit: contain;
 }

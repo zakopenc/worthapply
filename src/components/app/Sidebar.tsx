@@ -47,10 +47,10 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
         <Link href="/dashboard" className="block px-6 py-5" aria-label="WorthApply dashboard home">
           <div className="flex items-center gap-3">
             <Image
-              src="/logo.svg"
+              src="/logo.png"
               alt="WorthApply"
-              width={32}
-              height={32}
+              width={1080}
+              height={1080}
               priority
               className={styles.logoImage}
             />

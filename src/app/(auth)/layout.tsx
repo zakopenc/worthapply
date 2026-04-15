@@ -19,7 +19,7 @@ export default function AuthLayout({
         <div className={styles.brandPanel}>
           <Link href="/" className={styles.logo} aria-label="WorthApply home">
             <span className={styles.logoMark}>
-              <Image src="/logo.png" alt="WorthApply" width={176} height={96} priority />
+              <Image src="/logo.png" alt="WorthApply" width={1080} height={1080} priority />
             </span>
           </Link>
 
