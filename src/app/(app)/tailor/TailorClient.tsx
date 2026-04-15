@@ -95,7 +95,7 @@ export interface TailorApplicationOption {
 }
 
 export interface TailorInitialData {
-  plan: 'free' | 'pro' | 'lifetime';
+  plan: 'free' | 'pro' | 'premium' | 'lifetime';
   userName: string;
   features: {
     before_after_score: boolean;

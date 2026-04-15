@@ -9,7 +9,8 @@ export interface PlanLimits {
   analyses_per_month: number | null; // null = unlimited
   tailoring_per_month: number | null;
   cover_letters_per_month: number | null;
-  job_searches_per_month: number; // LinkedIn scraping
+  job_searches_per_month: number; // LinkedIn scraping searches per month
+  linkedin_results_per_search: number; // number of LinkedIn jobs returned per search
   tracker_jobs: number | null;
   evidence_items: number | null;
 }
@@ -20,6 +21,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     tailoring_per_month: 2,
     cover_letters_per_month: 3, // verdict only
     job_searches_per_month: 0, // No LinkedIn scraping
+    linkedin_results_per_search: 0,
     tracker_jobs: 8,
     evidence_items: 15,
   },
@@ -28,6 +30,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     tailoring_per_month: null, // unlimited
     cover_letters_per_month: null, // unlimited
     job_searches_per_month: 10, // 10 LinkedIn searches/month
+    linkedin_results_per_search: 10,
     tracker_jobs: null, // unlimited
     evidence_items: null, // unlimited
   },
@@ -36,6 +39,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     tailoring_per_month: null, // unlimited
     cover_letters_per_month: null, // unlimited
     job_searches_per_month: 20, // 20 LinkedIn searches/month
+    linkedin_results_per_search: 30,
     tracker_jobs: null, // unlimited
     evidence_items: null, // unlimited
   },
@@ -44,6 +48,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     tailoring_per_month: null, // unlimited
     cover_letters_per_month: null, // unlimited
     job_searches_per_month: 20, // Same as Premium
+    linkedin_results_per_search: 30,
     tracker_jobs: null, // unlimited
     evidence_items: null, // unlimited
   },
@@ -258,6 +263,7 @@ export const PLAN_PRICING: Record<Plan, PlanPricing> = {
       'Unlimited resume tailoring',
       'Unlimited cover letters',
       '10 LinkedIn job searches/month',
+      'See up to 10 fresh LinkedIn jobs per search',
       'Find 300 matching jobs automatically',
       'Advanced fit scoring',
       'ATS optimization',
@@ -276,6 +282,7 @@ export const PLAN_PRICING: Record<Plan, PlanPricing> = {
     features: [
       'Everything in Professional',
       '20 LinkedIn job searches/month',
+      'See up to 30 fresh LinkedIn jobs per search',
       'Find 600 matching jobs automatically',
       'AI interview preparation',
       'Salary negotiation guidance',

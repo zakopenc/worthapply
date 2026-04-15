@@ -22,7 +22,7 @@ export interface Profile {
   preferred_locations: string[];
   onboarding_complete: boolean;
   theme: 'light' | 'dark';
-  plan: 'free' | 'pro';
+  plan: 'free' | 'pro' | 'premium' | 'lifetime';
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   subscription_status: 'active' | 'canceled' | 'past_due' | 'trialing' | null;

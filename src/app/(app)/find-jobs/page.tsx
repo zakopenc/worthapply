@@ -91,16 +91,17 @@ export default function FindJobsPage() {
   }
 
   async function handleAnalyzeJob(job: LinkedInJob) {
-    // Redirect to analyzer with job info pre-filled
     const params = new URLSearchParams({
       title: job.title,
       company: job.company,
       description: job.description,
+      url: job.url || '',
+      location: job.location || '',
     });
     window.location.href = `/analyzer?${params.toString()}`;
   }
 
-  const isPro = userPlan === 'pro' || userPlan === 'lifetime';
+  const isPro = userPlan === 'pro' || userPlan === 'premium' || userPlan === 'lifetime';
 
   return (
     <>

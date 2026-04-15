@@ -5,14 +5,18 @@ import { CURRENT_MONTH, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { checkRateLimit } from '@/lib/ratelimit';
 import { z } from 'zod';
 
+const APIFY_BEST_ACTOR = 'curious_coder/linkedin-jobs-scraper';
+const APIFY_BEST_ACTOR_ID = 'curious_coder~linkedin-jobs-scraper';
+
 const scrapeJobsSchema = z.object({
+  jobTitle: z.string().trim().min(1).max(200).optional(),
   keywords: z.string().trim().min(1).max(200).optional(),
   location: z.string().trim().max(200).optional(),
   experienceLevel: z.array(z.string()).max(5).optional(),
   jobType: z.array(z.string()).max(5).optional(),
 });
 
-interface LinkedInJob {
+export interface LinkedInJob {
   id: string;
   title: string;
   company: string;
@@ -23,9 +27,15 @@ interface LinkedInJob {
   postedDate: string;
   experienceLevel?: string;
   jobType?: string;
+  applicantsCount?: string;
+  benefits?: string[];
+  companyLinkedinUrl?: string;
+  companyLogo?: string;
+  applyUrl?: string;
 }
 
 interface SearchCriteria {
+  jobTitle: string;
   keywords: string;
   location: string;
   experienceLevel?: string[];
@@ -44,7 +54,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limiting
     const rateLimit = await checkRateLimit(user.id);
     if (!rateLimit.success) {
       return NextResponse.json(
@@ -58,11 +67,10 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message || 'Invalid request body' }, { status: 400 });
     }
-    const { keywords, location, experienceLevel, jobType } = parsed.data;
 
+    const { jobTitle, keywords, location, experienceLevel, jobType } = parsed.data;
     const currentMonth = CURRENT_MONTH();
 
-    // Get user profile and plan
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('plan, subscription_status')
@@ -78,46 +86,38 @@ export async function POST(request: NextRequest) {
     const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
     const hasScrapeAccess = isPaidPlan(plan);
-
-    // Check usage limits based on plan
-    const usageLimit = limits.job_searches_per_month; // Free: 0, Pro: 10, Premium: 20
+    const usageLimit = limits.job_searches_per_month;
+    const resultsLimit = limits.linkedin_results_per_search;
 
     if (!hasScrapeAccess) {
       return NextResponse.json(
         {
-          error: 'This feature requires a Pro plan',
+          error: 'LinkedIn job search is available for Pro and Premium plans.',
           upgrade_required: true,
           plan,
-          teaser: await generateTeaserResults(keywords || 'Software Engineer', location || 'United States'),
+          teaser: await generateTeaserResults(jobTitle || keywords || 'Software Engineer', location || 'United States'),
         },
         { status: 403 }
       );
     }
 
-    try {
-      const usageReservation = await reserveMonthlyUsage(supabase, 'job_scrapes', usageLimit, currentMonth);
+    const usageReservation = await reserveMonthlyUsage(supabase, 'job_scrapes', usageLimit, currentMonth);
 
-      if (!usageReservation.allowed) {
-        return NextResponse.json(
-          {
-            error: `You've used all ${usageLimit} job searches this month. Resets ${getResetDate()}.`,
-            upgrade_required: false,
-            limit: usageLimit,
-            used: usageReservation.used,
-          },
-          { status: 403 }
-        );
-      }
-    } catch (usageError) {
-      console.error('Usage reservation error:', usageError);
-      return NextResponse.json({ error: 'Failed to reserve usage' }, { status: 500 });
+    if (!usageReservation.allowed) {
+      return NextResponse.json(
+        {
+          error: `You've used all ${usageLimit} LinkedIn searches this month. Resets ${getResetDate()}.`,
+          upgrade_required: false,
+          limit: usageLimit,
+          used: usageReservation.used,
+        },
+        { status: 403 }
+      );
     }
 
-    // Generate search criteria from resume if not provided
     let searchCriteria: SearchCriteria;
 
-    if (!keywords) {
-      // Get user's resume
+    if (!jobTitle && !keywords) {
       const { data: resume } = await supabase
         .from('resumes')
         .select('parsed_data')
@@ -129,79 +129,79 @@ export async function POST(request: NextRequest) {
 
       if (!resume?.parsed_data) {
         return NextResponse.json(
-          { error: 'Please upload a resume first or provide search keywords' },
+          { error: 'Please upload a resume first or enter a job title.' },
           { status: 400 }
         );
       }
 
-      searchCriteria = generateSearchCriteriaFromResume(resume.parsed_data);
+      searchCriteria = generateSearchCriteriaFromResume(resume.parsed_data, resultsLimit);
     } else {
+      const normalizedJobTitle = (jobTitle || keywords || '').trim();
       searchCriteria = {
-        keywords,
+        jobTitle: normalizedJobTitle,
+        keywords: normalizedJobTitle,
         location: location || 'United States',
-    experienceLevel: experienceLevel || ['MID_SENIOR'],
-    jobType: jobType || ['FULL_TIME', 'CONTRACT'],
-    maxResults: 30,
-  };
+        experienceLevel: experienceLevel || undefined,
+        jobType: jobType || undefined,
+        maxResults: resultsLimit,
+      };
     }
 
-    // Call Apify LinkedIn scraper
     const jobs = await scrapeLinkedInJobs(searchCriteria);
 
-    // Save scrape results to database
     const { error: insertError } = await supabase.from('job_scrapes').insert({
       user_id: user.id,
-      search_criteria: searchCriteria,
+      search_criteria: {
+        ...searchCriteria,
+        actor: APIFY_BEST_ACTOR,
+      },
       results: jobs,
       results_count: jobs.length,
     });
 
     if (insertError) {
       console.error('Failed to save scrape results:', insertError);
-      // Continue anyway - don't block user from seeing results
     }
 
     return NextResponse.json({
       jobs,
+      actor: {
+        id: APIFY_BEST_ACTOR,
+        reason: 'Best current fit for WorthApply: strongest market adoption, high rating, pay-per-result pricing, and salary-rich job output.',
+      },
       searchCriteria,
       usage: {
-        used: (await supabase
-          .from('monthly_usage')
-          .select('used')
-          .eq('user_id', user.id)
-          .eq('resource_type', 'job_scrapes')
-          .eq('period', currentMonth)
-          .single()).data?.used || 1,
+        used: usageReservation.used,
         limit: usageLimit,
+        resultsPerSearch: resultsLimit,
       },
     });
   } catch (error) {
     console.error('Scrape jobs error:', error);
     return NextResponse.json(
-      { error: 'Failed to scrape jobs. Please try again.' },
+      { error: 'Failed to search LinkedIn jobs. Please try again.' },
       { status: 500 }
     );
   }
 }
 
-function generateSearchCriteriaFromResume(parsedData: Record<string, unknown>): SearchCriteria {
-  // Extract job titles from work history
+function generateSearchCriteriaFromResume(parsedData: Record<string, unknown>, maxResults: number): SearchCriteria {
   const workHistory = (parsedData.work_history || parsedData.work_experience || parsedData.experience || []) as Record<string, unknown>[];
-  const jobTitles = workHistory.map((w: Record<string, unknown>) => (w.title || w.position || '') as string).filter(Boolean);
-  const topTitles = jobTitles.slice(0, 3).join(' OR ');
+  const jobTitles = workHistory
+    .map((w) => (w.title || w.position || '') as string)
+    .filter(Boolean);
+  const inferredJobTitle = jobTitles[0] || 'Software Engineer';
 
-  // Extract top skills
   let skills: string[] = [];
   if (Array.isArray(parsedData.skills)) {
-    skills = parsedData.skills.flat().filter(Boolean);
+    skills = parsedData.skills.flat().filter(Boolean) as string[];
   } else if (parsedData.skills && typeof parsedData.skills === 'object') {
     skills = Object.values(parsedData.skills).flat().filter(Boolean) as string[];
   }
-  const topSkills = skills.slice(0, 5).join(' ');
+  const topSkills = skills.slice(0, 4).join(' ');
 
-  // Determine experience level based on years of experience
   const yearsExp = calculateYearsOfExperience(workHistory);
-  let experienceLevel: string[] = [];
+  let experienceLevel: string[] | undefined;
   if (yearsExp < 3) {
     experienceLevel = ['ENTRY_LEVEL', 'ASSOCIATE'];
   } else if (yearsExp < 7) {
@@ -210,18 +210,17 @@ function generateSearchCriteriaFromResume(parsedData: Record<string, unknown>): 
     experienceLevel = ['MID_SENIOR', 'DIRECTOR'];
   }
 
-  // Get location from resume
   const contactInfo = (parsedData.contact_info || parsedData.contact || parsedData.basics || parsedData.personal_info || {}) as Record<string, unknown>;
   const location = (contactInfo.location as string) || (parsedData.location as string) || 'United States';
-
-  const keywords = topTitles && topSkills ? `${topTitles} ${topSkills}` : topTitles || topSkills || 'Software Engineer';
+  const keywords = [inferredJobTitle, topSkills].filter(Boolean).join(' ').trim() || inferredJobTitle;
 
   return {
-    keywords: keywords.trim(),
+    jobTitle: inferredJobTitle,
+    keywords,
     location,
     experienceLevel,
-    jobType: ['FULL_TIME', 'CONTRACT'],
-    maxResults: 50,
+    jobType: ['FULL_TIME'],
+    maxResults,
   };
 }
 
@@ -261,128 +260,154 @@ async function scrapeLinkedInJobs(criteria: SearchCriteria): Promise<LinkedInJob
   }
 
   try {
-    // Call Apify LinkedIn scraper
-    const response = await fetch('https://api.apify.com/v2/acts/bebity~linkedin-jobs-scraper/runs', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apifyToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        keywords: criteria.keywords,
-        location: criteria.location,
-        maxResults: criteria.maxResults,
-        experienceLevel: criteria.experienceLevel,
-        jobType: criteria.jobType,
-      }),
-    });
+    const searchUrl = buildLinkedInSearchUrl(criteria);
+    const response = await fetch(
+      `https://api.apify.com/v2/acts/${APIFY_BEST_ACTOR_ID}/run-sync-get-dataset-items?token=${encodeURIComponent(apifyToken)}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          urls: [searchUrl],
+          count: criteria.maxResults,
+          scrapeCompany: true,
+        }),
+        signal: AbortSignal.timeout(120_000),
+      }
+    );
 
     if (!response.ok) {
-      console.error('Apify API error:', response.statusText);
+      const failureBody = await response.text();
+      console.error('Apify API error:', response.status, failureBody);
       return generateMockJobs(criteria);
     }
 
-    const run = await response.json();
-    const runId = run.data.id;
-
-    // Poll for completion with exponential backoff (max ~45s total)
-    const MAX_POLL_TIME_MS = 45_000;
-    const startTime = Date.now();
-    let delay = 2000; // Start at 2s, increase with backoff
-
-    while (Date.now() - startTime < MAX_POLL_TIME_MS) {
-      await new Promise(resolve => setTimeout(resolve, delay));
-      delay = Math.min(delay * 1.5, 8000); // Cap at 8s between polls
-
-      const statusResponse = await fetch(`https://api.apify.com/v2/acts/runs/${runId}`, {
-        headers: { 'Authorization': `Bearer ${apifyToken}` },
-        signal: AbortSignal.timeout(10_000),
-      });
-
-      const statusData = await statusResponse.json();
-
-      if (statusData.data.status === 'SUCCEEDED') {
-        const datasetId = statusData.data.defaultDatasetId;
-        const resultsResponse = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items`, {
-          headers: { 'Authorization': `Bearer ${apifyToken}` },
-          signal: AbortSignal.timeout(10_000),
-        });
-
-        const results = await resultsResponse.json();
-        return results.map((item: Record<string, unknown>, index: number) => ({
-          id: item.id || `job-${index}`,
-          title: item.title || item.jobTitle || 'Unknown Title',
-          company: item.company || item.companyName || 'Unknown Company',
-          location: item.location || criteria.location,
-          description: item.description || item.jobDescription || '',
-          salary: item.salary || undefined,
-          url: item.url || item.link || item.jobUrl || '',
-          postedDate: item.postedDate || item.postedAt || new Date().toISOString(),
-          experienceLevel: item.experienceLevel || undefined,
-          jobType: item.jobType || undefined,
-        }));
-      }
-
-      if (statusData.data.status === 'FAILED') {
-        console.error('Apify run failed');
-        return generateMockJobs(criteria);
-      }
+    const results = (await response.json()) as Record<string, unknown>[];
+    if (!Array.isArray(results) || results.length === 0) {
+      return [];
     }
 
-    console.error('Apify scrape timeout after 45s');
-    return generateMockJobs(criteria);
+    return results
+      .map((item, index) => mapApifyJob(item, criteria, index))
+      .filter((job): job is LinkedInJob => Boolean(job.title && job.company && job.description));
   } catch (error) {
     console.error('Apify scrape error:', error);
     return generateMockJobs(criteria);
   }
 }
 
-function generateMockJobs(criteria: SearchCriteria): LinkedInJob[] {
-  // Generate realistic mock jobs for development/demo
-  const companies = ['Google', 'Meta', 'Amazon', 'Apple', 'Microsoft', 'Netflix', 'Uber', 'Airbnb'];
-  const locations = ['San Francisco, CA', 'New York, NY', 'Seattle, WA', 'Austin, TX', 'Remote'];
+function buildLinkedInSearchUrl(criteria: SearchCriteria) {
+  const params = new URLSearchParams();
+  params.set('keywords', criteria.keywords);
+  params.set('location', criteria.location);
+  params.set('sortBy', 'DD');
+  params.set('f_TPR', 'r86400');
 
-  return Array.from({ length: Math.min(criteria.maxResults, 10) }, (_, i) => ({
+  return `https://www.linkedin.com/jobs/search/?${params.toString()}`;
+}
+
+function mapApifyJob(item: Record<string, unknown>, criteria: SearchCriteria, index: number): LinkedInJob {
+  const salaryInfo = getSalaryString(item.salaryInfo ?? item.salary ?? item.salaryRange);
+  const description = getString(item.descriptionText)
+    || getString(item.description)
+    || getString(item.jobDescription)
+    || stripHtml(getString(item.descriptionHtml));
+
+  return {
+    id: getString(item.id) || `job-${index}`,
+    title: getString(item.title) || getString(item.jobTitle) || criteria.jobTitle || 'LinkedIn job',
+    company: getString(item.companyName) || getString(item.company) || 'Unknown company',
+    location: getString(item.location) || criteria.location,
+    description,
+    salary: salaryInfo || undefined,
+    url: getString(item.link) || getString(item.url) || getString(item.jobUrl) || '',
+    postedDate: getString(item.postedAt) || getString(item.postedDate) || new Date().toISOString(),
+    experienceLevel: getString(item.seniorityLevel) || getString(item.experienceLevel) || undefined,
+    jobType: getString(item.employmentType) || getString(item.jobType) || undefined,
+    applicantsCount: getString(item.applicantsCount) || undefined,
+    benefits: normalizeStringArray(item.benefits),
+    companyLinkedinUrl: getString(item.companyLinkedinUrl) || undefined,
+    companyLogo: getString(item.companyLogo) || getString(item.companyLogoUrl) || undefined,
+    applyUrl: getString(item.applyUrl) || undefined,
+  };
+}
+
+function getString(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeStringArray(value: unknown) {
+  if (!Array.isArray(value)) return undefined;
+  const normalized = value
+    .map((item) => (typeof item === 'string' ? item.trim() : ''))
+    .filter(Boolean);
+  return normalized.length ? normalized : undefined;
+}
+
+function getSalaryString(value: unknown) {
+  if (Array.isArray(value)) {
+    const parts = value.map((item) => (typeof item === 'string' ? item.trim() : '')).filter(Boolean);
+    return parts.length ? parts.join(' - ') : '';
+  }
+
+  return getString(value);
+}
+
+function stripHtml(value: string) {
+  return value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function generateMockJobs(criteria: SearchCriteria): LinkedInJob[] {
+  const companies = ['Stripe', 'Google', 'Meta', 'Microsoft', 'Notion', 'Vercel', 'Datadog', 'Airbnb'];
+  const locations = [criteria.location, 'Remote', 'New York, NY', 'Austin, TX', 'Seattle, WA'];
+
+  return Array.from({ length: criteria.maxResults }, (_, i) => ({
     id: `mock-job-${i}`,
-    title: criteria.keywords.split(' ').slice(0, 3).join(' ') || 'Software Engineer',
+    title: criteria.jobTitle || criteria.keywords || 'Software Engineer',
     company: companies[i % companies.length],
     location: locations[i % locations.length],
-    description: `Looking for an experienced professional to join our team. This role involves ${criteria.keywords}.`,
-    salary: i % 3 === 0 ? '$150K - $200K' : undefined,
-    url: `https://linkedin.com/jobs/view/mock-${i}`,
-    postedDate: new Date(Date.now() - i * 86400000).toISOString(),
-    experienceLevel: criteria.experienceLevel?.[0] || 'MID_SENIOR',
-    jobType: 'FULL_TIME',
+    description: `We are hiring for a ${criteria.jobTitle || criteria.keywords} role. You will own delivery, collaborate cross-functionally, and ship measurable product impact. Strong communication, execution, and domain fluency are expected.`,
+    salary: i % 2 === 0 ? '$140,000 - $185,000' : '$95,000 - $125,000',
+    url: `https://www.linkedin.com/jobs/view/mock-${i}`,
+    postedDate: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
+    experienceLevel: i % 3 === 0 ? 'Senior' : 'Mid-Senior',
+    jobType: 'Full-time',
+    applicantsCount: `${25 + i * 3}`,
+    benefits: i % 2 === 0 ? ['Actively Hiring', 'Remote'] : ['Health insurance'],
+    applyUrl: `https://www.linkedin.com/jobs/view/mock-${i}`,
   }));
 }
 
-async function generateTeaserResults(keywords: string, location: string): Promise<LinkedInJob[]> {
-  // Generate 3 teaser results for free users
+async function generateTeaserResults(jobTitle: string, location: string): Promise<LinkedInJob[]> {
   return [
     {
       id: 'teaser-1',
-      title: `Senior ${keywords}`,
-      company: '████████', // Blurred
-      location: location,
+      title: `Senior ${jobTitle}`,
+      company: '████████',
+      location,
       description: '████████████████████████████████',
+      salary: '$██K - $██K',
       url: '',
       postedDate: new Date().toISOString(),
     },
     {
       id: 'teaser-2',
-      title: keywords,
+      title: jobTitle,
       company: '████████',
-      location: location,
+      location,
       description: '████████████████████████████████',
+      salary: '$██K - $██K',
       url: '',
       postedDate: new Date().toISOString(),
     },
     {
       id: 'teaser-3',
-      title: `Lead ${keywords}`,
+      title: `Lead ${jobTitle}`,
       company: '████████',
-      location: location,
+      location,
       description: '████████████████████████████████',
+      salary: '$██K - $██K',
       url: '',
       postedDate: new Date().toISOString(),
     },
