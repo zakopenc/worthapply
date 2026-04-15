@@ -38,7 +38,8 @@ const navItems = [
 
 export default function Sidebar({ userName, plan }: SidebarProps) {
   const pathname = usePathname();
-  const isPro = plan === 'pro';
+  const isPaidPlan = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
+  const planLabel = plan === 'premium' ? 'Premium' : plan === 'lifetime' ? 'Lifetime' : plan === 'pro' ? 'Pro' : 'Free Plan';
 
   return (
     <>
@@ -74,14 +75,14 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
                 {userName || 'WorthApply User'}
               </p>
               <span className={`inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                isPro
+                isPaidPlan
                   ? 'bg-secondary/15 text-secondary'
                   : 'bg-surface-container text-on-surface-variant'
               }`}>
-                {isPro ? (
-                  <><TrendingUp className="w-2.5 h-2.5" /> Pro</>
+                {isPaidPlan ? (
+                  <><TrendingUp className="w-2.5 h-2.5" /> {planLabel}</>
                 ) : (
-                  'Free Plan'
+                  planLabel
                 )}
               </span>
             </div>
@@ -121,7 +122,7 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
 
         {/* Footer */}
         <div className="px-4 pb-6 pt-4 border-t border-[#cfc5bd]/15 flex flex-col gap-3">
-          {!isPro && (
+          {!isPaidPlan && (
             <div className="p-4 rounded-xl bg-primary-container relative overflow-hidden">
               <div className="absolute top-0 right-0 opacity-5">
                 <Sparkles className="w-24 h-24 -mr-4 -mt-4" />

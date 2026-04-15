@@ -7,7 +7,7 @@ type LegacyUsageColumn = 'analyses_count';
 
 type FeatureCountFallback = {
   kind: 'table_count';
-  table: 'tailored_resumes' | 'cover_letters';
+  table: 'tailored_resumes' | 'cover_letters' | 'job_scrapes';
 };
 
 interface ReserveMonthlyUsageResult {
@@ -30,6 +30,8 @@ function getTableCountFallback(feature: UsageFeature): FeatureCountFallback | nu
       return { kind: 'table_count', table: 'tailored_resumes' };
     case 'cover_letters':
       return { kind: 'table_count', table: 'cover_letters' };
+    case 'job_scrapes':
+      return { kind: 'table_count', table: 'job_scrapes' };
     default:
       return null;
   }
