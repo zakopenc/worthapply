@@ -4,11 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import {
   Target,
   TrendingUp,
-  Clock,
   Calendar,
   ArrowRight,
   Zap,
-  CheckCircle,
   Activity,
   WandSparkles,
   Inbox,
@@ -389,64 +387,6 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          {/* Next Steps */}
-          <div className="bg-white rounded-2xl p-6 border border-outline-variant/20">
-            <h2 className="text-lg font-bold text-on-surface mb-5 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-secondary" />
-              Next Steps
-            </h2>
-            <div className="flex flex-col gap-3">
-              {wishlistCount > 0 && (
-                <Link
-                  href="/applications"
-                  className="flex items-center justify-between p-4 rounded-xl bg-secondary/5 border border-secondary/15 hover:bg-secondary/10 transition-colors group"
-                >
-                  <div>
-                    <p className="text-sm font-bold text-on-surface">
-                      {wishlistCount} wishlist item{wishlistCount !== 1 ? "s" : ""} ready
-                    </p>
-                    <p className="text-xs text-on-surface-variant mt-0.5">Move your best roles into active applications</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-secondary group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-              )}
-
-              <Link
-                href="/resume"
-                className="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors group"
-              >
-                <div>
-                  <p className="text-sm font-bold text-on-surface">Tailor your resume</p>
-                  <p className="text-xs text-on-surface-variant mt-0.5">Boost match scores by 20%+</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-
-              <Link
-                href="/cover-letter"
-                className="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container transition-colors group"
-              >
-                <div>
-                  <p className="text-sm font-bold text-on-surface">Write a cover letter</p>
-                  <p className="text-xs text-on-surface-variant mt-0.5">AI-generated from your evidence</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-on-surface-variant group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Pro Tip */}
-          <div className="bg-white rounded-2xl p-6 border-2 border-dashed border-secondary/20 flex flex-col items-center text-center">
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-3">
-              <Clock className="w-5 h-5 text-secondary" />
-            </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2">
-              Did You Know
-            </p>
-            <p className="text-sm text-on-surface-variant leading-relaxed italic">
-              &ldquo;Tailored resumes with specific outcome-based evidence see a 40% higher response rate.&rdquo;
-            </p>
-          </div>
         </div>
       </div>
     </div>

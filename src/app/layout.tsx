@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ChatWidget } from "@/components/chat-widget";
 import { PostHogProvider } from "@/components/analytics/PostHogProvider";
 
 const inter = Inter({
@@ -101,7 +100,6 @@ export default function RootLayout({
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
-          <ChatWidget />
         </PostHogProvider>
       </body>
     </html>
