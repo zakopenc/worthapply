@@ -315,13 +315,7 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
   if (!resume) {
     return (
       <div className={styles.page}>
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".pdf,.doc,.docx"
-          className={styles.fileInput}
-          onChange={handleFileChange}
-        />
+        <input ref={fileRef} type="file" accept=".pdf,.doc,.docx" className={styles.fileInput} onChange={handleFileChange} />
         <div
           className={`${styles.dropzone} ${dragOver ? styles.dropzoneDragOver : ''}`}
           onClick={() => fileRef.current?.click()}
@@ -336,14 +330,12 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
             </div>
           ) : (
             <>
-              <div className={styles.dropzoneIcon}>
-                <Upload size={32} strokeWidth={1.5} />
-              </div>
-              <div className={styles.dropzoneTitle}>Upload your primary resume</div>
+              <div className={styles.dropzoneIcon}><Upload size={28} strokeWidth={1.5} /></div>
+              <div className={styles.dropzoneTitle}>Upload your resume</div>
               <div className={styles.dropzoneText}>
-                Drop your resume here or click to browse. WorthApply turns it into reusable evidence for job-fit analysis and tailored applications.
+                Drop it here or click to browse. WorthApply extracts structured evidence for job-fit analysis and tailored applications.
               </div>
-              <div className={styles.dropzoneHint}>PDF, DOC, or DOCX up to 10MB</div>
+              <div className={styles.dropzoneHint}>PDF, DOC, or DOCX · up to 10MB</div>
             </>
           )}
         </div>
@@ -355,7 +347,7 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
     ? 'Ready'
     : resume.parse_status === 'processing' || resume.parse_status === 'pending'
       ? 'Processing'
-      : 'Uploaded only';
+      : 'Extraction failed';
   const StatusIcon = resume.parse_status === 'complete'
     ? CheckCircle2
     : resume.parse_status === 'processing' || resume.parse_status === 'pending'
@@ -367,157 +359,70 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
       ? styles.statusPending
       : styles.statusFailed;
 
+  const isParsed = resume.parse_status === 'complete' && parsed;
+  const isFailed = resume.parse_status === 'failed';
+
   return (
     <div className={styles.page}>
-      <input
-        ref={fileRef}
-        type="file"
-        accept=".pdf,.doc,.docx"
-        className={styles.fileInput}
-        onChange={handleFileChange}
-      />
-      <div className={styles.panels}>
-        <div className={styles.resumeCard}>
-          <div className={styles.resumeIcon}>
-            <FileText size={28} strokeWidth={1.5} />
-          </div>
-          <div className={styles.resumeFilename}>{resume.filename}</div>
-          <div className={styles.resumeMeta}>
-            <div className={styles.resumeMetaRow}>
-              <Clock size={14} />
-              Uploaded {new Date(resume.uploaded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </div>
-            <div className={styles.resumeMetaRow}>
-              <span className={`${styles.statusBadge} ${statusClass}`}>
-                <StatusIcon size={12} className={resume.parse_status === 'processing' ? styles.spinningIcon : undefined} />
-                {statusLabel}
+      <input ref={fileRef} type="file" accept=".pdf,.doc,.docx" className={styles.fileInput} onChange={handleFileChange} />
+
+      {/* File card — horizontal, full width */}
+      <div className={styles.fileCard}>
+        <div className={styles.fileIcon}>
+          <FileText size={22} strokeWidth={1.5} />
+        </div>
+        <div className={styles.fileInfo}>
+          <div className={styles.fileFilename}>{resume.filename}</div>
+          <div className={styles.fileMeta}>
+            <span className={styles.fileMetaItem}>
+              <Clock size={12} />
+              {new Date(resume.uploaded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+            <span className={`${styles.statusBadge} ${statusClass}`}>
+              <StatusIcon size={11} className={resume.parse_status === 'processing' ? styles.spinningIcon : undefined} />
+              {statusLabel}
+            </span>
+            {items > 0 && (
+              <span className={styles.fileMetaItem}>
+                <Award size={12} />
+                {items} items extracted
               </span>
-            </div>
-            <div className={styles.resumeMetaRow}>
-              <Award size={14} />
-              {items} evidence items extracted
-            </div>
+            )}
           </div>
-          <div className={styles.resumeActions}>
-            <button className={styles.btnPrimary} onClick={() => fileRef.current?.click()}>
-              <Upload size={16} /> Upload New
-            </button>
-            {resume.file_url ? (
-              <a href={resume.file_url} download className={styles.btnSecondary}>
-                <Download size={16} /> Download
-              </a>
-            ) : null}
-            <button className={styles.btnDanger} onClick={handleDelete}>
-              <Trash2 size={16} /> Delete
-            </button>
-          </div>
-          {uploading && (
-            <div className={styles.uploading}>
-              <div className={styles.spinner} />
-              Uploading new resume...
+        </div>
+        <div className={styles.fileActions}>
+          {uploading ? (
+            <div className={styles.uploadingRow}>
+              <div className={styles.spinner} /> Uploading...
             </div>
-          )}
-
-          {parsed && resume.parse_status === 'complete' && (
-            <details className={styles.extractedPanel} open>
-              <summary className={styles.extractedSummary}>
-                <div>
-                  <div className={styles.extractedEyebrow}>Parser check</div>
-                  <div className={styles.extractedTitle}>View what we extracted</div>
-                  <div className={styles.extractedDescription}>
-                    Review the structured resume data below to confirm the parser captured the right details.
-                  </div>
-                </div>
-              </summary>
-
-              <div className={styles.extractedContent}>
-                <div className={styles.extractSection}>
-                  <div className={styles.extractSectionTitle}>Contact info</div>
-                  {contactEntries.length ? (
-                    <div className={styles.contactGrid}>
-                      {contactEntries.map(([label, value]) => (
-                        <div key={label} className={styles.contactCard}>
-                          <div className={styles.contactLabel}>{formatLabel(label)}</div>
-                          <div className={styles.contactValue}>{String(value)}</div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className={styles.extractedEmpty}>No contact info was extracted.</div>
-                  )}
-                </div>
-
-                <div className={styles.extractSection}>
-                  <div className={styles.extractSectionTitle}>Work experience</div>
-                  {extractedWorkExperience.length ? (
-                    <div className={styles.extractedList}>
-                      {extractedWorkExperience.map((item, index) => (
-                        <div key={`${item.company}-${item.title}-${index}`} className={styles.extractCard}>
-                          <div className={styles.extractCardHeader}>
-                            <div>
-                              <div className={styles.extractCardTitle}>{item.title}</div>
-                              <div className={styles.extractCardSubtitle}>{item.company}</div>
-                            </div>
-                            <div className={styles.extractCardMeta}>{item.dates}</div>
-                          </div>
-                          {item.bullets.length ? (
-                            <ul className={styles.extractBulletList}>
-                              {item.bullets.map((bullet, bulletIndex) => (
-                                <li key={`${index}-${bulletIndex}`} className={styles.extractBullet}>{bullet}</li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <div className={styles.extractedEmptyInline}>No bullet points were extracted for this role.</div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className={styles.extractedEmpty}>No work experience was extracted.</div>
-                  )}
-                </div>
-
-                <div className={styles.extractSection}>
-                  <div className={styles.extractSectionTitle}>Education</div>
-                  {extractedEducation.length ? (
-                    <div className={styles.extractedList}>
-                      {extractedEducation.map((item, index) => (
-                        <div key={`${item.institution}-${index}`} className={styles.extractCard}>
-                          <div className={styles.extractCardTitle}>{item.institution}</div>
-                          <div className={styles.extractCardSubtitle}>{item.degree}</div>
-                          {item.details ? <div className={styles.extractCardMeta}>{item.details}</div> : null}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className={styles.extractedEmpty}>No education entries were extracted.</div>
-                  )}
-                </div>
-
-                <div className={styles.extractSection}>
-                  <div className={styles.extractSectionTitle}>Skills</div>
-                  {extractedSkills.length ? (
-                    extractedSkills.map((group, index) => (
-                      <div key={`${group.category}-${index}`} className={styles.skillCategory}>
-                        <div className={styles.categoryLabel}>{group.category}</div>
-                        <div className={styles.skillGrid}>
-                          {group.items.map((skill, skillIndex) => (
-                            <span key={`${group.category}-${skillIndex}`} className={styles.skillTag}>{skill}</span>
-                          ))}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className={styles.extractedEmpty}>No skills were extracted.</div>
-                  )}
-                </div>
-
-                <div className={styles.extractedHelper}>This looks wrong? Upload a different version.</div>
-              </div>
-            </details>
+          ) : (
+            <>
+              <button className={styles.btnUpload} onClick={() => fileRef.current?.click()}>
+                <Upload size={14} /> Replace
+              </button>
+              {resume.file_url && (
+                <a href={resume.file_url} download className={styles.btnIcon} title="Download">
+                  <Download size={15} />
+                </a>
+              )}
+              <button className={styles.btnIconDanger} onClick={handleDelete} title="Delete">
+                <Trash2 size={15} />
+              </button>
+            </>
           )}
         </div>
+      </div>
 
+      {/* Extraction failed banner */}
+      {isFailed && (
+        <div className={styles.extractionBanner}>
+          <AlertCircle size={16} className={styles.extractionBannerIcon} />
+          Structured extraction failed for this file. Try replacing it with a cleaner PDF version.
+        </div>
+      )}
+
+      {/* Evidence tabs — full width below */}
+      {isParsed && (
         <div className={styles.evidencePanel}>
           <div className={styles.tabList}>
             {EVIDENCE_TABS.map((t, i) => (
@@ -526,85 +431,85 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
                 className={`${styles.tab} ${activeTab === i ? styles.tabActive : ''}`}
                 onClick={() => setActiveTab(i)}
               >
+                <t.icon size={14} />
                 {t.label}
               </button>
             ))}
           </div>
           <div className={styles.tabContent}>
-            {!parsed ? (
-              <div className={styles.emptyEvidence}>
-                <FileText size={48} className={styles.emptyEvidenceIcon} />
-                <div className={styles.emptyEvidenceText}>
-                  {resume.parse_status === 'processing' || resume.parse_status === 'pending'
-                    ? 'Resume is being processed...'
-                    : resume.parse_status === 'failed'
-                      ? 'Your resume file is stored, but structured extraction is unavailable right now.'
-                      : 'No evidence data available yet'}
+            {activeTab === 0 && (
+              parsed.achievements?.length ? parsed.achievements.map((achievement, i) => (
+                <div key={i} className={styles.achievementCard}>
+                  <div className={styles.achievementText}>{achievement.text}</div>
+                  <div className={styles.achievementMeta}>
+                    {normalizeMetrics(achievement.metrics).map((metric, j) => <span key={j} className={styles.metricTag}>{metric}</span>)}
+                    {achievement.tags?.map((tag, j) => <span key={j} className={styles.tag}>{tag}</span>)}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <>
-                {activeTab === 0 && (
-                  parsed.achievements?.length ? parsed.achievements.map((achievement, i) => (
-                    <div key={i} className={styles.achievementCard}>
-                      <div className={styles.achievementText}>{achievement.text}</div>
-                      <div className={styles.achievementMeta}>
-                        {normalizeMetrics(achievement.metrics).map((metric, j) => <span key={j} className={styles.metricTag}>{metric}</span>)}
-                        {achievement.tags?.map((tag, j) => <span key={j} className={styles.tag}>{tag}</span>)}
-                      </div>
-                    </div>
-                  )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No achievements extracted yet</div></div>
-                )}
+              )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No achievements extracted</div></div>
+            )}
 
-                {activeTab === 1 && (
-                  normalizedSkills.length ? normalizedSkills.map((category, i) => (
-                    <div key={i} className={styles.skillCategory}>
-                      <div className={styles.categoryLabel}>{category.category}</div>
-                      <div className={styles.skillGrid}>
-                        {category.items.map((skill, j) => <span key={j} className={styles.skillTag}>{skill}</span>)}
-                      </div>
-                    </div>
-                  )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No skills extracted yet</div></div>
-                )}
+            {activeTab === 1 && (
+              normalizedSkills.length ? normalizedSkills.map((category, i) => (
+                <div key={i} className={styles.skillCategory}>
+                  <div className={styles.categoryLabel}>{category.category}</div>
+                  <div className={styles.skillGrid}>
+                    {category.items.map((skill, j) => <span key={j} className={styles.skillTag}>{skill}</span>)}
+                  </div>
+                </div>
+              )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No skills extracted</div></div>
+            )}
 
-                {activeTab === 2 && (
-                  parsed.work_history?.length ? parsed.work_history.map((workItem, i) => (
-                    <div key={i} className={styles.timelineItem}>
-                      <div className={styles.timelineCompany}>{workItem.company}</div>
-                      <div className={styles.timelineTitle}>{workItem.title}</div>
-                      <div className={styles.timelineDates}>{workItem.start_date || workItem.start} - {workItem.end_date || workItem.end || 'Present'}</div>
-                      {workItem.highlights?.length ? (
-                        <div className={styles.timelineHighlights}>
-                          {workItem.highlights.map((highlight, j) => <div key={j} className={styles.highlight}>{highlight}</div>)}
-                        </div>
-                      ) : null}
+            {activeTab === 2 && (
+              parsed.work_history?.length ? parsed.work_history.map((workItem, i) => (
+                <div key={i} className={styles.timelineItem}>
+                  <div className={styles.timelineCompany}>{workItem.company}</div>
+                  <div className={styles.timelineTitle}>{workItem.title}</div>
+                  <div className={styles.timelineDates}>{workItem.start_date || workItem.start} – {workItem.end_date || workItem.end || 'Present'}</div>
+                  {workItem.highlights?.length ? (
+                    <div className={styles.timelineHighlights}>
+                      {workItem.highlights.map((highlight, j) => <div key={j} className={styles.highlight}>{highlight}</div>)}
                     </div>
-                  )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No work history extracted yet</div></div>
-                )}
+                  ) : null}
+                </div>
+              )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No work history extracted</div></div>
+            )}
 
-                {activeTab === 3 && (
-                  parsed.education?.length ? parsed.education.map((educationItem, i) => (
-                    <div key={i} className={styles.educationCard}>
-                      <div className={styles.educationInstitution}>{educationItem.institution}</div>
-                      <div className={styles.educationDegree}>{educationItem.degree}{educationItem.field ? ` in ${educationItem.field}` : ''}</div>
-                      <div className={styles.educationYear}>{educationItem.year || 'Year not provided'}</div>
-                    </div>
-                  )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No education data extracted yet</div></div>
-                )}
+            {activeTab === 3 && (
+              parsed.education?.length ? parsed.education.map((educationItem, i) => (
+                <div key={i} className={styles.educationCard}>
+                  <div className={styles.educationInstitution}>{educationItem.institution}</div>
+                  <div className={styles.educationDegree}>{educationItem.degree}{educationItem.field ? ` in ${educationItem.field}` : ''}</div>
+                  <div className={styles.educationYear}>{educationItem.year || ''}</div>
+                </div>
+              )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No education data extracted</div></div>
+            )}
 
-                {activeTab === 4 && (
-                  leadershipItems.length ? leadershipItems.map((item, i) => (
-                    <div key={i} className={styles.storyCard}>
-                      <div className={styles.storyTitle}>{item.title || 'Leadership story'}</div>
-                      <div className={styles.storyText}>{item.story || item.text}</div>
-                    </div>
-                  )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No leadership stories extracted yet</div></div>
-                )}
-              </>
+            {activeTab === 4 && (
+              leadershipItems.length ? leadershipItems.map((item, i) => (
+                <div key={i} className={styles.storyCard}>
+                  <div className={styles.storyTitle}>{item.title || 'Leadership story'}</div>
+                  <div className={styles.storyText}>{item.story || item.text}</div>
+                </div>
+              )) : <div className={styles.emptyEvidence}><div className={styles.emptyEvidenceText}>No leadership stories extracted</div></div>
             )}
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Processing state */}
+      {(resume.parse_status === 'pending' || resume.parse_status === 'processing') && (
+        <div className={styles.evidencePanel}>
+          <div className={styles.tabContent}>
+            <div className={styles.emptyEvidence}>
+              <div className={styles.uploading}>
+                <div className={styles.spinner} />
+              </div>
+              <div className={styles.emptyEvidenceText} style={{ marginTop: 12 }}>Extracting evidence from your resume...</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
