@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import Topbar from '@/components/app/Topbar';
 import DigestClient from './DigestClient';
 
 export const metadata = {
@@ -42,7 +41,6 @@ export default async function DigestPage() {
 
   return (
     <>
-      <Topbar title="Daily Digest" breadcrumb="Workspace / Daily Digest" />
       <DigestClient
         matches={safeMatches}
         plan={profile?.plan || 'free'}

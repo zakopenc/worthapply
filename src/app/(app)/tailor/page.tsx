@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import Topbar from '@/components/app/Topbar';
 import { createClient } from '@/lib/supabase/server';
 import { CURRENT_MONTH, countFeatureRowsForMonth } from '@/lib/usage-tracking';
 import { getEffectivePlan, getFeatureAccess, getPlanLimits, type Plan } from '@/lib/plans';
@@ -80,7 +79,6 @@ export default async function TailorPage() {
 
   return (
     <>
-      <Topbar title="Resume Tailoring" breadcrumb="Workspace / Resume Tailoring" />
       <TailorClient initialData={initialData} />
     </>
   );

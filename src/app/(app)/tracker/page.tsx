@@ -88,9 +88,6 @@ export default function TrackerPage() {
     <div className="min-h-screen p-6 lg:p-10">
       {/* Header — matches analyzer style */}
       <header className="mb-8">
-        <p className="text-[11px] font-black uppercase tracking-widest mb-2 text-on-surface-variant/60">
-          Workspace / Pipeline Tracker
-        </p>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-on-surface">

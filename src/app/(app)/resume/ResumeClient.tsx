@@ -316,7 +316,6 @@ export default function ResumeClient({ initialResume, initialParsedData, itemsEx
     return (
       <div className={styles.page}>
         <header className={styles.pageHeader}>
-          <p className={styles.pageEyebrow}>Workspace / Resume &amp; Evidence</p>
           <h1 className={styles.pageTitle}>Resume &amp; Evidence</h1>
           <p className={styles.pageDesc}>Your resume and extracted evidence used across all WorthApply tools.</p>
         </header>

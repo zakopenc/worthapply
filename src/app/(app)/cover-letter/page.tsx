@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import Topbar from '@/components/app/Topbar';
 import { isPaidPlan } from '@/lib/plans';
 import { createClient } from '@/lib/supabase/server';
 import CoverLetterClient, { type CoverLetterRecord, type CoverLetterWorkspaceAnalysis, type CoverLetterWorkspaceOption } from './CoverLetterClient';
@@ -100,7 +99,6 @@ export default async function CoverLetterPage({ searchParams: searchParamsPromis
 
   return (
     <>
-      <Topbar title="Cover Letter Builder" breadcrumb="Workspace / Cover Letter Builder" />
       <CoverLetterClient
         plan={plan}
         options={workspaceOptions}

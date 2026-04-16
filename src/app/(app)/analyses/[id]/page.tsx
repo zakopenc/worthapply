@@ -10,7 +10,6 @@ import {
   MapPin,
   Sparkles,
 } from 'lucide-react';
-import Topbar from '@/components/app/Topbar';
 import { createClient } from '@/lib/supabase/server';
 import {
   deriveTargetKeywords,
@@ -127,7 +126,6 @@ export default async function AnalysisDetailPage({ params }: { params: Promise<{
 
   return (
     <>
-      <Topbar title="Analysis Report" breadcrumb="Workspace / Previous Analysis" />
       <div className="min-h-screen p-6 lg:p-10">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>

@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import Topbar from '@/components/app/Topbar';
 import ResumeClient from './ResumeClient';
 
 export const metadata = {
@@ -33,7 +32,6 @@ export default async function ResumePage() {
 
   return (
     <>
-      <Topbar title="Resume & Evidence" breadcrumb="Workspace / Resume & Evidence" />
       <ResumeClient
         initialResume={
           resume

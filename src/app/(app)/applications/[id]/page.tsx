@@ -22,7 +22,6 @@ import {
   Tags,
   TrendingUp,
 } from 'lucide-react';
-import Topbar from '@/components/app/Topbar';
 import {
   buildDownloadFilename,
   buildParagraphDocxBlob,
@@ -572,7 +571,6 @@ export default function WorkspacePage() {
   if (loading) {
     return (
       <>
-        <Topbar title="Application Workspace" breadcrumb="Workspace / Application Workspace" />
         <div className={styles.page}>
           <div className={styles.loadingState}>
             <Loader2 className={styles.spinner} size={24} />
@@ -586,7 +584,6 @@ export default function WorkspacePage() {
   if (!app) {
     return (
       <>
-        <Topbar title="Application Workspace" breadcrumb="Workspace / Application Workspace" />
         <div className={styles.page}>
           <div className={styles.emptyState}>
             <h3>Application not found</h3>
@@ -599,7 +596,6 @@ export default function WorkspacePage() {
 
   return (
     <>
-      <Topbar title="Application Workspace" breadcrumb="Workspace / Application Workspace" />
       <div className={styles.page}>
         <section className={styles.heroCard}>
           <div className={styles.heroMain}>

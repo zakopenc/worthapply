@@ -475,7 +475,6 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
-        <p className={styles.pageEyebrow}>Workspace / Resume Tailoring</p>
         <div className={styles.pageTitleRow}>
           <div>
             <h1 className={styles.pageTitle}>Resume Tailoring</h1>

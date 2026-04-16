@@ -165,7 +165,6 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
     return (
       <div className={styles.page}>
         <header className={styles.pageHeader}>
-          <p className={styles.pageEyebrow}>Workspace / Cover Letter</p>
           <h1 className={styles.pageTitle}>Cover Letter</h1>
           <p className={styles.pageDesc}>Generate a role-aware recommendation or full draft based on your job analysis.</p>
         </header>

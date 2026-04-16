@@ -95,7 +95,6 @@ export default function DigestClient({ matches, plan, summary }: DigestClientPro
   const hero = (
     <section className={styles.heroCard}>
       <div>
-        <div className={styles.heroEyebrow}>Workspace / Daily Digest</div>
         <h1 className={styles.heroTitle}>Daily Digest</h1>
         <p className={styles.heroSubtitle}>Today&apos;s strongest matches, ranked for action.</p>
         <p className={styles.heroText}>
