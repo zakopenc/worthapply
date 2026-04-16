@@ -16,6 +16,62 @@
   }
 }
 
+/* Page header */
+.pageHeader {
+  margin-bottom: 4px;
+}
+
+.pageEyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b0a099;
+  margin-bottom: 8px;
+}
+
+.pageTitleRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #1c1c1a;
+  line-height: 1.1;
+}
+
+.pageDesc {
+  color: #8a7a6e;
+  margin-top: 6px;
+  font-size: 15px;
+  max-width: 580px;
+}
+
+.headerMeta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.metaPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: white;
+  color: #4c4640;
+  border: 1px solid #e8e0d8;
+}
+
 /* Hero Card */
 .heroCard {
   background: #ffffff;

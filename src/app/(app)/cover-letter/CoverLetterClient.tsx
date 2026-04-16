@@ -164,8 +164,12 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
   if (!options.length) {
     return (
       <div className={styles.page}>
+        <header className={styles.pageHeader}>
+          <p className={styles.pageEyebrow}>Workspace / Cover Letter</p>
+          <h1 className={styles.pageTitle}>Cover Letter</h1>
+          <p className={styles.pageDesc}>Generate a role-aware recommendation or full draft based on your job analysis.</p>
+        </header>
         <section className={styles.emptyState}>
-          <div className={styles.sectionEyebrow}>Cover letter workflow</div>
           <h2 className={styles.emptyTitle}>You need an analyzed role before you can build a cover letter.</h2>
           <p className={styles.emptyText}>Run a job fit analysis first, then come back here to generate a recommendation or full draft.</p>
           <div className={styles.actionRow}>
@@ -179,9 +183,14 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
 
   return (
     <div className={styles.page}>
+      <header className={styles.pageHeader}>
+        <p className={styles.pageEyebrow}>Workspace / Cover Letter</p>
+        <h1 className={styles.pageTitle}>Cover Letter</h1>
+        <p className={styles.pageDesc}>Generate a role-aware recommendation or full draft based on your job analysis.</p>
+      </header>
       <section className={styles.heroCard}>
         <div className={styles.heroContent}>
-          <div className={styles.sectionEyebrow}>Job context</div>
+          <div className={styles.sectionEyebrow}>Selected role</div>
           <h2 className={styles.heroTitle}>{analysis?.jobTitle || selectedOption?.jobTitle}</h2>
           <div className={styles.contextRow}>
             <span className={styles.pill}>{analysis?.company || selectedOption?.company}</span>

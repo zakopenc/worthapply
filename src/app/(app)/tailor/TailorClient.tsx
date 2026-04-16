@@ -474,27 +474,19 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
 
   return (
     <div className={styles.page}>
-      <section className={styles.heroCard}>
-        <div>
-          <span className={styles.eyebrow}>Tailoring workflow</span>
-          <h2 className={styles.heroTitle}>Review the original resume beside AI suggestions before you commit the changes.</h2>
-          <p className={styles.heroText}>
-            Keep edits grounded in your real experience, accept only what fits, and save a new tailored version for each role.
-          </p>
-        </div>
-        <div className={styles.heroMeta}>
-          <div className={styles.metaCard}>
-            <span className={styles.metaLabel}>Plan</span>
-            <strong>{formatPlan(initialData.plan)}</strong>
-            <span>{usageLabel}</span>
+      <header className={styles.pageHeader}>
+        <p className={styles.pageEyebrow}>Workspace / Resume Tailoring</p>
+        <div className={styles.pageTitleRow}>
+          <div>
+            <h1 className={styles.pageTitle}>Resume Tailoring</h1>
+            <p className={styles.pageDesc}>Review AI suggestions side-by-side with your original resume. Accept, edit, or reject each change before saving.</p>
           </div>
-          <div className={styles.metaCard}>
-            <span className={styles.metaLabel}>Resume source</span>
-            <strong>{initialData.activeResume?.filename || 'No active resume uploaded'}</strong>
-            <span>{initialData.activeResume?.parse_status || 'Upload a parsed resume to start tailoring'}</span>
+          <div className={styles.headerMeta}>
+            <span className={styles.metaPill}>{formatPlan(initialData.plan)}</span>
+            <span className={styles.metaPill}>{usageLabel}</span>
           </div>
         </div>
-      </section>
+      </header>
 
       <section className={styles.toolbar}>
         <label className={styles.selectField}>

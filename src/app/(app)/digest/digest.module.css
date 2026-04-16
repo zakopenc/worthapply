@@ -45,11 +45,19 @@
 }
 
 .heroTitle {
-  margin-top: var(--space-2);
-  font-size: clamp(2rem, 1.6rem + 1.1vw, 3rem);
-  line-height: 1;
-  letter-spacing: -0.05em;
-  color: var(--color-text);
+  margin-top: 6px;
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #1c1c1a;
+}
+
+.heroSubtitle {
+  margin-top: 6px;
+  font-size: 15px;
+  color: #8a7a6e;
+  max-width: 540px;
 }
 
 .heroText,

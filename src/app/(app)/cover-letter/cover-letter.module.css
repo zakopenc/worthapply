@@ -6,10 +6,39 @@
 .page {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: var(--space-8);
+  padding: 24px 40px 40px;
   display: grid;
-  gap: var(--space-6);
+  gap: 20px;
   animation: fadeIn 0.28s ease;
+}
+
+/* Page header */
+.pageHeader {
+  margin-bottom: 4px;
+}
+
+.pageEyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b0a099;
+  margin-bottom: 6px;
+}
+
+.pageTitle {
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #1c1c1a;
+  line-height: 1.1;
+}
+
+.pageDesc {
+  color: #8a7a6e;
+  margin-top: 6px;
+  font-size: 15px;
+  max-width: 540px;
 }
 
 .heroCard,
