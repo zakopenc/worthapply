@@ -1,0 +1,306 @@
+/* Shared Legal Page Styles (Privacy + Terms) */
+
+.hero {
+  padding: 120px 16px 80px;
+  background: radial-gradient(circle at top left, rgba(198, 138, 113, 0.14), transparent 30%),
+              linear-gradient(180deg, #fcfaf7 0%, #f6f1eb 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(36, 30, 26, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 30, 26, 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 85%);
+  pointer-events: none;
+}
+
+.heroInner {
+  max-width: 680px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: #171411;
+  letter-spacing: -0.04em;
+  margin-bottom: 16px;
+  line-height: 1.1;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroMeta {
+  display: inline-flex;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(198, 138, 113, 0.12);
+  border: 1px solid rgba(198, 138, 113, 0.2);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #8d5b46;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s backwards;
+}
+
+/* Two-column: TOC + content */
+.layout {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 60px;
+  padding: 80px 24px 120px;
+  align-items: start;
+}
+
+@media (max-width: 968px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 60px 16px 80px;
+  }
+}
+
+/* TOC Sidebar */
+.toc {
+  position: sticky;
+  top: 100px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  border: 1px solid rgba(84, 72, 64, 0.12);
+  padding: 28px;
+  box-shadow: 0 10px 40px rgba(36, 27, 19, 0.06);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toc:hover {
+  box-shadow: 0 20px 60px rgba(36, 27, 19, 0.1);
+  border-color: rgba(198, 138, 113, 0.25);
+}
+
+@media (max-width: 968px) {
+  .toc {
+    position: static;
+    border-radius: 20px;
+    padding: 24px;
+  }
+}
+
+.tocTitle {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8d5b46;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(198, 138, 113, 0.15);
+}
+
+.tocList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tocLink {
+  font-size: 0.9375rem;
+  color: #6e665f;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+  position: relative;
+  font-weight: 500;
+}
+
+.tocLink::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: linear-gradient(180deg, #c68a71, #f4a261);
+  border-radius: 2px;
+  transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tocLink:hover {
+  color: #c68a71;
+  background: rgba(198, 138, 113, 0.08);
+  transform: translateX(4px);
+}
+
+.tocLink:hover::before {
+  height: 20px;
+}
+
+/* Content prose */
+.content {
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 28px;
+  border: 1px solid rgba(84, 72, 64, 0.12);
+  padding: 48px;
+  box-shadow: 0 10px 40px rgba(36, 27, 19, 0.05);
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
+}
+
+@media (max-width: 968px) {
+  .content {
+    padding: 32px 24px;
+    border-radius: 20px;
+  }
+}
+
+.contentSection {
+  margin-bottom: 56px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid rgba(84, 72, 64, 0.08);
+}
+
+.contentSection:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.contentTitle {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: #171411;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+  scroll-margin-top: 120px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.contentTitle::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 4px;
+  height: calc(100% - 8px);
+  background: linear-gradient(180deg, #c68a71, #f4a261);
+  border-radius: 2px;
+}
+
+.contentSubtitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #3d362f;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contentSubtitle::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #c68a71, #f4a261);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.contentParagraph {
+  font-size: 1.0625rem;
+  color: #54483f;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.contentParagraph a {
+  color: #c68a71;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(198, 138, 113, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contentParagraph a:hover {
+  color: #f4a261;
+  border-bottom-color: #f4a261;
+}
+
+.contentList {
+  margin: 24px 0 32px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.contentListItem {
+  font-size: 1.0625rem;
+  color: #54483f;
+  line-height: 1.7;
+  padding-left: 32px;
+  position: relative;
+}
+
+.contentListItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #c68a71, #f4a261);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(198, 138, 113, 0.3);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .hero {
+    padding: 80px 16px 60px;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .contentTitle {
+    font-size: 1.5rem;
+  }
+
+  .contentSubtitle {
+    font-size: 1.125rem;
+  }
+
+  .contentParagraph,
+  .contentListItem {
+    font-size: 1rem;
+  }
+}

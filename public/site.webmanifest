@@ -1,0 +1,27 @@
+{
+  "name": "WorthApply - Land Your Dream Job 3x Faster",
+  "short_name": "WorthApply",
+  "description": "AI-powered job application platform. Analyze job fit, tailor resumes, and track applications in one place.",
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#C17F3C",
+  "background_color": "#1C1B1F",
+  "display": "standalone",
+  "start_url": "/",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["business", "productivity", "utilities"],
+  "screenshots": []
+}

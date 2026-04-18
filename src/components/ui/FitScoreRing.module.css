@@ -1,0 +1,22 @@
+.container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.svg {
+  display: block;
+}
+
+.progress {
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.label {
+  position: absolute;
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  user-select: none;
+}

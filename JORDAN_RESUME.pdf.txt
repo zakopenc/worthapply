@@ -1,0 +1,33 @@
+# Professional Resume for QA Testing (WorthApply)
+
+## Contact Information
+- Name: Jordan Taylor
+- Email: jordan.t.tech@email.com
+- Phone: (555) 012-3456
+- LinkedIn: linkedin.com/in/jordantaylor-dev
+
+## Summary
+Software Engineer with 4+ years of experience in full-stack development, cloud architecture, and DevOps. Proven track record of optimizing system performance by 30% and leading high-performing teams to deliver scalable, user-centric web applications. Passionate about automated testing, infrastructure as code, and clean, maintainable architecture.
+
+## Experience
+### Senior Software Engineer | TechFlow Solutions | 2023 - Present
+- Architected a serverless microservices backend using AWS Lambda and Node.js, resulting in a 40% reduction in infrastructure costs.
+- Led the migration of legacy monolith frontend to a React-based SPA, improving page load speeds by 25%.
+- Implemented CI/CD pipelines using GitHub Actions, reducing deployment time by 50%.
+
+### Software Engineer | Innovate Corp | 2021 - 2023
+- Developed and maintained RESTful APIs for a high-traffic SaaS product, supporting 50k+ daily active users.
+- Collaborated with UX designers to implement a new responsive design system, increasing user retention by 15%.
+- Authored comprehensive test suites (Jest, Cypress), boosting code coverage to 90%.
+
+## Skills
+- Languages: JavaScript (ES6+), TypeScript, Python, SQL, Go
+- Frameworks/Libraries: React, Next.js, Node.js, Express, FastAPI
+- Infrastructure/DevOps: AWS (S3, EC2, Lambda, RDS), Docker, Kubernetes, Terraform, GitHub Actions
+- Testing: Jest, Cypress, PyTest
+- Tools: Git, Jira, Confluence, VS Code
+
+## Education
+### B.S. in Computer Science | State University | 2017 - 2021
+- Graduated Magna Cum Laude.
+- Capstone Project: Developed a distributed web-scraping tool using Python and Scrapy.

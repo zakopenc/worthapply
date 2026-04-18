@@ -1,0 +1,23 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f6f3ef;
+}
+
+.main {
+  flex: 1;
+  margin-left: 256px;
+  min-height: 100vh;
+  background: #f6f3ef;
+}
+
+@media (max-width: 1023px) {
+  .layout {
+    display: block;
+  }
+
+  .main {
+    margin-left: 0;
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+}

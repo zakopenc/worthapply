@@ -1,0 +1,676 @@
+.hero,
+.section,
+.sectionAlt {
+  padding: 64px 16px 0;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(198, 138, 113, 0.16), transparent 30%),
+    linear-gradient(180deg, #fcfaf7 0%, #f6f1eb 100%);
+}
+
+.heroBackdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(36, 30, 26, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 30, 26, 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 85%);
+  pointer-events: none;
+}
+
+@keyframes pricingCardEntrance {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes contentSwapIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes savePillPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.sectionAlt {
+  background: linear-gradient(180deg, #fcfaf7 0%, #f6f1eb 100%);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.eyebrow,
+.sectionEyebrow,
+.featuredTag,
+.groupLabel,
+.savePill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.sectionEyebrow,
+.groupLabel,
+.savePill {
+  background: rgba(198, 138, 113, 0.12);
+  border: 1px solid rgba(198, 138, 113, 0.2);
+  color: #8d5b46;
+}
+
+.hero h1,
+.valuePanel h2,
+.tableIntro h2,
+.faqIntro h2,
+.bottomCta h2 {
+  margin-top: 16px;
+  font-family: var(--font-display);
+  color: #171411;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.hero h1 {
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  max-width: 11ch;
+}
+
+.hero p,
+.valuePanel p,
+.faqAnswer,
+.planCard p,
+.planCardDark p,
+.tableIntro p,
+.cellText,
+.cellMuted {
+  color: #6e665f;
+  line-height: 1.75;
+}
+
+.hero p {
+  margin-top: 16px;
+  max-width: 48rem;
+}
+
+.billingToggle,
+.bottomActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.billingToggle {
+  margin-top: 24px;
+}
+
+.toggleButton {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: #ead9cf;
+  transition: background 200ms ease, box-shadow 200ms ease, transform 180ms ease;
+}
+
+.toggleOn {
+  background: #c68a71;
+  box-shadow: 0 10px 24px rgba(198, 138, 113, 0.28);
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #fff;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toggleKnobOn {
+  transform: translateX(22px);
+}
+
+.toggleActive {
+  color: #171411;
+  font-weight: 800;
+}
+
+.savePillPulse {
+  animation: savePillPulse 420ms ease;
+}
+
+.planGrid,
+.valuePanel,
+.faqShell {
+  display: grid;
+  gap: 20px;
+}
+
+.planGrid {
+  align-items: start;
+  grid-template-columns: 1fr; /* Mobile: 1 column */
+}
+
+.planCard,
+.planCardDark,
+.valuePanel,
+.tableWrap,
+.faqShell,
+.bottomCta {
+  border-radius: 28px;
+  border: 1px solid rgba(84, 72, 64, 0.12);
+  box-shadow: 0 20px 50px rgba(36, 27, 19, 0.05);
+}
+
+.planCard,
+.planCardDark {
+  padding: 28px;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.planCard {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.planCardFeatured {
+  position: relative;
+  background: linear-gradient(180deg, #fff9f4 0%, #ffffff 100%);
+  border-color: rgba(198, 138, 113, 0.26);
+}
+
+.planCardAnimated {
+  opacity: 0;
+  animation: pricingCardEntrance 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.planCard:hover,
+.planCardDark:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 28px 60px rgba(36, 27, 19, 0.1);
+}
+
+.planCardFeaturedGlow {
+  box-shadow: 0 26px 62px rgba(198, 138, 113, 0.16);
+}
+
+.featuredTag {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  color: #fffdf9;
+  background: linear-gradient(135deg, #1f2937, #c68a71);
+  border: none;
+}
+
+.planCardDark {
+  background: linear-gradient(160deg, #171411 0%, #241f1a 55%, #2d261f 100%);
+}
+
+.planName,
+.planNameDark {
+  display: block;
+  color: #171411;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-size: 1.15rem;
+}
+
+.planNameDark,
+.priceRowDark strong,
+.priceRowDark span,
+.planCardDark p,
+.featureDark {
+  color: #f7efe7;
+}
+
+.priceRow,
+.priceRowDark {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.priceRow strong,
+.priceRowDark strong {
+  color: #171411;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.priceRowSwap,
+.planMetaSwap {
+  animation: contentSwapIn 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.priceRow span,
+.priceRowDark span,
+.planMeta {
+  color: #6e665f;
+}
+
+.planMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.planMeta span {
+  display: inline-flex;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #f5ece6;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #8d5b46;
+}
+
+.featureList,
+.featureListDark,
+.valueList,
+.faqList {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.feature,
+.featureDark,
+.valueList div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+}
+
+.feature {
+  background: #f8f3ee;
+  color: #171411;
+}
+
+.featureDark {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.primaryCta,
+.secondaryCta,
+.darkCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 15px;
+  font-weight: 700;
+  margin-top: 24px;
+}
+
+.primaryCta {
+  color: #fffdf9;
+  background: linear-gradient(135deg, #1f2937, #c68a71);
+}
+
+.secondaryCta {
+  color: #171411;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(84, 72, 64, 0.14);
+}
+
+.darkCta {
+  color: #171411;
+  background: #f3dfd4;
+}
+
+.valuePanel,
+.faqShell,
+.bottomCta {
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.valuePanel h2,
+.tableIntro h2,
+.faqIntro h2,
+.bottomCta h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.valuePanel {
+  margin-top: 24px;
+}
+
+.valueList div {
+  background: #f8f3ee;
+  color: #171411;
+  font-weight: 600;
+}
+
+.tableIntro {
+  max-width: 52rem;
+}
+
+.tableWrap {
+  margin-top: 24px;
+  overflow-x: auto; /* Allow horizontal scroll on mobile */
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.table {
+  width: 100%;
+  min-width: 600px; /* Prevent table from being too narrow on mobile */
+  border-collapse: collapse;
+}
+
+.table thead th {
+  padding: 16px 18px;
+  background: #f8f3ee;
+  border-bottom: 1px solid rgba(84, 72, 64, 0.12);
+  color: #171411;
+  text-align: left;
+}
+
+.table tbody td {
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(84, 72, 64, 0.1);
+  vertical-align: top;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.groupStart td {
+  border-top: 1px solid rgba(84, 72, 64, 0.12);
+}
+
+.groupLabel {
+  margin-bottom: 10px;
+}
+
+.highlightCell {
+  background: rgba(198, 138, 113, 0.08);
+}
+
+.cellIcon {
+  color: #8d5b46;
+}
+
+.cellMuted {
+  color: #9a8f85;
+}
+
+.faqButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 0;
+  color: #171411;
+  font-weight: 700;
+  text-align: left;
+}
+
+.chevron {
+  transition: transform 200ms ease;
+}
+
+.faqItem {
+  border-bottom: 1px solid rgba(84, 72, 64, 0.1);
+}
+
+.faqItem:last-child {
+  border-bottom: none;
+}
+
+.faqAnswerWrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms ease, opacity 220ms ease;
+  opacity: 0;
+}
+
+.faqAnswerWrapOpen {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.faqAnswer {
+  overflow: hidden;
+  padding: 0 0 18px;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.bottomCta {
+  margin-top: 24px;
+  background: linear-gradient(180deg, #fff8f2 0%, #ffffff 100%);
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+  .planGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .valuePanel,
+  .faqShell {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+
+/* Desktop: 4 columns */
+@media (min-width: 1024px) {
+  .planGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planCardAnimated,
+  .priceRowSwap,
+  .planMetaSwap,
+  .savePillPulse {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .faqAnswerWrap,
+  .chevron,
+  .toggleButton,
+  .toggleKnob,
+  .planCard,
+  .planCardDark {
+    transition: none;
+  }
+}
+
+/* Usage Visualization Section */
+.usageSection {
+  margin-top: 80px;
+  padding-top: 80px;
+  border-top: 1px solid rgba(84, 72, 64, 0.12);
+}
+
+.usageHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.usageHeader h3 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-family: var(--font-display);
+  color: #171411;
+  margin-top: 16px;
+  line-height: 1.2;
+}
+
+.usageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.usageCard {
+  background: #ffffff;
+  border: 2px solid rgba(84, 72, 64, 0.12);
+  border-radius: 20px;
+  padding: 32px;
+  transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+}
+
+.usageCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(198, 138, 113, 0.15);
+}
+
+.usageCardFeatured {
+  border-color: #c68a71;
+  border-width: 3px;
+  background: linear-gradient(135deg, rgba(198, 138, 113, 0.03), rgba(255, 255, 255, 1));
+}
+
+.usageCardDark {
+  background: linear-gradient(135deg, #2d2520, #1f2937);
+  border-color: rgba(198, 138, 113, 0.3);
+  color: #fbf8f4;
+}
+
+.usageCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.usageCardHeader h4 {
+  font-size: 1.5rem;
+  font-family: var(--font-display);
+  color: #171411;
+  margin: 0;
+}
+
+.usageCardDark .usageCardHeader h4 {
+  color: #fbf8f4;
+}
+
+.usageBadge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(84, 72, 64, 0.1);
+  color: #6e665f;
+}
+
+.usageBadgeFeatured {
+  background: rgba(198, 138, 113, 0.15);
+  color: #8d5b46;
+}
+
+.usageBadgeDark {
+  background: rgba(198, 138, 113, 0.2);
+  color: #c68a71;
+}
+
+.usageIndicators {
+  margin-bottom: 24px;
+}
+
+.usageNote {
+  color: #6e665f;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.usageCardDark .usageNote {
+  color: rgba(251, 248, 244, 0.8);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .hero,
+  .section,
+  .sectionAlt {
+    padding: 48px 16px 0; /* Reduce top padding on mobile */
+  }
+
+  .hero h1 {
+    font-size: 2rem; /* Smaller heading on mobile */
+  }
+
+  .planCard,
+  .planCardDark {
+    padding: 20px; /* Reduce card padding on mobile */
+  }
+
+  .usageCard {
+    padding: 24px; /* Reduce usage card padding */
+  }
+}
+
+@media (max-width: 968px) {
+  .usageGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .usageSection {
+    margin-top: 60px;
+    padding-top: 60px;
+  }
+}

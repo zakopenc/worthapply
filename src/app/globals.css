@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark mode — comprehensive inversion for hardcoded color sites */
+@layer base {
+  :root {
+    --background: 252 249 245; /* #fcf9f5 */
+    --foreground: 28 28 26; /* #1c1c1a */
+  }
+
+  .dark {
+    --background: 17 17 17;
+    --foreground: 245 245 245;
+    color-scheme: dark;
+  }
+}
+
+/* Dark mode: invert everything, then re-invert media so images look normal.
+   hue-rotate(180deg) corrects the hue shift from invert(). */
+html.dark {
+  filter: invert(0.92) hue-rotate(180deg);
+  background-color: #111 !important;
+}
+
+/* Re-invert media elements so images/videos look normal */
+html.dark img,
+html.dark video,
+html.dark svg:not(.phosphor-icon),
+html.dark [style*="background-image"],
+html.dark canvas,
+html.dark iframe,
+html.dark .no-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Fix the Remy chat widget avatar */
+html.dark [class*="chat-widget"] img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Ensure shadows don't look weird inverted */
+html.dark * {
+  --tw-shadow-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Material Symbols Icon Configuration */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Filled variant for active/special icons */
+.material-symbols-outlined.filled {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Base layer customizations */
+@layer base {
+  body {
+    @apply font-body;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-headline;
+  }
+}
+
+/* Utility layer customizations */
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Grid pattern background (for decorative elements) */
+  .grid-pattern {
+    background-image: radial-gradient(circle, #cfc5bd 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Backdrop blur utility */
+  .glass-effect {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  /* Safe area spacing for mobile */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Component layer patterns */
+@layer components {
+  /* Premium button base */
+  .btn-primary {
+    @apply bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm tracking-tight hover:opacity-90 active:scale-95 transition-all shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold text-sm tracking-tight hover:opacity-90 active:scale-95 transition-all;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border-2 border-outline-variant text-on-surface px-6 py-3 rounded-xl font-bold text-sm tracking-tight hover:bg-surface-container-low transition-all;
+  }
+
+  /* Card surfaces */
+  .card {
+    @apply bg-surface-container-lowest rounded-3xl shadow-md border border-outline-variant/5;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg hover:border-outline-variant/20 transition-all;
+  }
+
+  /* Input fields */
+  .input-field {
+    @apply w-full px-4 py-3 bg-surface-container-high border-none rounded-xl text-sm focus:ring-1 focus:ring-secondary/30 focus:bg-surface-container-lowest transition-all;
+  }
+
+  /* Bento grid badge */
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+
+  .badge-high {
+    @apply badge bg-green-100 text-green-700;
+  }
+
+  .badge-medium {
+    @apply badge bg-yellow-100 text-yellow-700;
+  }
+
+  .badge-low {
+    @apply badge bg-red-100 text-red-700;
+  }
+
+  .badge-status {
+    @apply badge text-white;
+  }
+
+  /* Navigation items */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 text-on-surface-variant font-medium text-sm tracking-tight hover:bg-surface-container-high transition-colors duration-200 rounded-xl cursor-pointer;
+  }
+
+  .nav-item-active {
+    @apply nav-item bg-surface-container-lowest text-on-surface font-bold shadow-sm;
+  }
+}
