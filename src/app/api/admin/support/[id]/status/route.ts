@@ -66,7 +66,6 @@ export async function PATCH(
     targetUserId: before.user_id,
     action: 'support_ticket_status',
     diff: { ticket_id: ticketId, before: before.status, after: status },
-    reason: null,
     ip: getIp(request),
   });
 
