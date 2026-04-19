@@ -4,8 +4,15 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
-type Plan = 'free' | 'pro' | 'premium' | 'lifetime';
+/** Plans admins can assign via this form (lifetime is not assignable here). */
+type SelectablePlan = 'free' | 'pro' | 'premium';
 type SubStatus = 'active' | 'trialing' | 'past_due' | 'canceled';
+
+function initialSelectablePlan(currentPlan: string): SelectablePlan {
+  if (currentPlan === 'free' || currentPlan === 'pro' || currentPlan === 'premium') return currentPlan;
+  // Existing lifetime (or unknown) — default dropdown to a paid tier; admin must confirm in dialog.
+  return 'premium';
+}
 
 interface AdminActionsProps {
   userId: string;
@@ -15,14 +22,15 @@ interface AdminActionsProps {
 
 export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActionsProps) {
   const router = useRouter();
-  const [plan, setPlan] = useState<Plan>((currentPlan as Plan) || 'free');
+  const [plan, setPlan] = useState<SelectablePlan>(() => initialSelectablePlan(currentPlan));
   const [status, setStatus] = useState<SubStatus | ''>((currentStatus as SubStatus) || '');
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const isLifetimeUser = currentPlan === 'lifetime';
 
   useEffect(() => {
-    setPlan((currentPlan as Plan) || 'free');
+    setPlan(initialSelectablePlan(currentPlan));
     setStatus((currentStatus as SubStatus) || '');
   }, [currentPlan, currentStatus]);
 
@@ -62,11 +70,15 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
       <h3 className={styles.actionTitle}>Repair plan</h3>
       <div className={styles.formRow}>
         <label className={styles.label}>Plan</label>
-        <select value={plan} onChange={e => setPlan(e.target.value as Plan)} className={styles.select}>
+        {isLifetimeUser && (
+          <p style={{ marginBottom: 8, fontSize: 13, color: '#57534e' }}>
+            User is currently on <strong>lifetime</strong>. Choose free, pro, or premium below to replace it.
+          </p>
+        )}
+        <select value={plan} onChange={e => setPlan(e.target.value as SelectablePlan)} className={styles.select}>
           <option value="free">free</option>
           <option value="pro">pro</option>
           <option value="premium">premium</option>
-          <option value="lifetime">lifetime</option>
         </select>
       </div>
       <div className={styles.formRow}>
