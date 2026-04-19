@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 type Plan = 'free' | 'pro' | 'premium' | 'lifetime';
@@ -13,15 +14,24 @@ interface AdminActionsProps {
 }
 
 export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActionsProps) {
-  const [plan, setPlan] = useState<Plan>(currentPlan as Plan || 'free');
-  const [status, setStatus] = useState<SubStatus | ''>(currentStatus as SubStatus || '');
+  const router = useRouter();
+  const [plan, setPlan] = useState<Plan>((currentPlan as Plan) || 'free');
+  const [status, setStatus] = useState<SubStatus | ''>((currentStatus as SubStatus) || '');
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
 
+  useEffect(() => {
+    setPlan((currentPlan as Plan) || 'free');
+    setStatus((currentStatus as SubStatus) || '');
+  }, [currentPlan, currentStatus]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!reason.trim()) { setResult({ ok: false, message: 'Reason is required.' }); return; }
+    if (!reason.trim()) {
+      setResult({ ok: false, message: 'Reason is required.' });
+      return;
+    }
     if (!confirm(`Set plan to "${plan}" (status: ${status || 'null'}) for this user?\n\nReason: ${reason}`)) return;
 
     setLoading(true);
@@ -38,6 +48,7 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
       } else {
         setResult({ ok: true, message: 'Plan updated successfully.' });
         setReason('');
+        router.refresh();
       }
     } catch {
       setResult({ ok: false, message: 'Network error.' });
@@ -48,7 +59,7 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
 
   return (
     <form onSubmit={handleSubmit} className={styles.actionForm}>
-      <h3 className={styles.actionTitle}>Repair Plan</h3>
+      <h3 className={styles.actionTitle}>Repair plan</h3>
       <div className={styles.formRow}>
         <label className={styles.label}>Plan</label>
         <select value={plan} onChange={e => setPlan(e.target.value as Plan)} className={styles.select}>
@@ -59,7 +70,7 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
         </select>
       </div>
       <div className={styles.formRow}>
-        <label className={styles.label}>Subscription Status</label>
+        <label className={styles.label}>Subscription status</label>
         <select value={status} onChange={e => setStatus(e.target.value as SubStatus | '')} className={styles.select}>
           <option value="">— none / null —</option>
           <option value="active">active</option>
@@ -69,7 +80,9 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
         </select>
       </div>
       <div className={styles.formRow}>
-        <label className={styles.label}>Reason <span className={styles.required}>*</span></label>
+        <label className={styles.label}>
+          Reason <span className={styles.required}>*</span>
+        </label>
         <input
           type="text"
           value={reason}
@@ -79,11 +92,9 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
           maxLength={300}
         />
       </div>
-      {result && (
-        <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>
-      )}
+      {result && <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>}
       <button type="submit" disabled={loading} className={styles.actionBtn}>
-        {loading ? 'Saving…' : 'Apply Plan Change'}
+        {loading ? 'Saving…' : 'Apply plan change'}
       </button>
     </form>
   );
@@ -94,15 +105,16 @@ interface ResetUsageProps {
 }
 
 const RESOURCE_TYPES = [
-  { value: 'analyses',      label: 'Job Analyses' },
-  { value: 'tailoring',     label: 'Resume Tailoring' },
-  { value: 'cover_letters', label: 'Cover Letters' },
-  { value: 'job_scrapes',   label: 'LinkedIn Searches' },
+  { value: 'analyses', label: 'Job analyses' },
+  { value: 'tailoring', label: 'Resume tailoring' },
+  { value: 'cover_letters', label: 'Cover letters' },
+  { value: 'job_scrapes', label: 'LinkedIn searches' },
 ] as const;
 
-type ResourceType = typeof RESOURCE_TYPES[number]['value'];
+type ResourceType = (typeof RESOURCE_TYPES)[number]['value'];
 
 export function ResetUsageForm({ userId }: ResetUsageProps) {
+  const router = useRouter();
   const [resource, setResource] = useState<ResourceType>('analyses');
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
@@ -110,7 +122,10 @@ export function ResetUsageForm({ userId }: ResetUsageProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!reason.trim()) { setResult({ ok: false, message: 'Reason is required.' }); return; }
+    if (!reason.trim()) {
+      setResult({ ok: false, message: 'Reason is required.' });
+      return;
+    }
     if (!confirm(`Reset "${resource}" usage for this user this month?\n\nReason: ${reason}`)) return;
 
     setLoading(true);
@@ -127,6 +142,7 @@ export function ResetUsageForm({ userId }: ResetUsageProps) {
       } else {
         setResult({ ok: true, message: `Usage for "${resource}" reset to 0.` });
         setReason('');
+        router.refresh();
       }
     } catch {
       setResult({ ok: false, message: 'Network error.' });
@@ -137,17 +153,21 @@ export function ResetUsageForm({ userId }: ResetUsageProps) {
 
   return (
     <form onSubmit={handleSubmit} className={styles.actionForm}>
-      <h3 className={styles.actionTitle}>Reset Monthly Usage</h3>
+      <h3 className={styles.actionTitle}>Reset monthly usage</h3>
       <div className={styles.formRow}>
         <label className={styles.label}>Resource</label>
         <select value={resource} onChange={e => setResource(e.target.value as ResourceType)} className={styles.select}>
           {RESOURCE_TYPES.map(r => (
-            <option key={r.value} value={r.value}>{r.label}</option>
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
           ))}
         </select>
       </div>
       <div className={styles.formRow}>
-        <label className={styles.label}>Reason <span className={styles.required}>*</span></label>
+        <label className={styles.label}>
+          Reason <span className={styles.required}>*</span>
+        </label>
         <input
           type="text"
           value={reason}
@@ -157,11 +177,9 @@ export function ResetUsageForm({ userId }: ResetUsageProps) {
           maxLength={300}
         />
       </div>
-      {result && (
-        <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>
-      )}
+      {result && <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>}
       <button type="submit" disabled={loading} className={styles.actionBtn}>
-        {loading ? 'Resetting…' : 'Reset Usage'}
+        {loading ? 'Resetting…' : 'Reset usage'}
       </button>
     </form>
   );
@@ -175,15 +193,24 @@ interface AccountStatusProps {
 }
 
 export function AccountStatusForm({ userId, currentStatus }: AccountStatusProps) {
-  const [status, setStatus] = useState<AccountStatus>(currentStatus as AccountStatus || 'active');
+  const router = useRouter();
+  const [status, setStatus] = useState<AccountStatus>((currentStatus as AccountStatus) || 'active');
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
 
+  useEffect(() => {
+    setStatus((currentStatus as AccountStatus) || 'active');
+  }, [currentStatus]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!reason.trim()) { setResult({ ok: false, message: 'Reason is required.' }); return; }
-    if (status === 'suspended' && !confirm(`Suspend this account? The user will not be able to access the app.\n\nReason: ${reason}`)) return;
+    if (!reason.trim()) {
+      setResult({ ok: false, message: 'Reason is required.' });
+      return;
+    }
+    if (status === 'suspended' && !confirm(`Suspend this account? The user will not be able to access the app.\n\nReason: ${reason}`))
+      return;
 
     setLoading(true);
     setResult(null);
@@ -195,7 +222,10 @@ export function AccountStatusForm({ userId, currentStatus }: AccountStatusProps)
       });
       const data = await res.json();
       setResult(res.ok ? { ok: true, message: 'Account status updated.' } : { ok: false, message: data.error || 'Failed.' });
-      if (res.ok) setReason('');
+      if (res.ok) {
+        setReason('');
+        router.refresh();
+      }
     } catch {
       setResult({ ok: false, message: 'Network error.' });
     } finally {
@@ -205,7 +235,7 @@ export function AccountStatusForm({ userId, currentStatus }: AccountStatusProps)
 
   return (
     <form onSubmit={handleSubmit} className={styles.actionForm}>
-      <h3 className={styles.actionTitle}>Account Status</h3>
+      <h3 className={styles.actionTitle}>Account status</h3>
       <div className={styles.formRow}>
         <label className={styles.label}>Status</label>
         <select value={status} onChange={e => setStatus(e.target.value as AccountStatus)} className={styles.select}>
@@ -215,7 +245,9 @@ export function AccountStatusForm({ userId, currentStatus }: AccountStatusProps)
         </select>
       </div>
       <div className={styles.formRow}>
-        <label className={styles.label}>Reason <span className={styles.required}>*</span></label>
+        <label className={styles.label}>
+          Reason <span className={styles.required}>*</span>
+        </label>
         <input
           type="text"
           value={reason}
@@ -225,11 +257,9 @@ export function AccountStatusForm({ userId, currentStatus }: AccountStatusProps)
           maxLength={300}
         />
       </div>
-      {result && (
-        <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>
-      )}
+      {result && <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>}
       <button type="submit" disabled={loading} className={styles.actionBtn}>
-        {loading ? 'Saving…' : 'Set Status'}
+        {loading ? 'Saving…' : 'Set status'}
       </button>
     </form>
   );
@@ -248,8 +278,12 @@ export function DeleteUserForm({ userId, userEmail }: DeleteUserProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!reason.trim()) { setResult({ ok: false, message: 'Reason is required.' }); return; }
-    if (!confirm(`PERMANENTLY DELETE this account and all data?\n\nThis cannot be undone.\n\nEmail: ${userEmail}\nReason: ${reason}`)) return;
+    if (!reason.trim()) {
+      setResult({ ok: false, message: 'Reason is required.' });
+      return;
+    }
+    if (!confirm(`PERMANENTLY DELETE this account and all data?\n\nThis cannot be undone.\n\nEmail: ${userEmail}\nReason: ${reason}`))
+      return;
 
     setLoading(true);
     setResult(null);
@@ -262,7 +296,9 @@ export function DeleteUserForm({ userId, userEmail }: DeleteUserProps) {
       const data = await res.json();
       if (res.ok) {
         setResult({ ok: true, message: 'User deleted. Redirecting…' });
-        setTimeout(() => { window.location.href = '/admin/users'; }, 1500);
+        window.setTimeout(() => {
+          window.location.href = '/admin/users';
+        }, 1500);
       } else {
         setResult({ ok: false, message: data.error || 'Failed.' });
       }
@@ -274,10 +310,12 @@ export function DeleteUserForm({ userId, userEmail }: DeleteUserProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={styles.actionForm} style={{ borderColor: '#fee2e2' }}>
-      <h3 className={styles.actionTitle} style={{ color: '#991b1b' }}>Delete Account (GDPR)</h3>
+    <form onSubmit={handleSubmit} className={styles.dangerForm}>
+      <h3 className={styles.dangerFormTitle}>Delete account (GDPR)</h3>
       <div className={styles.formRow}>
-        <label className={styles.label}>Confirm user email <span className={styles.required}>*</span></label>
+        <label className={styles.label}>
+          Confirm user email <span className={styles.required}>*</span>
+        </label>
         <input
           type="email"
           value={confirmEmail}
@@ -287,7 +325,9 @@ export function DeleteUserForm({ userId, userEmail }: DeleteUserProps) {
         />
       </div>
       <div className={styles.formRow}>
-        <label className={styles.label}>Reason <span className={styles.required}>*</span></label>
+        <label className={styles.label}>
+          Reason <span className={styles.required}>*</span>
+        </label>
         <input
           type="text"
           value={reason}
@@ -297,16 +337,13 @@ export function DeleteUserForm({ userId, userEmail }: DeleteUserProps) {
           maxLength={300}
         />
       </div>
-      {result && (
-        <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>
-      )}
+      {result && <p className={result.ok ? styles.successMsg : styles.errorMsg}>{result.message}</p>}
       <button
         type="submit"
         disabled={loading || confirmEmail.toLowerCase() !== userEmail.toLowerCase()}
-        className={styles.actionBtn}
-        style={{ background: '#991b1b' }}
+        className={styles.deleteBtn}
       >
-        {loading ? 'Deleting…' : 'Delete User Permanently'}
+        {loading ? 'Deleting…' : 'Delete user permanently'}
       </button>
     </form>
   );
