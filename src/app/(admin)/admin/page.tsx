@@ -1,169 +1,207 @@
-import { createServiceClient } from '@/lib/supabase/server';
-import styles from './page.module.css';
+import Link from 'next/link';
+import { getAdminOverviewData, getRecentAdminAudit } from '@/lib/admin/overview-data';
+import styles from './overview.module.css';
 
-type AdminUser = {
-  id: string;
-  email: string;
-  full_name: string | null;
-  plan: string;
-  subscription_status: string | null;
-  onboarding_complete: boolean;
-  created_at: string;
+function tone(n: number, warnAt: number, dangerAt: number): 'ok' | 'warn' | 'danger' | 'neutral' {
+  if (n >= dangerAt) return 'danger';
+  if (n >= warnAt) return 'warn';
+  if (n > 0) return 'neutral';
+  return 'ok';
+}
+
+function metricClass(t: 'ok' | 'warn' | 'danger' | 'neutral'): string {
+  if (t === 'danger') return styles.metricDanger;
+  if (t === 'warn') return styles.metricWarn;
+  if (t === 'ok') return styles.metricOk;
+  return styles.metricNeutral;
+}
+
+export const metadata = {
+  title: 'Overview — Admin',
+  robots: 'noindex,nofollow' as const,
 };
 
-async function getUsers(query?: string): Promise<AdminUser[]> {
-  const supabase = await createServiceClient();
-
-  if (query?.includes('@')) {
-    // Search by email — listUsers + in-memory filter (getUserByEmail not available in this SDK version)
-    const { data: authList } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-    const authUser = authList?.users?.find(u => u.email?.toLowerCase() === query.trim().toLowerCase());
-    if (!authUser) return [];
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('full_name, plan, subscription_status, onboarding_complete, created_at')
-      .eq('id', authUser.id)
-      .single();
-
-    if (!profile) return [];
-
-    return [{
-      id: authUser.id,
-      email: authUser.email ?? '',
-      full_name: profile.full_name,
-      plan: profile.plan,
-      subscription_status: profile.subscription_status,
-      onboarding_complete: profile.onboarding_complete,
-      created_at: profile.created_at,
-    }];
-  }
-
-  // Search by name or list recent 50 users
-  let profileQuery = supabase
-    .from('profiles')
-    .select('id, full_name, plan, subscription_status, onboarding_complete, created_at')
-    .order('created_at', { ascending: false })
-    .limit(50);
-
-  if (query) {
-    profileQuery = profileQuery.ilike('full_name', `%${query}%`);
-  }
-
-  const { data: profiles } = await profileQuery;
-  if (!profiles?.length) return [];
-
-  // One getUserById per row — avoids listUsers(1000), which is slow and can hit serverless timeouts.
-  const authResults = await Promise.all(
-    profiles.map(p => supabase.auth.admin.getUserById(p.id))
-  );
-  const emailMap = new Map(
-    authResults.map((r, i) => [profiles[i].id, r.data.user?.email ?? ''])
-  );
-
-  return profiles.map(p => ({
-    id: p.id,
-    email: emailMap.get(p.id) ?? '',
-    full_name: p.full_name,
-    plan: p.plan,
-    subscription_status: p.subscription_status,
-    onboarding_complete: p.onboarding_complete,
-    created_at: p.created_at,
-  }));
-}
-
-function planBadgeClass(plan: string) {
-  if (plan === 'premium' || plan === 'lifetime') return styles.badgePremium;
-  if (plan === 'pro') return styles.badgePro;
-  return styles.badgeFree;
-}
-
-function statusBadgeClass(status: string | null) {
-  if (status === 'active' || status === 'trialing') return styles.badgeActive;
-  if (status === 'past_due') return styles.badgePastDue;
-  return styles.badgeNeutral;
-}
-
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) {
-  const { q } = await searchParams;
-  const users = await getUsers(q);
+export default async function AdminOverviewPage() {
+  const [data, audit] = await Promise.all([getAdminOverviewData(), getRecentAdminAudit(10)]);
+  const opsFailed = tone(data.ops.failedResumes7d, 1, 5);
+  const opsPending = tone(data.ops.pendingResumes, 3, 10);
+  const opsWh = tone(data.ops.webhookFailures24h, 1, 3);
+  const opsAi = tone(data.ops.aiErrors24h, 3, 10);
+  const trFlag = data.trust.flagged > 0 ? 'warn' : 'ok';
+  const trSus = data.trust.suspended > 0 ? 'danger' : 'ok';
+  const trPriv = data.trust.pendingPrivacy > 0 ? 'warn' : 'ok';
 
   return (
-    <div>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.title}>User Management</h1>
-        <span className={styles.count}>{users.length} result{users.length !== 1 ? 's' : ''}</span>
-      </div>
-
-      <form method="GET" action="/admin" className={styles.searchForm}>
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="Search by email or name…"
-          className={styles.searchInput}
-          autoComplete="off"
-        />
-        <button type="submit" className={styles.searchBtn}>Search</button>
-        {q && (
-          <a href="/admin" className={styles.clearBtn}>Clear</a>
-        )}
-      </form>
-
-      {users.length === 0 ? (
-        <p className={styles.empty}>
-          {q ? `No users found matching "${q}".` : 'No users yet.'}
+    <div className={styles.page}>
+      <header className={styles.intro}>
+        <h1 className={styles.title}>Overview</h1>
+        <p className={styles.subtitle}>
+          Monitor growth, product health, and trust signals. Use the sections below to drill into users, operations,
+          and compliance workflows.
         </p>
-      ) : (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Plan</th>
-                <th>Status</th>
-                <th>Onboarded</th>
-                <th>Joined</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(user => (
-                <tr key={user.id}>
-                  <td>
-                    <div className={styles.userCell}>
-                      <span className={styles.userName}>{user.full_name || '—'}</span>
-                      <span className={styles.userEmail}>{user.email}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`${styles.badge} ${planBadgeClass(user.plan)}`}>
-                      {user.plan}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`${styles.badge} ${statusBadgeClass(user.subscription_status)}`}>
-                      {user.subscription_status ?? 'none'}
-                    </span>
-                  </td>
-                  <td className={styles.center}>
-                    {user.onboarding_complete ? '✓' : '—'}
-                  </td>
-                  <td className={styles.muted}>
-                    {new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </td>
-                  <td>
-                    <a href={`/admin/users/${user.id}`} className={styles.viewLink}>View →</a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      </header>
+
+      <div className={styles.divider} />
+
+      <section className={styles.section} aria-labelledby="growth-heading">
+        <h2 id="growth-heading" className={styles.sectionLabel}>
+          Growth
+        </h2>
+        <div className={styles.grid4}>
+          <div className={`${styles.card} ${styles.cardStatic}`}>
+            <span className={`${styles.metric} ${styles.metricNeutral}`}>{data.totalUsers}</span>
+            <span className={styles.cardTitle}>Total users</span>
+            <span className={styles.cardHint}>Profiles in the database</span>
+          </div>
+          <div className={`${styles.card} ${styles.cardStatic}`}>
+            <span className={`${styles.metric} ${styles.metricNeutral}`}>{data.signups7d}</span>
+            <span className={styles.cardTitle}>New signups</span>
+            <span className={styles.cardHint}>Last 7 days</span>
+          </div>
+          <div className={`${styles.card} ${styles.cardStatic}`}>
+            <span className={`${styles.metric} ${styles.metricNeutral}`}>{data.paidPlans}</span>
+            <span className={styles.cardTitle}>Paid plans</span>
+            <span className={styles.cardHint}>Pro, Premium, or Lifetime</span>
+          </div>
+          <Link href="/admin/users" className={styles.card}>
+            <span className={`${styles.metric} ${styles.metricNeutral}`}>→</span>
+            <span className={styles.cardTitle}>User directory</span>
+            <span className={styles.cardHint}>Search, inspect profiles, and take support actions</span>
+            <span className={styles.cardCta}>Open users</span>
+          </Link>
         </div>
-      )}
+      </section>
+
+      <section className={styles.section} aria-labelledby="health-heading">
+        <h2 id="health-heading" className={styles.sectionLabel}>
+          Product health
+        </h2>
+        <div className={styles.grid4}>
+          <Link href="/admin/ops/resumes" className={styles.card}>
+            <span className={`${styles.metric} ${metricClass(opsFailed)}`}>{data.ops.failedResumes7d}</span>
+            <span className={styles.cardTitle}>Failed resume parses</span>
+            <span className={styles.cardHint}>Last 7 days — investigate parsing pipeline</span>
+            <span className={styles.cardCta}>View resumes</span>
+          </Link>
+          <Link href="/admin/ops/resumes?status=pending" className={styles.card}>
+            <span className={`${styles.metric} ${metricClass(opsPending)}`}>{data.ops.pendingResumes}</span>
+            <span className={styles.cardTitle}>Pending / processing</span>
+            <span className={styles.cardHint}>Resumes still in the queue</span>
+            <span className={styles.cardCta}>View queue</span>
+          </Link>
+          <Link href="/admin/ops/webhooks" className={styles.card}>
+            <span className={`${styles.metric} ${metricClass(opsWh)}`}>{data.ops.webhookFailures24h}</span>
+            <span className={styles.cardTitle}>Webhook failures</span>
+            <span className={styles.cardHint}>Last 24 hours — billing &amp; Stripe events</span>
+            <span className={styles.cardCta}>View webhooks</span>
+          </Link>
+          <Link href="/admin/ops/ai-errors" className={styles.card}>
+            <span className={`${styles.metric} ${metricClass(opsAi)}`}>{data.ops.aiErrors24h}</span>
+            <span className={styles.cardTitle}>AI errors</span>
+            <span className={styles.cardHint}>Last 24 hours — Gemini / fallback routes</span>
+            <span className={styles.cardCta}>View errors</span>
+          </Link>
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="trust-heading">
+        <h2 id="trust-heading" className={styles.sectionLabel}>
+          Trust &amp; safety
+        </h2>
+        <div className={styles.grid3}>
+          <Link href="/admin/trust/flags" className={styles.card}>
+            <span className={`${styles.metric} ${trFlag === 'warn' ? styles.metricWarn : styles.metricOk}`}>
+              {data.trust.flagged}
+            </span>
+            <span className={styles.cardTitle}>Flagged accounts</span>
+            <span className={styles.cardHint}>Marked for manual review</span>
+            <span className={styles.cardCta}>Review flags</span>
+          </Link>
+          <Link href="/admin/trust/flags?status=suspended" className={styles.card}>
+            <span className={`${styles.metric} ${trSus === 'danger' ? styles.metricDanger : styles.metricOk}`}>
+              {data.trust.suspended}
+            </span>
+            <span className={styles.cardTitle}>Suspended</span>
+            <span className={styles.cardHint}>Blocked from the application</span>
+            <span className={styles.cardCta}>View suspended</span>
+          </Link>
+          <Link href="/admin/trust/privacy" className={styles.card}>
+            <span className={`${styles.metric} ${trPriv === 'warn' ? styles.metricWarn : styles.metricOk}`}>
+              {data.trust.pendingPrivacy}
+            </span>
+            <span className={styles.cardTitle}>Privacy requests</span>
+            <span className={styles.cardHint}>Awaiting admin action</span>
+            <span className={styles.cardCta}>Process queue</span>
+          </Link>
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="audit-heading">
+        <h2 id="audit-heading" className={styles.sectionLabel}>
+          Recent admin activity
+        </h2>
+        {audit.length === 0 ? (
+          <div className={styles.auditEmpty}>No audit log entries yet.</div>
+        ) : (
+          <div className={styles.auditCard}>
+            <table className={styles.auditTable}>
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Action</th>
+                  <th>Target</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {audit.map(row => (
+                  <tr key={row.id}>
+                    <td className={styles.auditTime}>
+                      {new Date(row.created_at).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                    <td className={styles.auditAction}>{row.action}</td>
+                    <td className={styles.auditMeta}>
+                      {row.target_user_id ? (
+                        <Link href={`/admin/users/${row.target_user_id}`} className={styles.auditLink}>
+                          User profile
+                        </Link>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                    <td className={styles.auditMeta}>{row.reason || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <section className={styles.section} aria-labelledby="quick-heading">
+        <h2 id="quick-heading" className={styles.sectionLabel}>
+          Shortcuts
+        </h2>
+        <div className={styles.quickRow}>
+          <Link href="/admin/users" className={`${styles.quickBtn} ${styles.quickBtnPrimary}`}>
+            User management
+          </Link>
+          <Link href="/admin/ops" className={styles.quickBtn}>
+            Ops center
+          </Link>
+          <Link href="/admin/trust" className={styles.quickBtn}>
+            Trust overview
+          </Link>
+          <Link href="/admin/trust/abuse" className={styles.quickBtn}>
+            Usage &amp; abuse review
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

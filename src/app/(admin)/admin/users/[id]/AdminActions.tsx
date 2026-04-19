@@ -262,7 +262,7 @@ export function DeleteUserForm({ userId, userEmail }: DeleteUserProps) {
       const data = await res.json();
       if (res.ok) {
         setResult({ ok: true, message: 'User deleted. Redirecting…' });
-        setTimeout(() => { window.location.href = '/admin'; }, 1500);
+        setTimeout(() => { window.location.href = '/admin/users'; }, 1500);
       } else {
         setResult({ ok: false, message: data.error || 'Failed.' });
       }

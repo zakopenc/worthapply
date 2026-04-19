@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase/server';
+import { stripeCustomerDashboardUrl } from '@/lib/admin/stripe-dashboard-url';
 import { RepairPlanForm, ResetUsageForm, AccountStatusForm, DeleteUserForm } from './AdminActions';
 import styles from './page.module.css';
 
@@ -86,7 +87,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
   return (
     <div>
       <div className={styles.backRow}>
-        <a href="/admin" className={styles.backLink}>← Back to users</a>
+        <a href="/admin/users" className={styles.backLink}>← Back to users</a>
       </div>
 
       <div className={styles.pageHeader}>
@@ -118,9 +119,26 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
           <StatCard label="Analyses" value={user.analysis_count} />
           <StatCard label="Onboarded" value={user.onboarding_complete ? 'Yes' : 'No'} />
           <StatCard label="Joined" value={new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} />
-          <StatCard label="Stripe ID" value={user.stripe_customer_id ? user.stripe_customer_id.slice(0, 14) + '…' : '—'} />
           <StatCard label="User ID" value={user.id.slice(0, 8) + '…'} />
         </div>
+        {user.stripe_customer_id ? (
+          <div className={styles.stripeRow}>
+            <div className={styles.stripeInfo}>
+              <span className={styles.stripeLabel}>Stripe customer</span>
+              <code className={styles.stripeId}>{user.stripe_customer_id}</code>
+            </div>
+            <a
+              href={stripeCustomerDashboardUrl(user.stripe_customer_id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.stripeCta}
+            >
+              Open in Stripe ↗
+            </a>
+          </div>
+        ) : (
+          <p className={styles.stripeMissing}>No Stripe customer ID on file.</p>
+        )}
       </section>
 
       <section className={styles.section}>
