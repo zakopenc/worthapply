@@ -30,6 +30,7 @@ export default async function AdminOverviewPage() {
   const trFlag = data.trust.flagged > 0 ? 'warn' : 'ok';
   const trSus = data.trust.suspended > 0 ? 'danger' : 'ok';
   const trPriv = data.trust.pendingPrivacy > 0 ? 'warn' : 'ok';
+  const supOpen = tone(data.supportOpen, 1, 8);
 
   return (
     <div className={styles.page}>
@@ -68,6 +69,20 @@ export default async function AdminOverviewPage() {
             <span className={styles.cardTitle}>User directory</span>
             <span className={styles.cardHint}>Search, inspect profiles, and take support actions</span>
             <span className={styles.cardCta}>Open users</span>
+          </Link>
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="support-heading">
+        <h2 id="support-heading" className={styles.sectionLabel}>
+          Support inbox
+        </h2>
+        <div className={styles.grid4}>
+          <Link href="/admin/support" className={styles.card}>
+            <span className={`${styles.metric} ${metricClass(supOpen)}`}>{data.supportOpen}</span>
+            <span className={styles.cardTitle}>Open tickets</span>
+            <span className={styles.cardHint}>Reports from the in-app Help &amp; support form</span>
+            <span className={styles.cardCta}>View inbox</span>
           </Link>
         </div>
       </section>
@@ -190,6 +205,9 @@ export default async function AdminOverviewPage() {
         <div className={styles.quickRow}>
           <Link href="/admin/users" className={`${styles.quickBtn} ${styles.quickBtnPrimary}`}>
             User management
+          </Link>
+          <Link href="/admin/support" className={styles.quickBtn}>
+            Support inbox
           </Link>
           <Link href="/admin/ops" className={styles.quickBtn}>
             Ops center

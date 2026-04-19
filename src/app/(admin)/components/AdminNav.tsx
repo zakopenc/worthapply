@@ -27,6 +27,7 @@ export function AdminNav({ role, deployEnv }: Props) {
   const users = pathname.startsWith('/admin/users');
   const ops = pathname.startsWith('/admin/ops');
   const trust = pathname.startsWith('/admin/trust');
+  const support = pathname.startsWith('/admin/support');
 
   return (
     <nav className={styles.navInner} aria-label="Admin primary">
@@ -40,6 +41,9 @@ export function AdminNav({ role, deployEnv }: Props) {
         </Link>
         <Link href="/admin/users" className={navClass(users)}>
           Users
+        </Link>
+        <Link href="/admin/support" className={navClass(support)}>
+          Support
         </Link>
         <Link href="/admin/ops" className={navClass(ops)}>
           Ops

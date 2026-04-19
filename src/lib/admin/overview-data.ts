@@ -4,6 +4,8 @@ export type AdminOverviewData = {
   totalUsers: number;
   signups7d: number;
   paidPlans: number;
+  /** Open support tickets (user reports). */
+  supportOpen: number;
   ops: {
     failedResumes7d: number;
     pendingResumes: number;
@@ -29,6 +31,7 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
     { count: totalUsers },
     { count: signups7d },
     { count: paidPlans },
+    { count: supportOpen },
     { count: failedResumes7d },
     { count: pendingResumes },
     { count: webhookFailures24h },
@@ -43,6 +46,7 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .in('plan', ['pro', 'premium', 'lifetime']),
+    supabase.from('support_tickets').select('*', { count: 'exact', head: true }).eq('status', 'open'),
     supabase
       .from('resumes')
       .select('*', { count: 'exact', head: true })
@@ -64,6 +68,7 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
     totalUsers: totalUsers ?? 0,
     signups7d: signups7d ?? 0,
     paidPlans: paidPlans ?? 0,
+    supportOpen: supportOpen ?? 0,
     ops: {
       failedResumes7d: failedResumes7d ?? 0,
       pendingResumes: pendingResumes ?? 0,
