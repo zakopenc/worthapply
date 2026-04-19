@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { SignOutButton } from '@/components/app/SignOutButton';
 import styles from './AdminNav.module.css';
 
 type Props = {
@@ -55,6 +56,7 @@ export function AdminNav({ role, deployEnv }: Props) {
         <Link href="/dashboard" className={styles.appLink}>
           App →
         </Link>
+        <SignOutButton className={styles.logoutBtn}>Log out</SignOutButton>
       </div>
     </nav>
   );

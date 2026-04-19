@@ -10,7 +10,9 @@ import {
   Activity,
   WandSparkles,
   Inbox,
+  LogOut,
 } from "lucide-react";
+import { SignOutButton } from "@/components/app/SignOutButton";
 import {
   APPLICATION_STATUS_META,
   normalizeApplicationStatus,
@@ -132,7 +134,7 @@ export default async function DashboardPage() {
               : `You have ${activeApplications} active application${activeApplications !== 1 ? "s" : ""} in progress.`}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/analyzer"
             className="flex items-center gap-2 px-5 py-2.5 bg-[#1c1c1a] text-white rounded-xl text-sm font-bold hover:bg-[#1c1c1a]/90 active:scale-95 transition-all shadow-lg"
@@ -147,6 +149,10 @@ export default async function DashboardPage() {
             <WandSparkles className="w-4 h-4 text-secondary" />
             Tailor Resume
           </Link>
+          <SignOutButton className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold border border-outline-variant/30 bg-white text-on-surface hover:bg-red-50 hover:text-red-600 hover:border-red-200/60 active:scale-95 transition-all">
+            <LogOut className="w-4 h-4 shrink-0" />
+            Log out
+          </SignOutButton>
         </div>
       </header>
 
