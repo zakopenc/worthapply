@@ -1,15 +1,47 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { LifeBuoy, Loader2, Paperclip, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 const MAX_FILES = 5;
 const MAX_BYTES = 5 * 1024 * 1024;
-const ACCEPT = 'image/png,image/jpeg,image/webp,image/gif';
+/** Picker + validation — bucket must allow these MIME types */
+const ACCEPT = 'image/png,image/jpeg,image/jpg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif';
 const BUCKET = 'support-attachments';
+
+const ALLOWED_EXT = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif']);
+
+function getExt(name: string): string {
+  return name.split('.').pop()?.toLowerCase() ?? '';
+}
+
+/** Mobile Safari often leaves `file.type` empty; some Android builds use octet-stream + extension. */
+function isAcceptableImageFile(file: File): boolean {
+  const ext = getExt(file.name);
+  const extOk = ALLOWED_EXT.has(ext);
+  if (file.type === 'image/svg+xml') return false;
+  const allowedMime = new Set(['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/pjpeg', 'image/x-png']);
+  if (allowedMime.has(file.type)) return true;
+  if (extOk && (!file.type || file.type === 'application/octet-stream')) return true;
+  if (file.type.startsWith('image/') && extOk) return true;
+  return false;
+}
+
+/** Supabase bucket expects a concrete image/* content type */
+function contentTypeForUpload(file: File): string {
+  if (file.type && file.type.startsWith('image/') && file.type !== 'image/svg+xml') {
+    if (file.type === 'image/jpg') return 'image/jpeg';
+    return file.type;
+  }
+  const ext = getExt(file.name);
+  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
+  if (ext === 'png') return 'image/png';
+  if (ext === 'webp') return 'image/webp';
+  if (ext === 'gif') return 'image/gif';
+  return 'image/jpeg';
+}
 
 function sanitizeFilename(name: string): string {
   const cleaned = name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
@@ -37,13 +69,16 @@ export default function SupportClient() {
           message = `You can add at most ${MAX_FILES} screenshots.`;
           break;
         }
-        if (file.size === 0) continue;
+        if (file.size === 0) {
+          message = 'Skipped an empty file.';
+          continue;
+        }
         if (file.size > MAX_BYTES) {
           message = `"${file.name}" is too large (max 5MB per image).`;
           continue;
         }
-        if (!file.type.startsWith('image/')) {
-          message = `"${file.name}" is not an image.`;
+        if (!isAcceptableImageFile(file)) {
+          message = `"${file.name}" must be PNG, JPEG, WebP, or GIF.`;
           continue;
         }
         const url = URL.createObjectURL(file);
@@ -82,15 +117,16 @@ export default function SupportClient() {
 
     setSubmitting(true);
     const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
 
-    if (!user) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.user) {
       setError('You must be signed in to send a report.');
       setSubmitting(false);
       return;
     }
+    const user = session.user;
 
     const ticketId = crypto.randomUUID();
     const uploadedPaths: string[] = [];
@@ -99,13 +135,23 @@ export default function SupportClient() {
       for (let i = 0; i < previews.length; i++) {
         const file = previews[i].file;
         const path = `${user.id}/${ticketId}/${i + 1}-${sanitizeFilename(file.name)}`;
+        const contentType = contentTypeForUpload(file);
+
         const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, {
-          contentType: file.type || 'image/png',
+          contentType,
           upsert: false,
+          cacheControl: '3600',
         });
+
         if (upErr) {
-          console.error(upErr);
-          throw new Error('Upload failed. Check your connection and try again.');
+          console.error('[support upload]', path, upErr);
+          const hint =
+            upErr.message?.includes('Bucket not found') || upErr.message?.includes('not found')
+              ? 'Storage is not configured yet. Please email hello@worthapply.com with your screenshots.'
+              : upErr.message?.includes('JWT') || upErr.message?.includes('expired')
+                ? 'Your session expired. Refresh the page and try again.'
+                : upErr.message || 'Upload failed. Check your connection and try again.';
+          throw new Error(hint);
         }
         uploadedPaths.push(path);
       }
@@ -113,6 +159,7 @@ export default function SupportClient() {
       const res = await fetch('/api/support', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({
           ticketId,
           subject: s,
@@ -215,11 +262,25 @@ export default function SupportClient() {
                 Screenshots (optional)
               </span>
               <p className="text-sm text-on-surface-variant ml-1 -mt-1">
-                PNG, JPEG, WebP, or GIF — up to {MAX_FILES} files, 5MB each.
+                PNG, JPEG, WebP, or GIF — up to {MAX_FILES} files, 5MB each. You can drag files here or use the file
+                picker.
               </p>
 
-              <label className="flex flex-col items-center justify-center gap-2 px-6 py-10 rounded-2xl border-2 border-dashed border-outline-variant/40 bg-surface-container-low/50 hover:border-secondary/40 hover:bg-surface-container-low transition-colors cursor-pointer">
+              <label
+                htmlFor="support-files"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  addFiles(e.dataTransfer.files);
+                }}
+                className="flex flex-col items-center justify-center gap-2 px-6 py-10 rounded-2xl border-2 border-dashed border-outline-variant/40 bg-surface-container-low/50 hover:border-secondary/40 hover:bg-surface-container-low transition-colors cursor-pointer"
+              >
                 <input
+                  id="support-files"
                   type="file"
                   accept={ACCEPT}
                   multiple
@@ -230,17 +291,28 @@ export default function SupportClient() {
                   }}
                 />
                 <Paperclip className="w-8 h-8 text-on-surface-variant" aria-hidden />
-                <span className="text-sm font-semibold text-on-surface">Click to attach screenshots</span>
-                <span className="text-xs text-on-surface-variant">
-                  Images upload securely from your browser (up to 5MB each).
+                <span className="text-sm font-semibold text-on-surface">Click or drag screenshots here</span>
+                <span className="text-xs text-on-surface-variant text-center px-2">
+                  If previews appear below, files are attached and will upload when you submit.
                 </span>
               </label>
 
               {previews.length > 0 && (
+                <p className="text-sm font-semibold text-secondary ml-1">
+                  {previews.length} file{previews.length !== 1 ? 's' : ''} ready to upload
+                </p>
+              )}
+
+              {previews.length > 0 && (
                 <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
                   {previews.map((p) => (
-                    <li key={p.id} className="relative aspect-video rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container">
-                      <Image src={p.url} alt="" fill className="object-cover" unoptimized />
+                    <li
+                      key={p.id}
+                      className="relative aspect-video rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container"
+                    >
+                      {/* Native img: next/image often fails to render blob: previews */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.url} alt="" className="h-full w-full object-cover" />
                       <button
                         type="button"
                         onClick={() => removePreview(p.id)}
@@ -265,7 +337,7 @@ export default function SupportClient() {
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Sending…
+                  {previews.length > 0 ? 'Uploading & sending…' : 'Sending…'}
                 </>
               ) : (
                 'Submit report'
