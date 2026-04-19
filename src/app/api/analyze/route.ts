@@ -8,18 +8,43 @@ import { checkRateLimit } from '@/lib/ratelimit';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
 import { logAiError } from '@/lib/admin/log-ai-error';
+import {
+  ANALYSIS_THRESHOLDS,
+  ANALYSIS_WEIGHTS,
+  clampScore0to100,
+  computeOverallScore,
+  verdictFromOverall,
+} from '@/lib/analysis-scoring';
 
 const ANALYSIS_PROMPT_VERSION = 'analysis-v3';
-const ANALYSIS_WEIGHTS = {
-  skills: 40,
-  experience: 35,
-  domain: 25,
+
+type GeminiAnalysis = {
+  job_metadata: { title: string; company: string; location: string; type: string; seniority_level: string };
+  overall_score: number;
+  sub_scores: { skills: number; experience: number; domain: number };
+  verdict: string;
+  matched_skills: { skill: string; evidence_from_resume: string }[];
+  skill_gaps: { skill: string; impact: string; suggestion: string }[];
+  recruiter_concerns: { concern: string; severity: string; mitigation: string }[];
+  seniority_analysis: { role_level: string; user_level: string; assessment: string; is_match: boolean };
 };
-const ANALYSIS_THRESHOLDS = {
-  apply_min: 70,
-  low_priority_min: 40,
-  skip_below: 40,
-};
+
+/** Clamp sub-scores, derive overall + verdict on the server (ignores model overall/verdict). */
+function applyDeterministicScoring(raw: GeminiAnalysis): GeminiAnalysis {
+  const sub_scores = {
+    skills: clampScore0to100(raw.sub_scores?.skills),
+    experience: clampScore0to100(raw.sub_scores?.experience),
+    domain: clampScore0to100(raw.sub_scores?.domain),
+  };
+  const overall_score = computeOverallScore(sub_scores);
+  const verdict = verdictFromOverall(overall_score);
+  return {
+    ...raw,
+    sub_scores,
+    overall_score,
+    verdict,
+  };
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -137,18 +162,15 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const analysis = geminiKey
-        ? await generateJSON<{
-            job_metadata: { title: string; company: string; location: string; type: string; seniority_level: string };
-            overall_score: number;
-            sub_scores: { skills: number; experience: number; domain: number };
-            verdict: string;
-            matched_skills: { skill: string; evidence_from_resume: string }[];
-            skill_gaps: { skill: string; impact: string; suggestion: string }[];
-            recruiter_concerns: { concern: string; severity: string; mitigation: string }[];
-            seniority_analysis: { role_level: string; user_level: string; assessment: string; is_match: boolean };
-          }>(buildAnalysisPrompt(job_description, resumeData as Record<string, unknown> | null))
-        : generateMockAnalysis(job_description);
+      const rawAnalysis = geminiKey
+        ? await generateJSON<GeminiAnalysis>(
+            buildAnalysisPrompt(job_description, resumeData as Record<string, unknown> | null)
+          )
+        : generateMockAnalysis(jobDescription);
+
+      const modelOverallScore = rawAnalysis.overall_score;
+      const modelVerdict = rawAnalysis.verdict;
+      const analysis = applyDeterministicScoring(rawAnalysis);
 
       const gatedAnalysis = {
         ...analysis,
@@ -188,9 +210,12 @@ export async function POST(request: NextRequest) {
             resume_source: linkedResumeId ? 'active_resume' : 'none',
             resume_note: resumeNote,
             scoring_method: {
-              overall_formula: 'skills*0.40 + experience*0.35 + domain*0.25',
+              overall_formula: '(skills*40 + experience*35 + domain*25) / 100',
               weights: ANALYSIS_WEIGHTS,
               verdict_thresholds: ANALYSIS_THRESHOLDS,
+              overall_computed_server: true,
+              model_overall_score: modelOverallScore,
+              model_verdict: modelVerdict,
             },
           },
         })

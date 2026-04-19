@@ -32,12 +32,12 @@ Analyze the fit between this candidate and this job like a world-class recruiter
 - If resume data is missing or sparse, explicitly stay conservative.
 
 ## SCORING RULES
-- Score each dimension from 0-100 using recruiter-quality calibration.
-- Overall score is a weighted average: skills (40%), experience (35%), domain (25%).
-- Verdict: score >= 70 = "apply", 40-69 = "low-priority", < 40 = "skip".
-- Do NOT give high scores for vague resumes with little proof.
-- Missing core requirements should drag the score down materially.
-- A candidate can still be "apply" with some gaps, but only if the proven strengths are strong and relevant.
+- Score each dimension from 0-100 using recruiter-quality calibration (skills, experience, domain).
+- The API computes the final overall score as: (skills×40 + experience×35 + domain×25) / 100. Your sub_scores must be well-calibrated; overall_score and verdict in this JSON are ignored server-side.
+- Verdict bands (applied to the computed overall): >= 70 = apply, 40-69 = low-priority, < 40 = skip.
+- Do NOT give high sub-scores for vague resumes with little proof.
+- Missing core requirements should drag the sub-scores down materially.
+- A candidate can still reach "apply" with some gaps only if the proven strengths are strong and relevant on the dimension scores.
 
 ## OUTPUT QUALITY BAR
 - Extract realistic job metadata from the job description when possible.
