@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { ArrowRight, ShieldCheck } from '@/components/ui/phosphor-icons';
+import { ShieldCheck } from '@/components/ui/phosphor-icons';
 import MarketingNav from '@/components/marketing/MarketingNav';
 import styles from './layout.module.css';
 
@@ -40,26 +40,6 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       <MarketingNav />
       <main>{children}</main>
       <footer className={styles.footer}>
-        <div className={styles.footerTop}>
-          <div className={styles.footerIntro}>
-            <span className={styles.badge}>WorthApply</span>
-            <h2>Ready to know before you apply?</h2>
-            <p>
-              Run your first fit analysis free. See if a role is worth your time before you change a single line on your
-              resume.
-            </p>
-            <div className={styles.footerActions}>
-              <Link href="/signup" className={styles.primaryCta}>
-                Get started free
-                <ArrowRight size={16} weight="bold" />
-              </Link>
-              <Link href="/pricing" className={styles.secondaryCta}>
-                View pricing
-              </Link>
-            </div>
-          </div>
-        </div>
-
         <div className={styles.footerMain}>
           <div className={styles.brandBlock}>
             <div className={styles.brandRow}>
