@@ -14,7 +14,7 @@ import {
   ReceiptText,
   Settings,
   Sparkles,
-  HelpCircle,
+  LifeBuoy,
   TrendingUp,
   LogOut,
 } from 'lucide-react';
@@ -36,6 +36,7 @@ const navItems = [
   { href: '/applications', label: 'Applications', icon: BriefcaseBusiness },
   { href: '/tracker', label: 'Pipeline Tracker', icon: FileSearch },
   { href: '/digest', label: 'Daily Digest', icon: ReceiptText },
+  { href: '/support', label: 'Support', icon: LifeBuoy },
 ];
 
 export default function Sidebar({ userName, plan }: SidebarProps) {
@@ -156,13 +157,6 @@ export default function Sidebar({ userName, plan }: SidebarProps) {
               <Settings className="w-4 h-4 shrink-0" />
               <span>Settings</span>
             </Link>
-            <a
-              href="mailto:hello@worthapply.com"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#4c4640] hover:bg-surface-container-low hover:text-[#1c1c1a] transition-all"
-            >
-              <HelpCircle className="w-4 h-4 shrink-0" />
-              <span>Support</span>
-            </a>
             <SignOutButton className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#4c4640] hover:bg-red-50 hover:text-red-600 transition-all w-full text-left">
               <LogOut className="w-4 h-4 shrink-0" />
               <span>Sign Out</span>
