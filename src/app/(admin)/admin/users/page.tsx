@@ -62,9 +62,9 @@ export default async function AdminUsersPage({
           Search
         </button>
         {q?.trim() ? (
-          <a href="/admin/users" className={styles.clearBtn}>
+          <Link href="/admin/users" className={styles.clearBtn}>
             Clear
-          </a>
+          </Link>
         ) : null}
       </form>
 
@@ -110,9 +110,9 @@ export default async function AdminUsersPage({
                       })}
                     </td>
                     <td>
-                      <a href={`/admin/users/${user.id}`} className={styles.viewLink}>
+                      <Link href={`/admin/users/${user.id}`} className={styles.viewLink}>
                         View →
-                      </a>
+                      </Link>
                     </td>
                   </tr>
                 ))}

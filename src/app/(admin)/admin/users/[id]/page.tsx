@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase/server';
 import { stripeCustomerDashboardUrl } from '@/lib/admin/stripe-dashboard-url';
@@ -87,7 +88,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
   return (
     <div>
       <div className={styles.backRow}>
-        <a href="/admin/users" className={styles.backLink}>← Back to users</a>
+        <Link href="/admin/users" className={styles.backLink}>← Back to users</Link>
       </div>
 
       <div className={styles.pageHeader}>
