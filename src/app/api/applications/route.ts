@@ -62,6 +62,22 @@ export async function POST(request: NextRequest) {
       if (analysisError || !analysis) {
         return NextResponse.json({ error: 'Analysis not found' }, { status: 404 });
       }
+
+      const { data: existingForAnalysis } = await supabase
+        .from('applications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('analysis_id', analysis_id)
+        .maybeSingle();
+
+      if (existingForAnalysis) {
+        return NextResponse.json({
+          data: {
+            ...existingForAnalysis,
+            status: normalizeApplicationStatus(existingForAnalysis.status),
+          },
+        });
+      }
     }
 
     const { data, error } = await supabase

@@ -8,6 +8,7 @@ import { checkRateLimit } from '@/lib/ratelimit';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
 import { logAiError } from '@/lib/admin/log-ai-error';
+import { ensureApplicationsForAnalyses } from '@/lib/ensure-applications-for-analyses';
 import {
   ANALYSIS_THRESHOLDS,
   ANALYSIS_WEIGHTS,
@@ -227,6 +228,8 @@ export async function POST(request: NextRequest) {
         await releaseReservedUsage();
         return NextResponse.json({ error: 'Failed to save analysis' }, { status: 500 });
       }
+
+      await ensureApplicationsForAnalyses(supabase, user.id);
 
       // Marky P0: fire first_fit_analysis_completed for the activation funnel.
       // Only fires on the user's first completed analysis (activation event).

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { isPaidPlan } from '@/lib/plans';
 import { createClient } from '@/lib/supabase/server';
+import { ensureApplicationsForAnalyses } from '@/lib/ensure-applications-for-analyses';
 import CoverLetterClient, { type CoverLetterRecord, type CoverLetterWorkspaceAnalysis, type CoverLetterWorkspaceOption } from './CoverLetterClient';
 
 export const metadata = {
@@ -22,6 +23,8 @@ export default async function CoverLetterPage({ searchParams: searchParamsPromis
   } = await supabase.auth.getUser();
 
   if (!user) redirect('/login');
+
+  await ensureApplicationsForAnalyses(supabase, user.id);
 
   const [{ data: profile }, { data: applications }] = await Promise.all([
     supabase.from('profiles').select('plan').eq('id', user.id).single(),

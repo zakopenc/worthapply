@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { CURRENT_MONTH, countFeatureRowsForMonth } from '@/lib/usage-tracking';
+import { ensureApplicationsForAnalyses } from '@/lib/ensure-applications-for-analyses';
 import { getEffectivePlan, getFeatureAccess, getPlanLimits, type Plan } from '@/lib/plans';
 import TailorClient, { type TailorInitialData } from './TailorClient';
 
@@ -16,6 +17,8 @@ export default async function TailorPage() {
   } = await supabase.auth.getUser();
 
   if (!user) redirect('/login');
+
+  await ensureApplicationsForAnalyses(supabase, user.id);
 
   const [{ data: profile }, { data: activeResume }, { data: applications }] = await Promise.all([
     supabase
