@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, CheckCircle, Briefcase, User, Sparkles, ArrowRight, Settings } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { fetchIsAdmin } from '@/lib/admin/fetch-is-admin';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { User as SupabaseUser } from '@supabase/supabase-js';
@@ -381,13 +382,21 @@ export default function OnboardingPage() {
                   You&apos;re all set!
                 </h1>
                 <p className="text-lg text-stone-600 text-center max-w-lg mb-10">
-                  Your Evidence Bank is initialized and your first analysis is complete. Let&apos;s head over to the Dashboard to review your personalized strategy.
+                  Your Evidence Bank is initialized and your first analysis is complete. Let&apos;s head to your workspace to review your personalized strategy.
                 </p>
                 <button
-                  onClick={() => router.push('/dashboard')}
+                  onClick={async () => {
+                    if (!user) {
+                      router.push('/dashboard');
+                      return;
+                    }
+                    const supabase = createClient();
+                    const isAdmin = await fetchIsAdmin(supabase, user.id);
+                    router.push(isAdmin ? '/admin' : '/dashboard');
+                  }}
                   className="px-8 py-4 bg-black text-white rounded-xl font-bold hover:bg-neutral-800 transition-colors flex items-center gap-2"
                 >
-                  Go to Dashboard <ArrowRight size={18} />
+                  Continue <ArrowRight size={18} />
                 </button>
               </motion.div>
             ) : null}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { sanitizeRedirectPath } from '@/lib/auth/redirect';
+import { fetchIsAdmin } from '@/lib/admin/fetch-is-admin';
 import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
@@ -67,13 +68,13 @@ export async function GET(request: NextRequest) {
       .eq('id', session.user.id)
       .single();
 
-    // If first-time user (no onboarding complete), redirect to onboarding
-    // Otherwise, respect the 'next' parameter or default to dashboard
+    // Onboarding first; then admins → /admin, others → `next` (usually /dashboard)
     const redirectUrl = request.nextUrl.clone();
     if (!profile?.onboarding_complete) {
       redirectUrl.pathname = '/onboarding';
     } else {
-      redirectUrl.pathname = next;
+      const isAdmin = await fetchIsAdmin(supabase, session.user.id);
+      redirectUrl.pathname = isAdmin ? '/admin' : next;
     }
     redirectUrl.search = '';
 

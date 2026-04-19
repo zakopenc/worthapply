@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
+import { fetchIsAdmin } from '@/lib/admin/fetch-is-admin';
 import { Button } from '@/components/ui/Button';
 
 export default function LoginPage() {
@@ -57,11 +58,14 @@ export default function LoginPage() {
       }
 
       if (data.session) {
-        const next =
-          redirectParam && redirectParam.startsWith('/') && !redirectParam.startsWith('//')
-            ? redirectParam
-            : '/dashboard';
-        router.push(next);
+        let nextPath: string;
+        if (redirectParam && redirectParam.startsWith('/') && !redirectParam.startsWith('//')) {
+          nextPath = redirectParam;
+        } else {
+          const isAdmin = await fetchIsAdmin(supabase, data.session.user.id);
+          nextPath = isAdmin ? '/admin' : '/dashboard';
+        }
+        router.push(nextPath);
         router.refresh();
       }
     } catch (err) {

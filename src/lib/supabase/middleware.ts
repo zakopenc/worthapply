@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { fetchIsAdmin } from '@/lib/admin/fetch-is-admin';
 
 export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -137,12 +138,15 @@ export async function updateSession(request: NextRequest) {
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone();
     const nextPath = url.searchParams.get('redirect');
+    let destination: string;
     if (nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//')) {
-      url.pathname = nextPath;
-      url.searchParams.delete('redirect');
+      destination = nextPath;
     } else {
-      url.pathname = '/dashboard';
+      const isAdmin = await fetchIsAdmin(supabase, user.id);
+      destination = isAdmin ? '/admin' : '/dashboard';
     }
+    url.pathname = destination;
+    url.searchParams.delete('redirect');
     return NextResponse.redirect(url);
   }
 

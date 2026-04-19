@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
+import { fetchIsAdmin } from '@/lib/admin/fetch-is-admin';
 import { capture, identify } from '@/lib/analytics/posthog-client';
 
 export default function SignupPage() {
@@ -110,11 +111,12 @@ export default function SignupPage() {
 
         // Check if email confirmation is required
         if (data.session) {
-          // Auto-confirmed, redirect to returnUrl or dashboard
+          // Auto-confirmed: honor returnUrl, else admin → /admin, else /dashboard
           if (returnUrl) {
             router.push(decodeURIComponent(returnUrl));
           } else {
-            router.push('/dashboard');
+            const isAdmin = await fetchIsAdmin(supabase, data.user.id);
+            router.push(isAdmin ? '/admin' : '/dashboard');
           }
         } else {
           // Email confirmation required, redirect to verify-email page
