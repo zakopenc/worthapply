@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
         ? await generateJSON<GeminiAnalysis>(
             buildAnalysisPrompt(job_description, resumeData as Record<string, unknown> | null)
           )
-        : generateMockAnalysis(jobDescription);
+        : generateMockAnalysis(job_description);
 
       const modelOverallScore = rawAnalysis.overall_score;
       const modelVerdict = rawAnalysis.verdict;
