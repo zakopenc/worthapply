@@ -104,7 +104,7 @@ export default function ATSCheckerPage() {
       setPhase('results');
       setCurrentStep(loadingSteps.length);
     }, loadingSteps.length * 700 + 500);
-  }, []);
+  }, [tab, fileName, pasteText]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

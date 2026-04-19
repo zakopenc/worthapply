@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Target, Bookmark, Send, Calendar, Trophy, XCircle,
+  Target,
   MapPin, Banknote, Clock, Loader2, AlertTriangle,
 } from 'lucide-react';
 import {
@@ -23,14 +23,6 @@ interface Application {
   notes?: string;
   created_at: string;
 }
-
-const STATUS_ICONS: Partial<Record<string, React.ElementType>> = {
-  wishlist:  Bookmark,
-  applied:   Send,
-  interview: Calendar,
-  offer:     Trophy,
-  rejected:  XCircle,
-};
 
 const STATUS_COLORS: Partial<Record<string, { col: string; dot: string; ring: string }>> = {
   wishlist:  { col: 'bg-blue-50 border-blue-100',     dot: 'bg-blue-400',   ring: 'ring-blue-300/40' },
