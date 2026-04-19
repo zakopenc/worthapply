@@ -13,7 +13,6 @@ import {
 import { createClient } from '@/lib/supabase/server';
 import {
   deriveTargetKeywords,
-  getResumeEvidenceStatus,
   normalizeAnalysisMetadata,
   normalizeMatchedSkills,
   normalizeRecruiterConcerns,
@@ -116,7 +115,6 @@ export default async function AnalysisDetailPage({ params }: { params: Promise<{
   const skillGaps = normalizeSkillGaps(analysis.skill_gaps);
   const recruiterConcerns = normalizeRecruiterConcerns(analysis.recruiter_concerns);
   const metadata = normalizeAnalysisMetadata(analysis.analysis_metadata);
-  const resumeEvidence = getResumeEvidenceStatus(metadata);
   const targetKeywords = deriveTargetKeywords(matchedSkills, skillGaps);
   const verdictMeta = getVerdictMeta(analysis.verdict || 'skip', overallScore);
   const seniority = analysis.seniority_analysis && typeof analysis.seniority_analysis === 'object'
@@ -210,22 +208,6 @@ export default async function AnalysisDetailPage({ params }: { params: Promise<{
                   <p className="mt-3 text-sm text-stone-600">
                     Recruiter concerns and seniority mismatch do not directly change the weighted formula, but they explain why a role may still be risky.
                   </p>
-                </div>
-              </div>
-            </article>
-
-            <article className="rounded-3xl border border-stone-200 bg-white p-6">
-              <div className="flex items-center gap-2 mb-4">
-                {resumeEvidence.tone === 'positive' ? <CheckCircle2 className="w-5 h-5 text-emerald-600" /> : <AlertTriangle className="w-5 h-5 text-amber-600" />}
-                <h2 className="text-lg font-black text-stone-950">Resume evidence status</h2>
-              </div>
-              <div className={`rounded-2xl border p-5 ${resumeEvidence.tone === 'positive' ? 'bg-emerald-50 border-emerald-200' : resumeEvidence.tone === 'warning' ? 'bg-amber-50 border-amber-200' : 'bg-stone-50 border-stone-200'}`}>
-                <p className="text-sm font-bold text-stone-950">{resumeEvidence.label}</p>
-                <p className="mt-2 text-sm text-stone-700 leading-6">{resumeEvidence.detail}</p>
-                <div className="mt-3 flex flex-wrap gap-2 text-xs text-stone-600">
-                  <span className="rounded-full bg-white px-3 py-1 border border-stone-200">Model: {metadata.model || 'unknown'}</span>
-                  <span className="rounded-full bg-white px-3 py-1 border border-stone-200">Prompt: {metadata.prompt_version || 'legacy'}</span>
-                  <span className="rounded-full bg-white px-3 py-1 border border-stone-200">Resume parse: {metadata.resume_parse_status || 'none'}</span>
                 </div>
               </div>
             </article>
