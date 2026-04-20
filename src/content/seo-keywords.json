@@ -381,7 +381,7 @@
       "word_count": 1800,
       "cta_type": "signup",
       "category": "comparison",
-      "status": "pending",
+      "status": "published",
       "outline": [
         "What Rezi does well",
         "The fabrication problem with AI resume writers",
@@ -1533,5 +1533,4 @@
       ]
     }
   ]
-}
-  
+    }
