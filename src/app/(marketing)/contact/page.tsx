@@ -43,18 +43,6 @@ export default function ContactPage() {
                     <div className={styles.infoItem}>
                       <div className={styles.infoIcon}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="2" y="4" width="20" height="16" rx="2" />
-                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                        </svg>
-                      </div>
-                      <div className={styles.infoItemText}>
-                        <strong>Email</strong>
-                        <span>ZakE@worthapply.com</span>
-                      </div>
-                    </div>
-                    <div className={styles.infoItem}>
-                      <div className={styles.infoIcon}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10" />
                           <polyline points="12 6 12 12 16 14" />
                         </svg>
