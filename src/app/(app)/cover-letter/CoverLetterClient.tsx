@@ -284,75 +284,166 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
     );
   }
 
+  const recClass =
+    coverLetter?.recommendation === 'full-letter' ? styles.recommendBadgeFull
+    : coverLetter?.recommendation === 'short-note' ? styles.recommendBadgeShort
+    : coverLetter?.recommendation === 'skip' ? styles.recommendBadgeSkip
+    : styles.recommendBadgeNeutral;
+
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
-        <p className={styles.pageEyebrow}>Workspace / Cover Letter</p>
+        <p className={styles.pageEyebrow}>Workspace · Cover Letter</p>
         <h1 className={styles.pageTitle}>Cover Letter</h1>
-        <p className={styles.pageDesc}>Generate a hiring-manager-grade letter grounded in your resume and this specific role.</p>
+        <p className={styles.pageDesc}>Hiring-manager-grade letters grounded in your resume, tailored for this specific role.</p>
       </header>
-      <section className={styles.heroCard}>
-        <div className={styles.heroContent}>
-          <div className={styles.sectionEyebrow}>Selected role</div>
-          <h2 className={styles.heroTitle}>{analysis?.jobTitle || selectedOption?.jobTitle}</h2>
-          <div className={styles.contextRow}>
-            <span className={styles.pill}>{analysis?.company || selectedOption?.company}</span>
-            <span className={styles.pill}>{recommendationLabel(coverLetter?.recommendation)}</span>
-            <span className={styles.pill}>{verdictLabel(analysis?.verdict)}</span>
-            {analysis?.overallScore != null ? <span className={styles.pill}>Fit score {analysis.overallScore}%</span> : null}
+
+      {/* ─── Role switcher ─── */}
+      <section className={styles.roleSwitcher}>
+        <span className={styles.roleSwitcherLabel}>Viewing</span>
+        <select
+          id="cover-letter-role"
+          aria-label="Select role"
+          value={selectedOption?.id || ''}
+          onChange={(event) => router.push(`/cover-letter?applicationId=${event.target.value}`)}
+        >
+          {options.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.jobTitle} — {option.company}
+            </option>
+          ))}
+        </select>
+      </section>
+
+      {/* ─── Selected role card (professional exec summary) ─── */}
+      <section className={styles.roleCard}>
+        <div className={styles.roleHeader}>
+          <div>
+            <p className={styles.roleEyebrow}>Selected role</p>
+            <h2 className={styles.roleTitle}>{analysis?.jobTitle || selectedOption?.jobTitle}</h2>
+            <div className={styles.roleMeta}>
+              <strong>{analysis?.company || selectedOption?.company}</strong>
+              {coverLetter && (
+                <>
+                  <span className={styles.roleMetaSep}>·</span>
+                  <span>Version {coverLetter.version} · {formatTimestamp(coverLetter.createdAt)}</span>
+                </>
+              )}
+            </div>
           </div>
-          <p className={styles.heroText}>
-            We enforce Problem–Solution structure, require a quantified opener or specific company signal, and lint the output for AI tells before you download.
-          </p>
+          <span className={`${styles.recommendBadge} ${recClass}`}>
+            {recommendationLabel(coverLetter?.recommendation)}
+          </span>
         </div>
 
-        <div className={styles.heroActions}>
-          <label className={styles.selectLabel} htmlFor="cover-letter-role">Role</label>
-          <select
-            id="cover-letter-role"
-            className={styles.select}
-            value={selectedOption?.id || ''}
-            onChange={(event) => router.push(`/cover-letter?applicationId=${event.target.value}`)}
-          >
-            {options.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.jobTitle} — {option.company}
-              </option>
-            ))}
-          </select>
-          <button type="button" className={styles.primaryButton} onClick={handleGenerate} disabled={loading || !analysis}>
-            {loading ? <Loader2 size={16} className={styles.spin} /> : <Sparkles size={16} />}
-            {coverLetter ? 'Regenerate' : 'Generate'}
-          </button>
+        <div className={styles.statGrid}>
+          <div className={styles.statCell}>
+            <span className={styles.statLabel}>Fit score</span>
+            <span className={styles.statValue}>
+              {analysis?.overallScore != null ? `${analysis.overallScore}%` : '—'}
+            </span>
+          </div>
+          <div className={styles.statCell}>
+            <span className={styles.statLabel}>Verdict</span>
+            <span className={styles.statValue} style={{ fontSize: 16 }}>{verdictLabel(analysis?.verdict)}</span>
+          </div>
+          <div className={styles.statCell}>
+            <span className={styles.statLabel}>Your plan</span>
+            <span className={styles.statValue} style={{ fontSize: 16 }}>{planLabel}</span>
+          </div>
+          {structureFormat && (
+            <div className={styles.statCell}>
+              <span className={styles.statLabel}>Structure</span>
+              <span className={styles.statValue} style={{ fontSize: 16, textTransform: 'capitalize' }}>{String(structureFormat).replace(/_/g, ' ')}</span>
+            </div>
+          )}
+          {openerType && openerType !== 'none' && (
+            <div className={styles.statCell}>
+              <span className={styles.statLabel}>Opener</span>
+              <span className={styles.statValue} style={{ fontSize: 16, textTransform: 'capitalize' }}>{String(openerType).replace(/_/g, ' ')}</span>
+            </div>
+          )}
         </div>
       </section>
 
+      {/* ─── Controls: industry tone + company signal ─── */}
       {isPaid && (
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 14, marginBottom: 16 }}>
-          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: 16 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', color: '#475569', marginBottom: 8 }}>Industry tone</label>
+        <section className={styles.controlsGrid}>
+          <div className={styles.controlCard}>
+            <label className={styles.controlLabel} htmlFor="industry-preset">Industry tone</label>
             <select
+              id="industry-preset"
               value={industryPreset}
               onChange={(e) => setIndustryPreset(e.target.value as IndustryPreset)}
-              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, background: '#fff' }}
             >
               {INDUSTRY_LABELS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
-            <p style={{ fontSize: 12, color: '#64748b', margin: '8px 0 0' }}>Changes vocabulary density, contractions, and formality.</p>
+            <p className={styles.controlHint}>Shifts formality, contractions, vocabulary density.</p>
           </div>
-          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: 16 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', color: '#475569', marginBottom: 8 }}>Why this company specifically?</label>
+          <div className={styles.controlCard}>
+            <label className={styles.controlLabel} htmlFor="company-signal">Why this company specifically?</label>
             <textarea
+              id="company-signal"
               rows={3}
               value={companySignal}
               onChange={(e) => setCompanySignal(e.target.value)}
-              placeholder="e.g. a specific product launch, a leadership blog post, or a recent strategic move at the company"
-              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, fontFamily: 'inherit', resize: 'vertical' }}
+              placeholder="e.g. a product launch, a CTO blog post, a recent Series B, a strategic pivot — something specific you noticed."
             />
-            <p style={{ fontSize: 12, color: '#64748b', margin: '8px 0 0' }}>One specific thing beats ten generic mentions. We won&apos;t invent one for you.</p>
+            <p className={styles.controlHint}>One specific thing beats ten generic mentions. We won&apos;t invent one for you.</p>
           </div>
+        </section>
+      )}
+
+      {/* ─── Big, visible Generate CTA ─── */}
+      {isPaid && (
+        <section className={styles.generateSection}>
+          <div className={styles.generateText}>
+            <h3 className={styles.generateTitle}>
+              {coverLetter ? 'Regenerate with your latest inputs' : 'Ready to generate your draft?'}
+            </h3>
+            <p className={styles.generateSubtitle}>
+              {coverLetter
+                ? 'Updates tone, opener, and company signal based on current settings. Edits are preserved on the editor below until you save.'
+                : 'Problem–Solution structure, mandatory quantified or company-specific opener, AI-tell lint, email-body variant, and edit-save versioning — all in one pass.'}
+            </p>
+            <div className={styles.generateMeta}>
+              <span><strong>Tone:</strong> {INDUSTRY_LABELS.find((l) => l.value === industryPreset)?.label}</span>
+              {companySignal.trim() && <span><strong>Signal:</strong> {companySignal.slice(0, 60)}{companySignal.length > 60 ? '…' : ''}</span>}
+              {!companySignal.trim() && <span style={{ color: 'rgba(255,255,255,0.45)' }}>No company signal provided — we&apos;ll prompt if needed.</span>}
+            </div>
+          </div>
+          <button
+            type="button"
+            className={styles.generateButton}
+            onClick={handleGenerate}
+            disabled={loading || !analysis}
+          >
+            {loading ? <Loader2 size={20} className={styles.spin} /> : <Sparkles size={20} />}
+            {loading ? 'Generating…' : coverLetter ? 'Regenerate draft' : 'Generate cover letter'}
+          </button>
+        </section>
+      )}
+
+      {/* Free plan: shorter CTA banner that upgrades */}
+      {!isPaid && (
+        <section className={styles.generateSection}>
+          <div className={styles.generateText}>
+            <h3 className={styles.generateTitle}>Get a recommendation verdict now</h3>
+            <p className={styles.generateSubtitle}>
+              Free plans see whether a cover letter is worth writing. Full drafts with tone presets, email variants, and AI-tell lint unlock on Pro, Premium, or Lifetime.
+            </p>
+          </div>
+          <button
+            type="button"
+            className={styles.generateButton}
+            onClick={handleGenerate}
+            disabled={loading || !analysis}
+          >
+            {loading ? <Loader2 size={20} className={styles.spin} /> : <Sparkles size={20} />}
+            {loading ? 'Loading…' : coverLetter ? 'Regenerate verdict' : 'Get verdict'}
+          </button>
         </section>
       )}
 
@@ -374,22 +465,14 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
       <section className={styles.grid}>
         <article className={styles.summaryCard}>
           <div className={styles.cardHeader}>
-            <span className={styles.sectionEyebrow}>Recommendation</span>
+            <span className={styles.sectionEyebrow}>Coach&apos;s read</span>
             <FileText size={18} />
           </div>
-          <h3 className={styles.summaryTitle}>{recommendationLabel(coverLetter?.recommendation)}</h3>
           <p className={styles.summaryText}>
             {reasoning || (isPaid
               ? 'Generate a draft to get a role-aware recommendation and editable cover letter.'
               : 'Free plans can save the verdict only. Upgrade when you want the full generated letter.')}
           </p>
-          <div className={styles.metaList}>
-            <div className={styles.metaRow}><span>Plan</span><strong>{planLabel}</strong></div>
-            <div className={styles.metaRow}><span>Saved version</span><strong>{coverLetter?.version ? `v${coverLetter.version}` : '—'}</strong></div>
-            <div className={styles.metaRow}><span>Last updated</span><strong>{formatTimestamp(coverLetter?.createdAt)}</strong></div>
-            {structureFormat && <div className={styles.metaRow}><span>Structure</span><strong style={{ textTransform: 'capitalize' }}>{structureFormat.replace(/_/g, ' ')}</strong></div>}
-            {openerType && openerType !== 'none' && <div className={styles.metaRow}><span>Opener</span><strong style={{ textTransform: 'capitalize' }}>{openerType.replace(/_/g, ' ')}</strong></div>}
-          </div>
 
           {(aiFlags.length > 0 || concernsAddressed.length > 0) && (
             <div style={{ marginTop: 14, display: 'grid', gap: 10 }}>
