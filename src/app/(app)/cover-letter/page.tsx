@@ -62,7 +62,7 @@ export default async function CoverLetterPage({ searchParams: searchParamsPromis
         .maybeSingle(),
       supabase
         .from('cover_letters')
-        .select('id, recommendation, content, version, created_at')
+        .select('id, recommendation, content, email_body_content, metadata, version, created_at')
         .eq('application_id', selectedOption.id)
         .eq('user_id', user.id)
         .order('version', { ascending: false })
@@ -86,6 +86,8 @@ export default async function CoverLetterPage({ searchParams: searchParamsPromis
           id: coverLetterRow.id,
           recommendation: coverLetterRow.recommendation,
           content: coverLetterRow.content,
+          email_body_content: (coverLetterRow as { email_body_content?: string | null }).email_body_content ?? null,
+          metadata: (coverLetterRow as { metadata?: Record<string, unknown> | null }).metadata ?? null,
           version: coverLetterRow.version,
           createdAt: coverLetterRow.created_at,
         }
@@ -97,6 +99,8 @@ export default async function CoverLetterPage({ searchParams: searchParamsPromis
     ? {
         ...coverLetter,
         content: isPaidPlan(plan) ? coverLetter.content : null,
+        email_body_content: isPaidPlan(plan) ? coverLetter.email_body_content : null,
+        metadata: isPaidPlan(plan) ? coverLetter.metadata : null,
       }
     : null;
 

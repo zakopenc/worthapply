@@ -200,6 +200,33 @@ export interface TailoredResume {
 }
 
 // Cover Letter
+export type CoverLetterIndustryPreset =
+  | 'tech_startup'
+  | 'enterprise_tech'
+  | 'finance_law'
+  | 'academia'
+  | 'nonprofit'
+  | 'creative'
+  | 'public_sector'
+  | 'general';
+
+export type CoverLetterStructureFormat = 'problem_solution' | 'aida' | 'harvard';
+
+export type CoverLetterOpenerType = 'accomplishment' | 'referral' | 'company_observation' | 'none';
+
+export interface CoverLetterMetadata {
+  structure_format?: CoverLetterStructureFormat;
+  tone_preset_used?: CoverLetterIndustryPreset;
+  opener_type?: CoverLetterOpenerType;
+  concerns_addressed?: string[];
+  needs_company_signal?: boolean;
+  company_signal_question?: string;
+  ai_tell_flags?: string[];
+  key_points_addressed?: string[];
+  user_company_signal?: string;
+  reasoning?: string;
+}
+
 export interface CoverLetter {
   id: string;
   user_id: string;
@@ -207,6 +234,8 @@ export interface CoverLetter {
   analysis_id: string;
   recommendation: 'skip' | 'short-note' | 'full-letter';
   content: string;
+  email_body_content?: string | null;
+  metadata?: CoverLetterMetadata | null;
   version: number;
   created_at: string;
 }

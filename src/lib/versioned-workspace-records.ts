@@ -79,6 +79,8 @@ export async function createCoverLetterVersionRecord(
     analysisId: string;
     recommendation: string;
     content: string | null;
+    emailBodyContent?: string | null;
+    metadata?: JsonObject | null;
   }
 ) {
   const userId = await getAuthenticatedUserId(supabase);
@@ -92,9 +94,11 @@ export async function createCoverLetterVersionRecord(
       analysis_id: args.analysisId,
       recommendation: args.recommendation,
       content: args.content,
+      email_body_content: args.emailBodyContent ?? null,
+      metadata: args.metadata ?? {},
       version,
     })
-    .select('id, application_id, analysis_id, recommendation, content, version, created_at')
+    .select('id, application_id, analysis_id, recommendation, content, email_body_content, metadata, version, created_at')
     .single();
 
   if (error || !data) {

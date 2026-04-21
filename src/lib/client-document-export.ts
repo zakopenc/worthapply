@@ -163,91 +163,28 @@ function wrapText(text: string, maxWidth: number, measure: (line: string) => num
   return lines;
 }
 
-function formatExportDate() {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date());
-}
-
 export async function buildSimplePdfBlob(title: string, sections: ExportSection[]) {
   const pdfDoc = await PDFDocument.create();
   const pageSize: [number, number] = [612, 792];
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const margin = 54;
-  const headerHeight = 60;
-  const footerHeight = 38;
+  const footerHeight = 24;
   const bodySize = 11;
   const headingSize = 12;
-  const titleSize = 22;
+  const titleSize = 20;
   const lineHeight = 16;
   const maxWidth = pageSize[0] - margin * 2;
-  const exportedAt = formatExportDate();
 
   let page = pdfDoc.addPage(pageSize);
-  let pageNumber = 1;
   let y = 0;
 
   const resetCursor = () => {
-    y = pageSize[1] - margin - headerHeight;
-  };
-
-  const drawFrame = () => {
-    page.drawRectangle({
-      x: margin,
-      y: pageSize[1] - margin - 18,
-      width: maxWidth,
-      height: 2,
-      color: BRAND.accent,
-    });
-
-    page.drawText(BRAND.name, {
-      x: margin,
-      y: pageSize[1] - margin + 6,
-      size: 10,
-      font: boldFont,
-      color: BRAND.ink,
-    });
-
-    page.drawText('Tailored application export', {
-      x: margin,
-      y: pageSize[1] - margin - 10,
-      size: 9,
-      font,
-      color: BRAND.muted,
-    });
-
-    const footerY = margin - 10;
-    page.drawLine({
-      start: { x: margin, y: footerY + 16 },
-      end: { x: pageSize[0] - margin, y: footerY + 16 },
-      thickness: 1,
-      color: BRAND.border,
-    });
-
-    page.drawText(`Generated ${exportedAt}`, {
-      x: margin,
-      y: footerY,
-      size: 9,
-      font,
-      color: BRAND.muted,
-    });
-
-    page.drawText(`Page ${pageNumber}`, {
-      x: pageSize[0] - margin - 34,
-      y: footerY,
-      size: 9,
-      font,
-      color: BRAND.muted,
-    });
+    y = pageSize[1] - margin;
   };
 
   const addPage = () => {
     page = pdfDoc.addPage(pageSize);
-    pageNumber += 1;
-    drawFrame();
     resetCursor();
   };
 
@@ -257,35 +194,25 @@ export async function buildSimplePdfBlob(title: string, sections: ExportSection[
     }
   };
 
-  drawFrame();
   resetCursor();
 
-  page.drawText(title, {
-    x: margin,
-    y,
-    size: titleSize,
-    font: boldFont,
-    color: BRAND.ink,
-  });
-  y -= titleSize + 10;
-
-  page.drawRectangle({
-    x: margin,
-    y: y - 6,
-    width: maxWidth,
-    height: 28,
-    color: BRAND.accentSoft,
-    borderColor: BRAND.border,
-    borderWidth: 1,
-  });
-  page.drawText('Export prepared for quick review and clean sharing.', {
-    x: margin + 12,
-    y,
-    size: 10,
-    font,
-    color: BRAND.body,
-  });
-  y -= 34;
+  if (title) {
+    page.drawText(title, {
+      x: margin,
+      y,
+      size: titleSize,
+      font: boldFont,
+      color: BRAND.ink,
+    });
+    y -= titleSize + 8;
+    page.drawLine({
+      start: { x: margin, y },
+      end: { x: pageSize[0] - margin, y },
+      thickness: 0.75,
+      color: BRAND.border,
+    });
+    y -= 16;
+  }
 
   sections.forEach((section) => {
     if (section.heading) {

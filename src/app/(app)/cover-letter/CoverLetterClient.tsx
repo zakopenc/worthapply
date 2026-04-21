@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Download, FileText, Loader2, Lock, Sparkles } from 'lucide-react';
+import { Download, FileText, Loader2, Lock, Save, Sparkles } from 'lucide-react';
 import {
   buildDownloadFilename,
   buildParagraphDocxBlob,
@@ -29,10 +29,27 @@ export interface CoverLetterWorkspaceAnalysis {
   verdict: 'apply' | 'low-priority' | 'skip' | null;
 }
 
+type IndustryPreset = 'tech_startup' | 'enterprise_tech' | 'finance_law' | 'academia' | 'nonprofit' | 'creative' | 'public_sector' | 'general';
+
+interface CoverLetterMetadata {
+  structure_format?: string;
+  tone_preset_used?: string;
+  opener_type?: string;
+  concerns_addressed?: string[];
+  needs_company_signal?: boolean;
+  company_signal_question?: string;
+  ai_tell_flags?: string[];
+  key_points_addressed?: string[];
+  user_company_signal?: string;
+  reasoning?: string;
+}
+
 export interface CoverLetterRecord {
   id: string;
   recommendation: 'skip' | 'short-note' | 'full-letter';
   content: string | null;
+  email_body_content?: string | null;
+  metadata?: CoverLetterMetadata | null;
   version: number;
   createdAt: string | null;
 }
@@ -49,6 +66,17 @@ interface CoverLetterClientProps {
   analysis: CoverLetterWorkspaceAnalysis | null;
   initialCoverLetter: CoverLetterRecord | null;
 }
+
+const INDUSTRY_LABELS: { value: IndustryPreset; label: string }[] = [
+  { value: 'general', label: 'General / default' },
+  { value: 'tech_startup', label: 'Tech startup' },
+  { value: 'enterprise_tech', label: 'Enterprise tech' },
+  { value: 'finance_law', label: 'Finance / Law' },
+  { value: 'academia', label: 'Academia' },
+  { value: 'nonprofit', label: 'Non-profit' },
+  { value: 'creative', label: 'Creative / Design' },
+  { value: 'public_sector', label: 'Public sector' },
+];
 
 function recommendationLabel(value?: string | null) {
   if (value === 'full-letter') return 'Full letter recommended';
@@ -75,22 +103,34 @@ function formatTimestamp(value?: string | null) {
   });
 }
 
+function countWords(text: string) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
 export default function CoverLetterClient({ plan, options, analysis, initialCoverLetter }: CoverLetterClientProps) {
   const router = useRouter();
   const isPaid = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
   const planLabel = plan === 'lifetime' ? 'Lifetime access' : plan === 'premium' ? 'Premium access' : plan === 'pro' ? 'Pro access' : 'Free verdict only';
   const [coverLetter, setCoverLetter] = useState<GeneratedCoverLetter | null>(initialCoverLetter);
   const [draft, setDraft] = useState(initialCoverLetter?.content || '');
+  const [emailDraft, setEmailDraft] = useState(initialCoverLetter?.email_body_content || '');
   const [reasoning, setReasoning] = useState('');
   const [banner, setBanner] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'attached' | 'email'>('attached');
+  const [industryPreset, setIndustryPreset] = useState<IndustryPreset>('general');
+  const [companySignal, setCompanySignal] = useState(initialCoverLetter?.metadata?.user_company_signal || '');
+
   const selectedOption = useMemo(() => options.find((option) => option.id === analysis?.applicationId) || null, [analysis?.applicationId, options]);
 
   useEffect(() => {
     setCoverLetter(initialCoverLetter);
     setDraft(initialCoverLetter?.content || '');
-    setReasoning('');
+    setEmailDraft(initialCoverLetter?.email_body_content || '');
+    setReasoning(initialCoverLetter?.metadata?.reasoning || '');
+    setCompanySignal(initialCoverLetter?.metadata?.user_company_signal || '');
     setBanner('');
     setError('');
   }, [initialCoverLetter, analysis?.applicationId]);
@@ -108,7 +148,12 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
     const response = await fetch('/api/cover-letter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ application_id: analysis.applicationId, analysis_id: analysis.id }),
+      body: JSON.stringify({
+        application_id: analysis.applicationId,
+        analysis_id: analysis.id,
+        industry_preset: industryPreset,
+        user_company_signal: companySignal.trim() || undefined,
+      }),
     });
 
     const payload = await response.json().catch(() => ({}));
@@ -122,44 +167,103 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
     const nextCoverLetter = payload.data as GeneratedCoverLetter;
     setCoverLetter(nextCoverLetter);
     setDraft(nextCoverLetter.content || '');
-    setReasoning(nextCoverLetter.reasoning || '');
+    setEmailDraft(nextCoverLetter.email_body_content || '');
+    setReasoning(nextCoverLetter.reasoning || nextCoverLetter.metadata?.reasoning || '');
     setBanner(isPaid ? 'Cover letter draft generated and saved.' : 'Verdict saved. Upgrade to unlock the full draft.');
     setLoading(false);
   };
 
+  const handleSaveEdits = async () => {
+    if (!analysis || !coverLetter) return;
+    setSaving(true);
+    setError('');
+    setBanner('');
+
+    const response = await fetch('/api/cover-letter', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        application_id: analysis.applicationId,
+        analysis_id: analysis.id,
+        recommendation: coverLetter.recommendation,
+        content: draft,
+        email_body_content: emailDraft,
+        metadata: coverLetter.metadata || {},
+      }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setError(payload.error || 'Unable to save your edits.');
+      setSaving(false);
+      return;
+    }
+
+    const saved = payload.data as GeneratedCoverLetter;
+    setCoverLetter({ ...coverLetter, ...saved });
+    setBanner(`Saved as v${saved.version}.`);
+    setSaving(false);
+  };
+
   const handleDownloadTxt = () => {
-    if (!draft.trim() || !analysis) return;
+    if (!analysis) return;
+    const text = activeTab === 'email' ? emailDraft : draft;
+    if (!text.trim()) return;
     downloadBlob(
-      buildDownloadFilename([analysis.jobTitle, analysis.company], 'cover-letter', 'txt'),
-      new Blob([draft], { type: 'text/plain;charset=utf-8' })
+      buildDownloadFilename([analysis.jobTitle, analysis.company], activeTab === 'email' ? 'cover-letter-email' : 'cover-letter', 'txt'),
+      new Blob([text], { type: 'text/plain;charset=utf-8' })
     );
   };
 
   const handleDownloadDocx = async () => {
-    if (!draft.trim() || !analysis) return;
+    if (!analysis) return;
+    const text = activeTab === 'email' ? emailDraft : draft;
+    if (!text.trim()) return;
 
     const blob = await buildParagraphDocxBlob(
-      draft.split(/\n{2,}/).map((block, index) => ({
-        heading: index === 0 ? 'Cover Letter' : undefined,
+      text.split(/\n{2,}/).map((block) => ({
         body: block.replace(/\n/g, ' '),
       }))
     );
 
-    downloadBlob(buildDownloadFilename([analysis.jobTitle, analysis.company], 'cover-letter', 'docx'), blob);
+    downloadBlob(buildDownloadFilename([analysis.jobTitle, analysis.company], activeTab === 'email' ? 'cover-letter-email' : 'cover-letter', 'docx'), blob);
   };
 
   const handleDownloadPdf = async () => {
-    if (!draft.trim() || !analysis) return;
+    if (!analysis) return;
+    const text = activeTab === 'email' ? emailDraft : draft;
+    if (!text.trim()) return;
 
     const blob = await buildSimplePdfBlob(`${analysis.jobTitle} — ${analysis.company}`, [
-      {
-        heading: 'Cover Letter',
-        body: draft,
-      },
+      { body: text },
     ]);
 
-    downloadBlob(buildDownloadFilename([analysis.jobTitle, analysis.company], 'cover-letter', 'pdf'), blob);
+    downloadBlob(buildDownloadFilename([analysis.jobTitle, analysis.company], activeTab === 'email' ? 'cover-letter-email' : 'cover-letter', 'pdf'), blob);
   };
+
+  const handleCopyEmail = async () => {
+    if (!emailDraft.trim()) return;
+    try {
+      await navigator.clipboard.writeText(emailDraft);
+      setBanner('Email body copied to clipboard.');
+    } catch {
+      setError('Clipboard copy blocked. Select and copy manually.');
+    }
+  };
+
+  const metadata = coverLetter?.metadata || null;
+  const needsSignal = !!metadata?.needs_company_signal;
+  const aiFlags = metadata?.ai_tell_flags || [];
+  const concernsAddressed = metadata?.concerns_addressed || [];
+  const openerType = metadata?.opener_type;
+  const structureFormat = metadata?.structure_format;
+
+  const activeText = activeTab === 'email' ? emailDraft : draft;
+  const targetMin = activeTab === 'email' ? 150 : (coverLetter?.recommendation === 'short-note' ? 120 : 280);
+  const targetMax = activeTab === 'email' ? 220 : (coverLetter?.recommendation === 'short-note' ? 180 : 350);
+  const wordCount = countWords(activeText);
+  const inRange = wordCount >= targetMin && wordCount <= targetMax;
 
   if (!options.length) {
     return (
@@ -185,7 +289,7 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
       <header className={styles.pageHeader}>
         <p className={styles.pageEyebrow}>Workspace / Cover Letter</p>
         <h1 className={styles.pageTitle}>Cover Letter</h1>
-        <p className={styles.pageDesc}>Generate a role-aware recommendation or full draft based on your job analysis.</p>
+        <p className={styles.pageDesc}>Generate a hiring-manager-grade letter grounded in your resume and this specific role.</p>
       </header>
       <section className={styles.heroCard}>
         <div className={styles.heroContent}>
@@ -198,7 +302,7 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
             {analysis?.overallScore != null ? <span className={styles.pill}>Fit score {analysis.overallScore}%</span> : null}
           </div>
           <p className={styles.heroText}>
-            Use your saved job analysis to decide whether this role deserves a cover letter and, on Pro, turn that context into an editable draft.
+            We enforce Problem–Solution structure, require a quantified opener or specific company signal, and lint the output for AI tells before you download.
           </p>
         </div>
 
@@ -223,9 +327,49 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
         </div>
       </section>
 
+      {isPaid && (
+        <section style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 14, marginBottom: 16 }}>
+          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: 16 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', color: '#475569', marginBottom: 8 }}>Industry tone</label>
+            <select
+              value={industryPreset}
+              onChange={(e) => setIndustryPreset(e.target.value as IndustryPreset)}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, background: '#fff' }}
+            >
+              {INDUSTRY_LABELS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+            <p style={{ fontSize: 12, color: '#64748b', margin: '8px 0 0' }}>Changes vocabulary density, contractions, and formality.</p>
+          </div>
+          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: 16 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', color: '#475569', marginBottom: 8 }}>Why this company specifically?</label>
+            <textarea
+              rows={3}
+              value={companySignal}
+              onChange={(e) => setCompanySignal(e.target.value)}
+              placeholder="e.g. a specific product launch, a leadership blog post, or a recent strategic move at the company"
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, fontFamily: 'inherit', resize: 'vertical' }}
+            />
+            <p style={{ fontSize: 12, color: '#64748b', margin: '8px 0 0' }}>One specific thing beats ten generic mentions. We won&apos;t invent one for you.</p>
+          </div>
+        </section>
+      )}
+
       {(banner || error) ? (
         <div className={banner ? styles.successBanner : styles.errorBanner}>{banner || error}</div>
       ) : null}
+
+      {needsSignal && metadata?.company_signal_question && (
+        <div style={{ padding: 16, background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 12, marginBottom: 16, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <span style={{ flexShrink: 0, marginTop: 2, width: 24, height: 24, borderRadius: 999, background: '#d97706', color: 'white', fontSize: 12, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>?</span>
+          <div style={{ flex: 1, fontSize: 14, color: '#78350f' }}>
+            <strong style={{ display: 'block', marginBottom: 4 }}>Add a company-specific signal to make this land</strong>
+            <span>{metadata.company_signal_question}</span>
+            <span style={{ display: 'block', marginTop: 6, fontSize: 13, color: '#92400e' }}>Fill the &quot;Why this company&quot; field above and regenerate. We won&apos;t invent a hook for you.</span>
+          </div>
+        </div>
+      )}
 
       <section className={styles.grid}>
         <article className={styles.summaryCard}>
@@ -243,7 +387,30 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
             <div className={styles.metaRow}><span>Plan</span><strong>{planLabel}</strong></div>
             <div className={styles.metaRow}><span>Saved version</span><strong>{coverLetter?.version ? `v${coverLetter.version}` : '—'}</strong></div>
             <div className={styles.metaRow}><span>Last updated</span><strong>{formatTimestamp(coverLetter?.createdAt)}</strong></div>
+            {structureFormat && <div className={styles.metaRow}><span>Structure</span><strong style={{ textTransform: 'capitalize' }}>{structureFormat.replace(/_/g, ' ')}</strong></div>}
+            {openerType && openerType !== 'none' && <div className={styles.metaRow}><span>Opener</span><strong style={{ textTransform: 'capitalize' }}>{openerType.replace(/_/g, ' ')}</strong></div>}
           </div>
+
+          {(aiFlags.length > 0 || concernsAddressed.length > 0) && (
+            <div style={{ marginTop: 14, display: 'grid', gap: 10 }}>
+              {aiFlags.length > 0 && (
+                <div style={{ padding: 10, background: '#fee2e2', border: '1px solid #fecaca', borderRadius: 8 }}>
+                  <strong style={{ display: 'block', fontSize: 11, letterSpacing: 0.4, textTransform: 'uppercase', color: '#991b1b', marginBottom: 4 }}>AI tells detected · {aiFlags.length}</strong>
+                  <ul style={{ fontSize: 12, color: '#7f1d1d', margin: 0, paddingLeft: 16 }}>
+                    {aiFlags.slice(0, 4).map((flag, i) => <li key={i}>{flag}</li>)}
+                  </ul>
+                </div>
+              )}
+              {concernsAddressed.length > 0 && (
+                <div style={{ padding: 10, background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 8 }}>
+                  <strong style={{ display: 'block', fontSize: 11, letterSpacing: 0.4, textTransform: 'uppercase', color: '#047857', marginBottom: 4 }}>Concerns addressed · {concernsAddressed.length}</strong>
+                  <ul style={{ fontSize: 12, color: '#064e3b', margin: 0, paddingLeft: 16 }}>
+                    {concernsAddressed.slice(0, 3).map((c, i) => <li key={i}>{c}</li>)}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </article>
 
         {isPaid ? (
@@ -254,23 +421,85 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
                 <h3 className={styles.editorTitle}>Generated cover letter</h3>
               </div>
               <div className={styles.actionRow}>
-                <button type="button" className={styles.secondaryButton} onClick={handleDownloadTxt} disabled={!draft.trim()}>
-                  <Download size={16} /> Download TXT
+                <button type="button" className={styles.secondaryButton} onClick={handleSaveEdits} disabled={saving || !coverLetter}>
+                  {saving ? <Loader2 size={16} className={styles.spin} /> : <Save size={16} />} Save as new version
                 </button>
-                <button type="button" className={styles.secondaryButton} onClick={handleDownloadDocx} disabled={!draft.trim()}>
-                  <Download size={16} /> Download DOCX
+                <button type="button" className={styles.secondaryButton} onClick={handleDownloadTxt} disabled={!activeText.trim()}>
+                  <Download size={16} /> TXT
                 </button>
-                <button type="button" className={styles.secondaryButton} onClick={handleDownloadPdf} disabled={!draft.trim()}>
-                  <Download size={16} /> Download PDF
+                <button type="button" className={styles.secondaryButton} onClick={handleDownloadDocx} disabled={!activeText.trim()}>
+                  <Download size={16} /> DOCX
+                </button>
+                <button type="button" className={styles.secondaryButton} onClick={handleDownloadPdf} disabled={!activeText.trim()}>
+                  <Download size={16} /> PDF
                 </button>
               </div>
             </div>
+
+            <div role="tablist" style={{ display: 'flex', gap: 4, borderBottom: '1px solid #e5e7eb', marginBottom: 12 }}>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'attached'}
+                onClick={() => setActiveTab('attached')}
+                style={{
+                  padding: '10px 16px',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: activeTab === 'attached' ? '2px solid #0f172a' : '2px solid transparent',
+                  fontWeight: activeTab === 'attached' ? 700 : 500,
+                  color: activeTab === 'attached' ? '#0f172a' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                }}
+              >
+                Attached letter
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'email'}
+                onClick={() => setActiveTab('email')}
+                style={{
+                  padding: '10px 16px',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: activeTab === 'email' ? '2px solid #0f172a' : '2px solid transparent',
+                  fontWeight: activeTab === 'email' ? 700 : 500,
+                  color: activeTab === 'email' ? '#0f172a' : '#64748b',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                }}
+              >
+                Email body
+              </button>
+              {activeTab === 'email' && (
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  disabled={!emailDraft.trim()}
+                  style={{ marginLeft: 'auto', padding: '6px 12px', fontSize: 13, color: '#0f172a', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  Copy to clipboard
+                </button>
+              )}
+            </div>
+
             <textarea
               className={styles.textarea}
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              placeholder="Generate a cover letter draft to start editing."
+              value={activeTab === 'email' ? emailDraft : draft}
+              onChange={(event) => activeTab === 'email' ? setEmailDraft(event.target.value) : setDraft(event.target.value)}
+              placeholder={activeTab === 'email' ? 'A 150–220 word email-body variant that fits one mobile screen.' : 'Generate a cover letter draft to start editing.'}
             />
+
+            <div style={{ marginTop: 8, fontSize: 12, color: inRange ? '#047857' : '#b45309' }}>
+              {wordCount} words · target {targetMin}–{targetMax} {activeTab === 'email' ? '(fits one mobile screen)' : '(one page)'}
+              {!inRange && wordCount > 0 && (
+                <span style={{ marginLeft: 8 }}>
+                  {wordCount > targetMax ? '— consider cutting' : '— add specificity, not padding'}
+                </span>
+              )}
+            </div>
           </article>
         ) : (
           <article className={styles.upgradeCard}>
@@ -278,7 +507,7 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
             <div className={styles.sectionEyebrow}>Paid unlock</div>
             <h3 className={styles.editorTitle}>Upgrade to generate the full letter</h3>
             <p className={styles.summaryText}>
-              Your free workspace can save the recommendation verdict, but the complete editable draft and download options are reserved for Pro, Premium, and Lifetime.
+              Your free workspace can save the recommendation verdict, but the complete editable draft, email body variant, and download options are reserved for Pro, Premium, and Lifetime.
             </p>
             <div className={styles.actionRow}>
               <Link href="/pricing" className={styles.primaryButton}>Upgrade to generate full letter</Link>
