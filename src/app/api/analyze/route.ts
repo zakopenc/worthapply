@@ -5,6 +5,7 @@ import { getFeatureAccess, getPlanLimits, getEffectivePlan, type Plan } from '@/
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeJobSchema } from '@/lib/validations';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
 import { logAiError } from '@/lib/admin/log-ai-error';
@@ -114,6 +115,14 @@ export async function POST(request: NextRequest) {
     const limits = getPlanLimits(plan);
     const features = getFeatureAccess(plan);
 
+    const budget = await reserveAiBudget(user.id, plan, 'analyze');
+    if (!budget.allowed) {
+      return NextResponse.json(
+        { error: budget.reason || 'Daily AI budget reached.', upgrade_required: plan === 'free', budget },
+        { status: 429 }
+      );
+    }
+
     let usedAnalyses = 0;
 
     try {
@@ -159,6 +168,7 @@ export async function POST(request: NextRequest) {
 
     if (!geminiKey && process.env.NODE_ENV === 'production') {
       await releaseReservedUsage();
+      await refundAiBudget(user.id, 'analyze');
       return NextResponse.json({ error: 'AI service is not configured' }, { status: 503 });
     }
 
@@ -272,6 +282,7 @@ export async function POST(request: NextRequest) {
     } catch (generationError) {
       console.error('Analysis generation error:', generationError);
       await releaseReservedUsage();
+      await refundAiBudget(user.id, 'analyze');
       logAiError({ userId: user.id, route: '/api/analyze', error: generationError }).catch(() => {});
       return NextResponse.json({ error: 'Failed to generate analysis' }, { status: 500 });
     }

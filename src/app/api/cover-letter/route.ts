@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { createCoverLetterVersionRecord } from '@/lib/versioned-workspace-records';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { logAiError } from '@/lib/admin/log-ai-error';
 import { z } from 'zod';
 
@@ -77,6 +78,18 @@ export async function POST(request: NextRequest) {
     const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
     const hasFullCoverLetterAccess = isPaidPlan(plan);
+
+    // Only consume AI budget for plans that actually generate a full letter.
+    // Free-plan verdicts are computed deterministically — no AI call.
+    if (hasFullCoverLetterAccess) {
+      const budget = await reserveAiBudget(user.id, plan, 'cover_letter');
+      if (!budget.allowed) {
+        return NextResponse.json(
+          { error: budget.reason || 'Daily AI budget reached.', upgrade_required: false, budget },
+          { status: 429 }
+        );
+      }
+    }
 
     let usedCoverLetters = 0;
 
@@ -270,6 +283,7 @@ export async function POST(request: NextRequest) {
     } catch (generationError) {
       console.error('Cover letter generation error:', generationError);
       await releaseReservedUsage();
+      if (hasFullCoverLetterAccess) await refundAiBudget(user.id, 'cover_letter');
       return NextResponse.json({ error: 'Failed to generate cover letter' }, { status: 500 });
     }
   } catch (error) {

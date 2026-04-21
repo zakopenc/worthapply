@@ -4,6 +4,7 @@ import { buildOfferEvaluationPrompt } from '@/lib/gemini/prompts/offer-evaluatio
 import { getEffectivePlan, isPremiumPlan, type Plan } from '@/lib/plans';
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { logAiError } from '@/lib/admin/log-ai-error';
 import { z } from 'zod';
 
@@ -62,6 +63,14 @@ export async function POST(request: NextRequest) {
     const plan = getEffectivePlan((profile?.plan || 'free') as Plan, profile?.subscription_status);
     if (!isPremiumPlan(plan)) {
       return NextResponse.json({ error: 'Offer Evaluation is a Premium feature.', upgrade_required: true }, { status: 403 });
+    }
+
+    const budget = await reserveAiBudget(user.id, plan, 'offer_evaluation');
+    if (!budget.allowed) {
+      return NextResponse.json(
+        { error: budget.reason || 'Daily AI budget reached.', budget },
+        { status: 429 }
+      );
     }
 
     let analysisData: Record<string, unknown> | null = null;
@@ -159,6 +168,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ data: inserted });
     } catch (generationError) {
       console.error('Offer evaluation generation error:', generationError);
+      await refundAiBudget(user.id, 'offer_evaluation');
       return NextResponse.json({ error: 'Failed to evaluate offer' }, { status: 500 });
     }
   } catch (error) {

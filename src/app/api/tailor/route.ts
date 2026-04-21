@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { createTailoredResumeVersionRecord } from '@/lib/versioned-workspace-records';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { logAiError } from '@/lib/admin/log-ai-error';
 import { z } from 'zod';
 
@@ -104,6 +105,14 @@ export async function POST(request: NextRequest) {
     const rawPlan = (profile?.plan || 'free') as Plan;
     const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
+
+    const budget = await reserveAiBudget(user.id, plan, 'tailor');
+    if (!budget.allowed) {
+      return NextResponse.json(
+        { error: budget.reason || 'Daily AI budget reached.', upgrade_required: plan === 'free', budget },
+        { status: 429 }
+      );
+    }
 
     let usedTailoring = 0;
 
@@ -221,6 +230,7 @@ export async function POST(request: NextRequest) {
     } catch (generationError) {
       console.error('Tailor error:', generationError);
       await releaseReservedUsage();
+      await refundAiBudget(user.id, 'tailor');
       return NextResponse.json({ error: 'Failed to generate tailored resume' }, { status: 500 });
     }
   } catch (error) {

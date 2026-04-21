@@ -3,6 +3,18 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { captureServer } from '@/lib/analytics/posthog-server';
 import { logWebhookEvent } from '@/lib/admin/log-ai-error';
+import { createHash } from 'crypto';
+
+/**
+ * Redacts a user ID for logs — returns a short stable hash so the same user
+ * produces the same token across log lines (useful for tracing) but the
+ * actual UUID is not written to stdout / log aggregators.
+ */
+function redactId(raw: string | null | undefined): string {
+  if (!raw) return 'anon';
+  const hash = createHash('sha256').update(raw).digest('hex').slice(0, 10);
+  return `u_${hash}`;
+}
 
 // Extend Stripe types to include properties for beta API
 interface SubscriptionWithPeriod extends Stripe.Subscription {
@@ -139,7 +151,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
     if (error) {
       console.error('Error updating profile after lifetime checkout:', error);
     } else {
-      console.log(`Lifetime plan activated for user ${userId}`);
+      console.log(`Lifetime plan activated for user ${redactId(userId)}`);
       await captureServer(userId, 'paid_conversion', {
         plan: plan || 'lifetime',
         stripe_customer_id: session.customer,
@@ -175,7 +187,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
   if (error) {
     console.error('Error updating profile after checkout:', error);
   } else {
-    console.log(`Subscription activated for user ${userId}: ${plan}`);
+    console.log(`Subscription activated for user ${redactId(userId)}: ${plan}`);
 
     await captureServer(userId, 'paid_conversion', {
       plan: plan || 'pro',
@@ -212,7 +224,7 @@ async function handleSubscriptionUpdated(subscription: SubscriptionWithPeriod, s
   if (error) {
     console.error('Error updating subscription:', error);
   } else {
-    console.log(`Subscription updated for user ${userId}: ${subscription.status}`);
+    console.log(`Subscription updated for user ${redactId(userId)}: ${subscription.status}`);
   }
 }
 
@@ -239,7 +251,7 @@ async function handleSubscriptionDeleted(subscription: SubscriptionWithPeriod, s
   if (error) {
     console.error('Error handling subscription cancellation:', error);
   } else {
-    console.log(`Subscription canceled for user ${userId}`);
+    console.log(`Subscription canceled for user ${redactId(userId)}`);
   }
 }
 
@@ -258,7 +270,7 @@ async function handleInvoicePaymentSucceeded(invoice: InvoiceWithSubscription, s
     return;
   }
 
-  console.log(`Payment succeeded for user ${userId}: ${invoice.amount_paid / 100} ${invoice.currency}`);
+  console.log(`Payment succeeded for user ${redactId(userId)}: ${invoice.amount_paid / 100} ${invoice.currency}`);
 }
 
 async function handleInvoicePaymentFailed(invoice: InvoiceWithSubscription, stripe: Stripe) {
@@ -288,6 +300,6 @@ async function handleInvoicePaymentFailed(invoice: InvoiceWithSubscription, stri
   if (error) {
     console.error('Error updating subscription status on payment failure:', error);
   } else {
-    console.log(`Payment failed for user ${userId}, status set to ${subscription.status}`);
+    console.log(`Payment failed for user ${redactId(userId)}, status set to ${subscription.status}`);
   }
 }
