@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const rateLimit = await checkRateLimit(user.id);
+    const rateLimit = await checkRateLimit(user.id, 'scrape-jobs');
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },

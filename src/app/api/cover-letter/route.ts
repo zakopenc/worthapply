@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate limiting
-    const rateLimit = await checkRateLimit(user.id);
+    const rateLimit = await checkRateLimit(user.id, 'cover-letter');
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
