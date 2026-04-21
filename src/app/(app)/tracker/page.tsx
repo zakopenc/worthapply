@@ -184,6 +184,30 @@ export default function TrackerPage() {
                           Applied {new Date(app.applied_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
                       )}
+                      {(app.status === 'interview' || app.status === 'offer') && (
+                        <div className="mt-3 pt-3 border-t border-outline-variant/10 flex flex-col gap-1.5">
+                          {app.status === 'interview' && (
+                            <a
+                              href={`/interview-prep?applicationId=${app.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              onDragStart={(e) => e.preventDefault()}
+                              className="text-xs font-bold text-violet-700 hover:text-violet-900 underline underline-offset-2"
+                            >
+                              → Interview prep
+                            </a>
+                          )}
+                          {app.status === 'offer' && (
+                            <a
+                              href={`/offer-evaluation?applicationId=${app.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              onDragStart={(e) => e.preventDefault()}
+                              className="text-xs font-bold text-green-700 hover:text-green-900 underline underline-offset-2"
+                            >
+                              → Evaluate & negotiate offer
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
 

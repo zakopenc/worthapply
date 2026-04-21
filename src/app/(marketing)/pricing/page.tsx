@@ -128,12 +128,11 @@ export default function PricingPage() {
                   popular={false}
                   features={[
                     'Everything in Pro',
-                    '20 LinkedIn job searches/month',
-                    'Priority email support',
-                    'Early access to new features',
-                    'Custom resume templates',
-                    'Dedicated success manager',
-                    'Advanced analytics'
+                    '30 LinkedIn job searches per month',
+                    'AI Interview Prep Studio',
+                    'Offer Evaluation & Negotiation Copilot',
+                    '4-year total-comp projections',
+                    'Priority email support'
                   ]}
                 />
               </div>

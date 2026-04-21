@@ -199,6 +199,161 @@ export interface TailoredResume {
   created_at: string;
 }
 
+// Interview Prep
+export type InterviewStage =
+  | 'phone_screen'
+  | 'recruiter_screen'
+  | 'hiring_manager'
+  | 'technical'
+  | 'behavioral'
+  | 'onsite_loop'
+  | 'executive'
+  | 'culture_fit'
+  | 'take_home';
+
+export interface InterviewPrepQuestion {
+  question: string;
+  category: 'behavioral' | 'role' | 'technical' | 'company' | 'scenario' | 'stretch';
+  competency: string;
+  why_asked: string;
+  difficulty: 'entry' | 'mid' | 'senior' | 'executive';
+  prep_hint: string;
+}
+
+export interface InterviewPrepStarStory {
+  title: string;
+  competencies: string[];
+  source_bullet: string;
+  situation: string;
+  task: string;
+  action: string;
+  result: string;
+  adaptability: string;
+}
+
+export interface InterviewPrepContent {
+  summary?: string;
+  stage_context?: { duration_estimate_minutes: number; format: string; signal_hunted: string };
+  questions?: InterviewPrepQuestion[];
+  star_stories?: InterviewPrepStarStory[];
+  questions_to_ask?: { question: string; type: string; what_it_signals: string }[];
+  company_research?: { topic: string; source: string; how_to_use: string }[];
+  red_flags_to_avoid?: { concern: string; avoid: string; replace_with: string }[];
+  thirty_sixty_ninety_plan?: { applicable: boolean; days_30: string[]; days_60: string[]; days_90: string[] };
+  narrative_gaps?: { area: string; risk: string; mitigation: string }[];
+  checklist?: string[];
+  confidence_coaching?: { framing_statement: string; body_language_notes: string; recovery_script: string };
+}
+
+export interface InterviewPrep {
+  id: string;
+  user_id: string;
+  application_id: string;
+  analysis_id: string;
+  interview_stage: InterviewStage;
+  interviewer_notes: string | null;
+  content: InterviewPrepContent;
+  metadata: Record<string, unknown>;
+  version: number;
+  created_at: string;
+}
+
+// Offer Evaluation
+export interface OfferEquity {
+  type: 'rsu' | 'iso' | 'nso' | 'options' | 'phantom' | 'none' | 'unknown';
+  total_grant_value_usd?: number | null;
+  shares_granted?: number | null;
+  vesting_schedule?: string;
+  cliff_months?: number | null;
+  refreshers_typical_annual?: number | null;
+  strike_price?: number | null;
+  exercise_window_months_post_term?: number | null;
+  notes?: string;
+}
+
+export interface OfferBenefits {
+  health_plan_quality?: string;
+  _401k_match_percent?: number | null;
+  _401k_match_vesting?: string;
+  pto_days?: number | null;
+  parental_leave_weeks?: number | null;
+  relocation_package_usd?: number | null;
+  wfh_stipend_usd?: number | null;
+  learning_budget_usd?: number | null;
+}
+
+export interface ParsedOffer {
+  base_salary_annual?: number | null;
+  signing_bonus?: number | null;
+  annual_bonus_target?: number | null;
+  annual_bonus_target_percent?: number | null;
+  equity?: OfferEquity;
+  benefits?: OfferBenefits;
+  start_date?: string | null;
+  offer_expiration_date?: string | null;
+  company_stage_inferred?: string;
+  parsing_confidence?: 'high' | 'medium' | 'low';
+  missing_info_flags?: string[];
+}
+
+export interface OfferYearProjection {
+  base: number;
+  bonus: number;
+  signing: number;
+  equity_vested: number;
+  total: number;
+}
+
+export interface OfferProjectionScenario {
+  year_1: OfferYearProjection;
+  year_2: OfferYearProjection;
+  year_3: OfferYearProjection;
+  year_4: OfferYearProjection;
+  cumulative: number;
+  assumptions: string;
+}
+
+export interface OfferProjection {
+  conservative: OfferProjectionScenario;
+  base: OfferProjectionScenario;
+  optimistic: OfferProjectionScenario;
+}
+
+export interface OfferNegotiationLever {
+  lever: string;
+  flexibility: 'low' | 'medium' | 'high';
+  rationale: string;
+  ask_amount: string;
+  justification_script: string;
+}
+
+export interface OfferNegotiation {
+  email_counter?: string;
+  phone_script?: string[];
+  rebuttal_lines?: { pushback: string; response: string }[];
+}
+
+export interface OfferEvaluation {
+  id: string;
+  user_id: string;
+  application_id: string | null;
+  offer_text: string | null;
+  parsed_offer: ParsedOffer;
+  projection: OfferProjection;
+  negotiation: OfferNegotiation;
+  metadata: {
+    headline?: string;
+    benchmark_analysis?: Record<string, unknown>;
+    negotiation_levers?: OfferNegotiationLever[];
+    common_mistakes_to_avoid?: string[];
+    decision_matrix?: Record<string, unknown>;
+    red_alerts?: { alert: string; severity: string; action: string }[];
+    next_steps?: string[];
+  };
+  version: number;
+  created_at: string;
+}
+
 // Cover Letter
 export type CoverLetterIndustryPreset =
   | 'tech_startup'

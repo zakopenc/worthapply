@@ -17,6 +17,8 @@ import {
   LifeBuoy,
   TrendingUp,
   LogOut,
+  MessageCircleQuestion,
+  HandCoins,
 } from 'lucide-react';
 import { SignOutButton } from '@/components/app/SignOutButton';
 import styles from './Sidebar.module.css';
@@ -33,6 +35,8 @@ const navItems = [
   { href: '/resume', label: 'Resume & Evidence', icon: FileText },
   { href: '/tailor', label: 'Resume Tailoring', icon: WandSparkles },
   { href: '/cover-letter', label: 'Cover Letter', icon: NotebookPen },
+  { href: '/interview-prep', label: 'Interview Prep', icon: MessageCircleQuestion },
+  { href: '/offer-evaluation', label: 'Offer & Negotiation', icon: HandCoins },
   { href: '/applications', label: 'Applications', icon: BriefcaseBusiness },
   { href: '/tracker', label: 'Pipeline Tracker', icon: FileSearch },
   { href: '/digest', label: 'Daily Digest', icon: ReceiptText },

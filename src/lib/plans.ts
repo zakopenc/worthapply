@@ -38,7 +38,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     analyses_per_month: null, // unlimited
     tailoring_per_month: null, // unlimited
     cover_letters_per_month: null, // unlimited
-    job_searches_per_month: 20, // 20 LinkedIn searches/month
+    job_searches_per_month: 30, // 30 LinkedIn searches/month
     linkedin_results_per_search: 30,
     tracker_jobs: null, // unlimited
     evidence_items: null, // unlimited
@@ -47,7 +47,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     analyses_per_month: null, // unlimited
     tailoring_per_month: null, // unlimited
     cover_letters_per_month: null, // unlimited
-    job_searches_per_month: 20, // Same as Premium
+    job_searches_per_month: 30, // Same as Premium
     linkedin_results_per_search: 30,
     tracker_jobs: null, // unlimited
     evidence_items: null, // unlimited
@@ -262,9 +262,8 @@ export const PLAN_PRICING: Record<Plan, PlanPricing> = {
       'Unlimited job analyses',
       'Unlimited resume tailoring',
       'Unlimited cover letters',
-      '10 LinkedIn job searches/month',
-      'See up to 10 fresh LinkedIn jobs per search',
-      'Find 300 matching jobs automatically',
+      '10 LinkedIn job searches per month',
+      'Up to 10 fresh LinkedIn jobs per search',
       'Advanced fit scoring',
       'ATS optimization',
       'Unlimited job tracking',
@@ -281,13 +280,11 @@ export const PLAN_PRICING: Record<Plan, PlanPricing> = {
     description: 'For executives & high earners',
     features: [
       'Everything in Professional',
-      '20 LinkedIn job searches/month',
-      'See up to 30 fresh LinkedIn jobs per search',
-      'Find 600 matching jobs automatically',
-      'AI interview preparation',
-      'Salary negotiation guidance',
-      'Custom AI training on your industry',
-      '1-on-1 strategy call (monthly)',
+      '30 LinkedIn job searches per month',
+      'Up to 30 fresh LinkedIn jobs per search',
+      'AI Interview Prep Studio tied to each job',
+      'Offer Evaluation & Salary Negotiation Copilot',
+      '4-year total-comp projections with equity scenarios',
       'Priority support',
     ],
     cta: 'Go Premium',
