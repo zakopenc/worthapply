@@ -49,7 +49,7 @@ interface ParsedEducationItem {
 interface ParsedResumeData {
   summary?: string;
   achievements?: { text?: string }[];
-  skills?: Record<string, string[]> | { category?: string; items?: string[] }[];
+  skills?: Record<string, string[]> | { category?: string; items?: string[] }[] | string[];
   work_history?: ParsedWorkHistoryItem[];
   education?: ParsedEducationItem[];
   leadership?: { text?: string; title?: string; story?: string }[];
@@ -173,21 +173,38 @@ function formatDate(value?: string | null) {
   });
 }
 
-function normalizeSkills(skills: ParsedResumeData['skills']) {
-  if (!skills) return [] as { category: string; items: string[] }[];
+function normalizeSkills(skills: ParsedResumeData['skills']): { category: string; items: string[] }[] {
+  if (!skills) return [];
+
   if (Array.isArray(skills)) {
-    return skills.map((group) => ({
-      category: group.category || 'Skills',
-      items: group.items || [],
-    }));
+    // Case 1: flat string[] from the resume parser (most common).
+    // One group with all strings.
+    if (skills.length > 0 && typeof skills[0] === 'string') {
+      const items = (skills as unknown as string[])
+        .map((s) => (typeof s === 'string' ? s.trim() : ''))
+        .filter((s) => s.length > 0);
+      return items.length > 0 ? [{ category: 'Skills', items }] : [];
+    }
+    // Case 2: array of { category, items } group objects.
+    return (skills as { category?: string; items?: string[] }[])
+      .map((group) => ({
+        category: (group?.category || 'Skills').trim() || 'Skills',
+        items: (group?.items || [])
+          .map((it) => (typeof it === 'string' ? it.trim() : ''))
+          .filter((it) => it.length > 0),
+      }))
+      .filter((g) => g.items.length > 0);
   }
 
+  // Case 3: object map of category -> items (e.g. { technical: [...], soft: [...] }).
   return Object.entries(skills)
-    .filter(([, items]) => Array.isArray(items) && items.length > 0)
-    .map(([category, items]) => ({
+    .map(([category, rawItems]) => ({
       category: category.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-      items,
-    }));
+      items: Array.isArray(rawItems)
+        ? rawItems.map((it) => (typeof it === 'string' ? it.trim() : '')).filter((it) => it.length > 0)
+        : [],
+    }))
+    .filter((g) => g.items.length > 0);
 }
 
 interface ParsedResumeWithContact extends ParsedResumeData {
