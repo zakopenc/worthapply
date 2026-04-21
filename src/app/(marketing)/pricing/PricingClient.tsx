@@ -287,69 +287,70 @@ export default function PricingClient({ priceIds }: PricingClientProps) {
               </Link>
             </article>
 
-            {/* Pro Plan */}
-            <article className={`${styles.planCard} ${styles.planCardFeatured} ${styles.planCardAnimated} ${styles.planCardFeaturedGlow}`} style={{ animationDelay: '120ms' }}>
-              <span className={styles.featuredTag}>Most popular</span>
-              <div>
-                <span className={styles.planName}>{plans[1].name}</span>
-                <div key={annual ? 'annual' : 'monthly'} className={`${styles.priceRow} ${styles.priceRowSwap}`}>
-                  <strong>{proPrice}</strong>
-                  <span>/month</span>
+            {/* Pro Plan — Coming Soon */}
+            <article className={`${styles.planCard} ${styles.planCardFeatured} ${styles.planCardAnimated} ${styles.planCardFeaturedGlow}`} style={{ animationDelay: '120ms', position: 'relative', overflow: 'hidden' }} aria-label="Professional plan — coming soon">
+              <ComingSoonOverlay />
+              <div style={{ filter: 'blur(5px)', pointerEvents: 'none', userSelect: 'none', opacity: 0.65, display: 'flex', flexDirection: 'column', gap: '1.5rem', height: '100%' }} aria-hidden="true">
+                <span className={styles.featuredTag}>Most popular</span>
+                <div>
+                  <span className={styles.planName}>{plans[1].name}</span>
+                  <div key={annual ? 'annual' : 'monthly'} className={`${styles.priceRow} ${styles.priceRowSwap}`}>
+                    <strong>{proPrice}</strong>
+                    <span>/month</span>
+                  </div>
+                  <p>{plans[1].subtitle}</p>
+                  <div key={`meta-${annual ? 'annual' : 'monthly'}`} className={`${styles.planMeta} ${styles.planMetaSwap}`}>
+                    <span>{proBilling}</span>
+                    {annual && <span>{plans[1].annualNote}</span>}
+                    <span>7-day free trial</span>
+                  </div>
                 </div>
-                <p>{plans[1].subtitle}</p>
-                <div key={`meta-${annual ? 'annual' : 'monthly'}`} className={`${styles.planMeta} ${styles.planMetaSwap}`}>
-                  <span>{proBilling}</span>
-                  {annual && <span>{plans[1].annualNote}</span>}
-                  <span>7-day free trial</span>
+                <div className={styles.featureList}>
+                  {plans[1].features.map((feature) => (
+                    <Feature key={feature} text={feature} />
+                  ))}
                 </div>
+                <button type="button" className={styles.primaryCta} disabled tabIndex={-1}>
+                  {plans[1].cta}
+                  <ArrowRight size={16} weight="bold" />
+                </button>
               </div>
-              <div className={styles.featureList}>
-                {plans[1].features.map((feature) => (
-                  <Feature key={feature} text={feature} />
-                ))}
-              </div>
-              <button
-                type="button"
-                className={styles.primaryCta}
-                onClick={() => handleCheckout('pro', annual ? 'annual' : 'monthly')}
-                disabled={loading === 'monthly' || loading === 'annual'}
-              >
-                {loading === 'monthly' || loading === 'annual' ? 'Loading…' : plans[1].cta}
-                <ArrowRight size={16} weight="bold" />
-              </button>
             </article>
 
-            {/* Premium Plan */}
-            <article className={`${styles.planCard} ${styles.planCardAnimated}`} style={{ animationDelay: '200ms', border: '2px solid #8B5CF6' }}>
-              <div style={{ position: 'relative' }}>
-                <Crown size={20} weight="duotone" style={{ position: 'absolute', top: -4, right: 0, color: '#8B5CF6' }} />
-                <span className={styles.planName} style={{ color: '#8B5CF6' }}>{plans[2].name}</span>
-                <div key={annual ? 'premium-annual' : 'premium-monthly'} className={`${styles.priceRow} ${styles.priceRowSwap}`}>
-                  <strong>{premiumPrice}</strong>
-                  <span>/month</span>
+            {/* Premium Plan — Coming Soon */}
+            <article className={`${styles.planCard} ${styles.planCardAnimated}`} style={{ animationDelay: '200ms', border: '2px solid #8B5CF6', position: 'relative', overflow: 'hidden' }} aria-label="Premium plan — coming soon">
+              <ComingSoonOverlay accent="#8B5CF6" />
+              <div style={{ filter: 'blur(5px)', pointerEvents: 'none', userSelect: 'none', opacity: 0.65, display: 'flex', flexDirection: 'column', gap: '1.5rem', height: '100%' }} aria-hidden="true">
+                <div style={{ position: 'relative' }}>
+                  <Crown size={20} weight="duotone" style={{ position: 'absolute', top: -4, right: 0, color: '#8B5CF6' }} />
+                  <span className={styles.planName} style={{ color: '#8B5CF6' }}>{plans[2].name}</span>
+                  <div key={annual ? 'premium-annual' : 'premium-monthly'} className={`${styles.priceRow} ${styles.priceRowSwap}`}>
+                    <strong>{premiumPrice}</strong>
+                    <span>/month</span>
+                  </div>
+                  <p>{plans[2].subtitle}</p>
+                  <div key={`premium-meta-${annual ? 'annual' : 'monthly'}`} className={`${styles.planMeta} ${styles.planMetaSwap}`}>
+                    <span>{premiumBilling}</span>
+                    {annual && <span>{plans[2].annualNote}</span>}
+                    <span>7-day free trial</span>
+                  </div>
                 </div>
-                <p>{plans[2].subtitle}</p>
-                <div key={`premium-meta-${annual ? 'annual' : 'monthly'}`} className={`${styles.planMeta} ${styles.planMetaSwap}`}>
-                  <span>{premiumBilling}</span>
-                  {annual && <span>{plans[2].annualNote}</span>}
-                  <span>7-day free trial</span>
+                <div className={styles.featureList}>
+                  {plans[2].features.map((feature) => (
+                    <Feature key={feature} text={feature} />
+                  ))}
                 </div>
+                <button
+                  type="button"
+                  className={styles.primaryCta}
+                  style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)' }}
+                  disabled
+                  tabIndex={-1}
+                >
+                  {plans[2].cta}
+                  <ArrowRight size={16} weight="bold" />
+                </button>
               </div>
-              <div className={styles.featureList}>
-                {plans[2].features.map((feature) => (
-                  <Feature key={feature} text={feature} />
-                ))}
-              </div>
-              <button
-                type="button"
-                className={styles.primaryCta}
-                style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)' }}
-                onClick={() => handleCheckout('premium', annual ? 'annual' : 'monthly')}
-                disabled={loading === 'monthly' || loading === 'annual'}
-              >
-                {loading === 'monthly' || loading === 'annual' ? 'Loading…' : plans[2].cta}
-                <ArrowRight size={16} weight="bold" />
-              </button>
             </article>
 
             {/* Lifetime Plan */}
@@ -557,6 +558,38 @@ export default function PricingClient({ priceIds }: PricingClientProps) {
         </div>
       </section>
     </>
+  );
+}
+
+function ComingSoonOverlay({ accent = '#0f172a' }: { accent?: string }) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 3,
+        pointerEvents: 'none',
+      }}
+    >
+      <span
+        style={{
+          padding: '10px 20px',
+          borderRadius: 999,
+          background: accent,
+          color: 'white',
+          fontWeight: 700,
+          fontSize: 13,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          boxShadow: '0 10px 30px rgba(15, 23, 42, 0.25)',
+        }}
+      >
+        Coming Soon
+      </span>
+    </div>
   );
 }
 
