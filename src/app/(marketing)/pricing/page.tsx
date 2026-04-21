@@ -80,46 +80,64 @@ export default function PricingPage() {
             </div>
             </FadeUp>
 
-            {/* Pro Plan */}
+            {/* Pro Plan — Coming Soon */}
             <FadeUp>
-            <PricingCard
-              name="Pro"
-              description="Best for active job seekers"
-              price={39}
-              priceId={process.env.STRIPE_PRO_PRICE_ID!}
-              plan="pro"
-              popular={true}
-              features={[
-                'Unlimited job analyses',
-                'Advanced resume tailoring',
-                'Cover letter generator',
-                '10 LinkedIn job searches/month',
-                'Application tracking',
-                'Pipeline tracker',
-                'Email support'
-              ]}
-            />
+            <div className="relative" aria-label="Pro plan — coming soon">
+              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                <span className="px-5 py-2.5 rounded-full bg-gray-900 text-white font-bold text-xs uppercase tracking-widest shadow-xl">
+                  Coming Soon
+                </span>
+              </div>
+              <div className="blur-[5px] opacity-60 pointer-events-none select-none" aria-hidden="true">
+                <PricingCard
+                  name="Pro"
+                  description="Best for active job seekers"
+                  price={39}
+                  priceId={process.env.STRIPE_PRO_PRICE_ID!}
+                  plan="pro"
+                  popular={true}
+                  features={[
+                    'Unlimited job analyses',
+                    'Advanced resume tailoring',
+                    'Cover letter generator',
+                    '10 LinkedIn job searches/month',
+                    'Application tracking',
+                    'Pipeline tracker',
+                    'Email support'
+                  ]}
+                />
+              </div>
+            </div>
             </FadeUp>
 
-            {/* Premium Plan */}
+            {/* Premium Plan — Coming Soon */}
             <FadeUp>
-            <PricingCard
-              name="Premium"
-              description="For power users"
-              price={79}
-              priceId={process.env.STRIPE_PREMIUM_PRICE_ID!}
-              plan="premium"
-              popular={false}
-              features={[
-                'Everything in Pro',
-                '20 LinkedIn job searches/month',
-                'Priority email support',
-                'Early access to new features',
-                'Custom resume templates',
-                'Dedicated success manager',
-                'Advanced analytics'
-              ]}
-            />
+            <div className="relative" aria-label="Premium plan — coming soon">
+              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                <span className="px-5 py-2.5 rounded-full bg-gray-900 text-white font-bold text-xs uppercase tracking-widest shadow-xl">
+                  Coming Soon
+                </span>
+              </div>
+              <div className="blur-[5px] opacity-60 pointer-events-none select-none" aria-hidden="true">
+                <PricingCard
+                  name="Premium"
+                  description="For power users"
+                  price={79}
+                  priceId={process.env.STRIPE_PREMIUM_PRICE_ID!}
+                  plan="premium"
+                  popular={false}
+                  features={[
+                    'Everything in Pro',
+                    '20 LinkedIn job searches/month',
+                    'Priority email support',
+                    'Early access to new features',
+                    'Custom resume templates',
+                    'Dedicated success manager',
+                    'Advanced analytics'
+                  ]}
+                />
+              </div>
+            </div>
             </FadeUp>
           </StaggerGroup>
         </div>
