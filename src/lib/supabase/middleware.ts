@@ -2,7 +2,57 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { fetchIsAdmin } from '@/lib/admin/fetch-is-admin';
 
+// ── CSRF Origin/Referer guard for mutating API requests ──────────────────
+// Browsers with SameSite=Lax cookies already block most cross-site POSTs,
+// but Lax still permits top-level-nav POST via form submissions. For any
+// mutating API call we additionally require the Origin (or Referer) host
+// to match this site's host. Webhook endpoints are excluded because they
+// authenticate via cryptographic signatures, not cookies.
+const CSRF_SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+const CSRF_EXEMPT_PREFIXES = ['/api/webhooks/'];
+
+function getHostFromUrl(raw: string | null): string | null {
+  if (!raw) return null;
+  try {
+    return new URL(raw).host;
+  } catch {
+    return null;
+  }
+}
+
+function isCsrfOriginAllowed(request: NextRequest): boolean {
+  const pathname = request.nextUrl.pathname;
+  if (!pathname.startsWith('/api/')) return true;
+  if (CSRF_SAFE_METHODS.has(request.method)) return true;
+  if (CSRF_EXEMPT_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return true;
+
+  const expectedHost = request.nextUrl.host;
+  const originHost = getHostFromUrl(request.headers.get('origin'));
+  const refererHost = getHostFromUrl(request.headers.get('referer'));
+
+  // Require at least one of Origin or Referer to be present and match host.
+  if (originHost && originHost === expectedHost) return true;
+  if (refererHost && refererHost === expectedHost) return true;
+
+  // In development, allow localhost variants for easier local testing.
+  if (process.env.NODE_ENV !== 'production') {
+    const localHosts = new Set(['localhost:3000', '127.0.0.1:3000']);
+    if (originHost && localHosts.has(originHost)) return true;
+    if (refererHost && localHosts.has(refererHost)) return true;
+  }
+
+  return false;
+}
+
 export async function updateSession(request: NextRequest) {
+  // CSRF guard runs before anything else — cheap header inspection only.
+  if (!isCsrfOriginAllowed(request)) {
+    return new NextResponse(
+      JSON.stringify({ error: 'Cross-site request rejected.' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

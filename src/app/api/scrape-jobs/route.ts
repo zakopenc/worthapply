@@ -280,7 +280,10 @@ async function scrapeLinkedInJobs(criteria: SearchCriteria): Promise<LinkedInJob
     if (!response.ok) {
       const failureBody = await response.text();
       console.error('Apify API error:', response.status, failureBody);
-      return generateMockJobs(criteria);
+      if (process.env.NODE_ENV !== 'production') {
+        return generateMockJobs(criteria);
+      }
+      throw new Error(`Apify API responded with ${response.status}`);
     }
 
     const results = (await response.json()) as Record<string, unknown>[];
@@ -293,7 +296,10 @@ async function scrapeLinkedInJobs(criteria: SearchCriteria): Promise<LinkedInJob
       .filter((job): job is LinkedInJob => Boolean(job.title && job.company && job.description));
   } catch (error) {
     console.error('Apify scrape error:', error);
-    return generateMockJobs(criteria);
+    if (process.env.NODE_ENV !== 'production') {
+      return generateMockJobs(criteria);
+    }
+    throw error;
   }
 }
 
