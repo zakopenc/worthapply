@@ -21,6 +21,7 @@ import {
   buildDownloadFilename,
   buildResumeDocxBlob,
   buildResumePdfBlob,
+  buildAnnotatedResumeDocxBlob,
   type ResumeDocumentModel,
   type ResumeExperienceEntry,
   type ResumeSkillGroup,
@@ -79,6 +80,7 @@ interface TailoredContent {
   seniority_match?: { candidate_level: string; target_level: string; gap_note: string };
   red_flags?: RedFlagItem[];
   ats_family?: string;
+  portfolio_suggestion?: { needed: boolean; reason: string; suggestion: string };
 }
 
 interface TailoredResumeRecord {
@@ -223,8 +225,8 @@ function buildTailoredResumeDocument(
   const header = extractContacts(resume, fallbackName);
 
   const acceptedBullets = bulletDecisions.filter((d) => d.state === 'accepted' && d.value.trim());
-  const originalToAccepted = new Map<string, string>();
-  acceptedBullets.forEach((d) => originalToAccepted.set(d.original.trim(), d.value.trim()));
+  const originalToAccepted = new Map<string, BulletDecision>();
+  acceptedBullets.forEach((d) => originalToAccepted.set(d.original.trim(), d));
 
   const summary =
     summaryDecision.state === 'accepted' && summaryDecision.value.trim()
@@ -237,15 +239,30 @@ function buildTailoredResumeDocument(
       : typeof (job as unknown as { summary?: string }).summary === 'string'
         ? ((job as unknown as { summary: string }).summary.split(/\n+/).filter(Boolean))
         : [];
-    const merged = originalBullets.map((b) => originalToAccepted.get(b.trim()) || b);
-    const unusedAccepted = acceptedBullets
+    const mergedBullets: string[] = [];
+    const mergedAnnotations: (NonNullable<ResumeExperienceEntry['bulletAnnotations']>[number])[] = [];
+    originalBullets.forEach((b) => {
+      const decision = originalToAccepted.get(b.trim());
+      if (decision) {
+        mergedBullets.push(decision.value.trim());
+        mergedAnnotations.push({ framework: decision.framework, reason: decision.reason });
+      } else {
+        mergedBullets.push(b);
+        mergedAnnotations.push(undefined);
+      }
+    });
+    acceptedBullets
       .filter((d) => !originalBullets.some((b) => b.trim() === d.original.trim()))
-      .map((d) => d.value.trim());
+      .forEach((d) => {
+        mergedBullets.push(d.value.trim());
+        mergedAnnotations.push({ framework: d.framework, reason: d.reason });
+      });
     return {
       title: job.title || '',
       company: job.company || '',
       dates: [job.start || job.start_date, job.end || job.end_date].filter(Boolean).join(' – '),
-      bullets: merged.concat(unusedAccepted),
+      bullets: mergedBullets,
+      bulletAnnotations: mergedAnnotations,
     };
   });
 
@@ -255,6 +272,7 @@ function buildTailoredResumeDocument(
       title: 'Selected Highlights',
       company: '',
       bullets: acceptedBullets.map((d) => d.value.trim()),
+      bulletAnnotations: acceptedBullets.map((d) => ({ framework: d.framework, reason: d.reason })),
     });
   }
 
@@ -585,6 +603,34 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
     }
   };
 
+  const handleExportAnnotated = async () => {
+    if (!detail) return;
+    if (!initialData.features.docx_download) {
+      setError('Annotated export is available on Pro, Premium, and Lifetime plans.');
+      return;
+    }
+
+    setExporting(true);
+    setError('');
+
+    try {
+      const resumeDoc = buildTailoredResumeDocument(
+        parsedResume as ParsedResumeWithContact | null,
+        initialData.userName,
+        summaryDecision,
+        bulletDecisions,
+        skillsDecision
+      );
+      const blob = await buildAnnotatedResumeDocxBlob(resumeDoc);
+      downloadBlob(buildDownloadFilename([resumeDoc.header.name, detail.job_title, detail.company], 'resume-annotated', 'docx'), blob);
+      setBanner('Annotated copy downloaded. For your reference only — do not send to recruiters.');
+    } catch {
+      setError('Unable to export the annotated file on this device.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const acceptedCount = bulletDecisions.filter((item) => item.state === 'accepted').length
     + (summaryDecision.state === 'accepted' ? 1 : 0)
     + (skillsDecision.state === 'accepted' ? 1 : 0);
@@ -700,7 +746,8 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
             const hasLength = !!c.length_guidance;
             const hasSeniority = !!c.seniority_match;
             const hasAtsFamily = !!c.ats_family && c.ats_family !== 'unknown';
-            if (!hasRedFlags && !hasLength && !hasSeniority && !hasAtsFamily) return null;
+            const hasPortfolio = !!c.portfolio_suggestion?.needed;
+            if (!hasRedFlags && !hasLength && !hasSeniority && !hasAtsFamily && !hasPortfolio) return null;
             return (
               <section style={{ display: 'grid', gap: 14, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', marginBottom: 18 }}>
                 {hasRedFlags && (
@@ -736,6 +783,13 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
                     <strong style={{ display: 'block', fontSize: 13, letterSpacing: 0.5, textTransform: 'uppercase', color: '#047857', marginBottom: 10 }}>Detected ATS</strong>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#064e3b', textTransform: 'capitalize' }}>{c.ats_family}</div>
                     <p style={{ fontSize: 13, color: '#047857', margin: '6px 0 0' }}>Keyword placement tuned for this ATS family.</p>
+                  </article>
+                )}
+                {hasPortfolio && (
+                  <article style={{ padding: 18, background: '#faf5ff', border: '1px solid #d8b4fe', borderRadius: 14, gridColumn: 'span 2' }}>
+                    <strong style={{ display: 'block', fontSize: 13, letterSpacing: 0.5, textTransform: 'uppercase', color: '#6b21a8', marginBottom: 10 }}>Portfolio opportunity</strong>
+                    <p style={{ fontSize: 14, color: '#581c87', margin: '0 0 8px', fontWeight: 600 }}>{c.portfolio_suggestion!.reason}</p>
+                    <p style={{ fontSize: 13, color: '#6b21a8', margin: 0 }}>{c.portfolio_suggestion!.suggestion}</p>
                   </article>
                 )}
               </section>
@@ -941,6 +995,16 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
               <button type="button" className={styles.primaryButton} onClick={handleExportDocx} disabled={exporting || !parsedResume}>
                 {exporting ? <Loader2 size={16} className={styles.inlineSpin} /> : <Download size={16} />}
                 Export to DOCX
+              </button>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={handleExportAnnotated}
+                disabled={exporting || !parsedResume || bulletDecisions.filter((b) => b.state === 'accepted').length === 0}
+                title="Includes framework + reasoning notes under each tailored bullet. For your study only — do not send to recruiters."
+              >
+                {exporting ? <Loader2 size={16} className={styles.inlineSpin} /> : <Download size={16} />}
+                Export annotated
               </button>
             </div>
           </section>

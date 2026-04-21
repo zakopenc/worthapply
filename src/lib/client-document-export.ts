@@ -3,12 +3,22 @@ import JSZip from 'jszip';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 // ── Professional Resume Document Model ─────────────────────────────
+export interface ResumeExperienceBullet {
+  text: string;
+  annotation?: {
+    framework?: 'PAR' | 'CAR';
+    reason: string;
+  };
+}
+
 export interface ResumeExperienceEntry {
   title: string;
   company: string;
   location?: string;
   dates?: string;
   bullets: string[];
+  /** Optional per-bullet annotations (framework + reason) parallel to bullets[] */
+  bulletAnnotations?: (ResumeExperienceBullet['annotation'] | undefined)[];
 }
 
 export interface ResumeEducationEntry {
@@ -520,6 +530,149 @@ export async function buildResumeDocxBlob(doc: ResumeDocumentModel): Promise<Blo
             margin: { top: 720, right: 720, bottom: 720, left: 720 },
           },
         },
+        children,
+      },
+    ],
+  });
+
+  return Packer.toBlob(document);
+}
+
+// Annotated DOCX — same professional layout, but each bullet carries an italic
+// coaching note underneath explaining framework + reason. Meant for the
+// candidate's own records; NEVER send this to a recruiter.
+export async function buildAnnotatedResumeDocxBlob(doc: ResumeDocumentModel): Promise<Blob> {
+  const children: Paragraph[] = [];
+
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 40 },
+      children: [new TextRun({ text: doc.header.name || 'Your Name', bold: true, size: 44 })],
+    })
+  );
+
+  if (doc.header.contacts.length > 0) {
+    children.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+        children: [new TextRun({ text: doc.header.contacts.filter(Boolean).join('  •  '), size: 20, color: '555555' })],
+      })
+    );
+  }
+
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 240 },
+      border: { top: { color: '999999', space: 1, style: BorderStyle.SINGLE, size: 4 }, bottom: { color: '999999', space: 1, style: BorderStyle.SINGLE, size: 4 } },
+      children: [new TextRun({ text: 'ANNOTATED VERSION — for your reference only. Do not send this copy to recruiters.', italics: true, size: 18, color: '777777' })],
+    })
+  );
+
+  const addSectionHeading = (label: string) => {
+    children.push(
+      new Paragraph({
+        spacing: { before: 200, after: 80 },
+        border: { bottom: { color: '222222', space: 1, style: BorderStyle.SINGLE, size: 6 } },
+        children: [new TextRun({ text: label.toUpperCase(), bold: true, size: 22, color: '1a1a1a' })],
+      })
+    );
+  };
+
+  if (doc.summary) {
+    addSectionHeading('Summary');
+    children.push(
+      new Paragraph({
+        spacing: { after: 120 },
+        children: [new TextRun({ text: doc.summary, size: 22 })],
+      })
+    );
+  }
+
+  if (doc.experience.length > 0) {
+    addSectionHeading('Experience');
+    doc.experience.forEach((job) => {
+      children.push(
+        new Paragraph({
+          spacing: { before: 140, after: 0 },
+          tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+          children: [
+            new TextRun({ text: job.title || '', bold: true, size: 22 }),
+            new TextRun({ text: job.company ? `  |  ${job.company}` : '', size: 22 }),
+            ...(job.dates ? [new TextRun({ text: `\t${job.dates}`, size: 20, color: '555555' })] : []),
+          ],
+        })
+      );
+
+      job.bullets.forEach((bullet, idx) => {
+        children.push(
+          new Paragraph({
+            spacing: { after: 20 },
+            indent: { left: 220, hanging: 220 },
+            children: [new TextRun({ text: `•  ${bullet}`, size: 22 })],
+          })
+        );
+        const note = job.bulletAnnotations?.[idx];
+        if (note) {
+          const parts: TextRun[] = [];
+          if (note.framework) {
+            parts.push(new TextRun({ text: `[${note.framework}] `, italics: true, bold: true, size: 18, color: '6b21a8' }));
+          }
+          parts.push(new TextRun({ text: note.reason, italics: true, size: 18, color: '555555' }));
+          children.push(
+            new Paragraph({
+              spacing: { after: 80 },
+              indent: { left: 460 },
+              children: parts,
+            })
+          );
+        }
+      });
+    });
+  }
+
+  if (doc.skills && doc.skills.length > 0) {
+    addSectionHeading('Skills');
+    doc.skills.forEach((group) => {
+      const prefix = group.category ? `${group.category}: ` : '';
+      children.push(
+        new Paragraph({
+          spacing: { after: 60 },
+          children: [
+            ...(group.category ? [new TextRun({ text: prefix, bold: true, size: 22 })] : []),
+            new TextRun({ text: group.items.join(', '), size: 22 }),
+          ],
+        })
+      );
+    });
+  }
+
+  if (doc.education && doc.education.length > 0) {
+    addSectionHeading('Education');
+    doc.education.forEach((ed) => {
+      children.push(
+        new Paragraph({
+          spacing: { before: 80, after: 40 },
+          tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+          children: [
+            new TextRun({ text: ed.degree || '', bold: true, size: 22 }),
+            new TextRun({ text: ed.school ? `  |  ${ed.school}` : '', size: 22 }),
+            ...(ed.dates ? [new TextRun({ text: `\t${ed.dates}`, size: 20, color: '555555' })] : []),
+          ],
+        })
+      );
+    });
+  }
+
+  const document = new Document({
+    styles: {
+      default: { document: { run: { font: 'Calibri', size: 22 } } },
+    },
+    sections: [
+      {
+        properties: { page: { margin: { top: 720, right: 720, bottom: 720, left: 720 } } },
         children,
       },
     ],

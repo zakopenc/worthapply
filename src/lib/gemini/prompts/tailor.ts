@@ -97,6 +97,21 @@ Estimate resume length needed based on years of experience from work_history:
 - 8+ years OR manager/director/VP titles: recommend 2 pages.
 Report this in \`length_guidance\`. If current resume pushes against recommendation, note which sections to trim or expand.
 
+## PORTFOLIO / GITHUB EVIDENCE (TECHNICAL ROLES ONLY)
+Decide whether this role benefits from a portfolio or GitHub link:
+- technical=TRUE when the role is engineer / developer / data scientist / ML / designer / researcher / product designer / architect / SRE / security researcher / any role where external artifacts are normal evidence.
+- technical=FALSE for sales, marketing, ops, finance, HR, legal, most analyst roles (unless coding is core).
+
+If technical=TRUE, check if the resume data already contains a portfolio link (GitHub, personal site, Dribbble, Behance, case studies, published papers, Kaggle, Hugging Face, etc.) — look at any field that could contain a URL: summary, links, headline, projects, leadership_stories, contact.
+
+If technical=TRUE AND no portfolio is visible, populate \`portfolio_suggestion.needed = true\` with a role-specific suggestion:
+- Engineering: "Link to 1–2 pinned repos that demonstrate the exact stack in this JD. Each pinned repo should have a README that opens with the problem, approach, and a specific metric or result — not just a star count. 78% of tech recruiters check GitHub before interviewing."
+- Design: "Link to 2–3 case studies that walk through problem → hypothesis → process → measured outcome. Avoid portfolios that are only shots without narrative."
+- Data/ML: "Link a Kaggle profile or Hugging Face space, or a GitHub repo with a notebook showing the end-to-end workflow (data → model → evaluation → decision)."
+- Research/ML: "Link Google Scholar + a single flagship paper or project page."
+
+If technical=FALSE OR portfolio already exists, set needed=false and leave suggestion empty.
+
 ## OUTPUT TONE
 - Read it aloud test: would a real hiring manager believe a human wrote this on their best day?
 - Prefer specific verbs over grand ones: "rebuilt" over "transformed", "cut" over "optimized", "hired" over "scaled the team", "shipped" over "delivered".
@@ -134,6 +149,11 @@ Report this in \`length_guidance\`. If current resume pushes against recommendat
     "candidate_level": "entry" | "mid" | "senior" | "lead" | "manager" | "director" | "vp",
     "target_level": "entry" | "mid" | "senior" | "lead" | "manager" | "director" | "vp",
     "gap_note": "One sentence: is the target a stretch, match, or downlevel?"
+  },
+  "portfolio_suggestion": {
+    "needed": true or false,
+    "reason": "One sentence: why this role benefits from external evidence, OR empty if needed=false",
+    "suggestion": "Specific artifact the candidate should link (see rules above), OR empty if needed=false"
   },
   "estimated_score_improvement": 8
 }

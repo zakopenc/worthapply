@@ -42,6 +42,11 @@ const tailoredResumeSaveSchema = z.object({
       action: z.string(),
     })).optional(),
     ats_family: z.string().optional(),
+    portfolio_suggestion: z.object({
+      needed: z.boolean(),
+      reason: z.string(),
+      suggestion: z.string(),
+    }).optional(),
   }),
   original_score: z.number().int().min(0).max(100),
   tailored_score: z.number().int().min(0).max(100),
@@ -176,6 +181,7 @@ export async function POST(request: NextRequest) {
         tone_check: { passed: boolean; flags: string[] };
         length_guidance?: { recommended_pages: 1 | 2; reason: string };
         seniority_match?: { candidate_level: string; target_level: string; gap_note: string };
+        portfolio_suggestion?: { needed: boolean; reason: string; suggestion: string };
         estimated_score_improvement: number;
       }>(buildTailoringPrompt(resume.parsed_data as Record<string, unknown>, analysis, { ats_family: atsFamily, job_url: analysis.job_url }));
 

@@ -182,6 +182,7 @@ export interface TailoredResumeContent {
   seniority_match?: { candidate_level: SeniorityLevel; target_level: SeniorityLevel; gap_note: string };
   red_flags?: { type: string; severity: 'low' | 'medium' | 'high'; explanation: string; action: string }[];
   ats_family?: AtsFamily;
+  portfolio_suggestion?: { needed: boolean; reason: string; suggestion: string };
 }
 
 export interface TailoredResume {
