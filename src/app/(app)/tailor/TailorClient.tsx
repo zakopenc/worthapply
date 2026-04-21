@@ -19,9 +19,11 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import {
   buildDownloadFilename,
-  buildParagraphDocxBlob,
-  buildSimplePdfBlob,
-  type ExportSection,
+  buildResumeDocxBlob,
+  buildResumePdfBlob,
+  type ResumeDocumentModel,
+  type ResumeExperienceEntry,
+  type ResumeSkillGroup,
   downloadBlob,
 } from '@/lib/client-document-export';
 import styles from './tailor.module.css';
@@ -53,10 +55,30 @@ interface ParsedResumeData {
   leadership_stories?: { text?: string; title?: string; story?: string }[];
 }
 
+interface TailoredBulletApi {
+  original: string;
+  tailored: string;
+  reason: string;
+  framework?: 'PAR' | 'CAR';
+  needs_metric?: boolean;
+  metric_question?: string;
+}
+
+interface RedFlagItem {
+  type: string;
+  severity: 'low' | 'medium' | 'high';
+  explanation: string;
+  action: string;
+}
+
 interface TailoredContent {
   tailored_summary?: string;
-  tailored_bullets?: { original: string; tailored: string; reason: string }[];
+  tailored_bullets?: TailoredBulletApi[];
   reordered_skills?: string[];
+  length_guidance?: { recommended_pages: 1 | 2; reason: string };
+  seniority_match?: { candidate_level: string; target_level: string; gap_note: string };
+  red_flags?: RedFlagItem[];
+  ats_family?: string;
 }
 
 interface TailoredResumeRecord {
@@ -129,6 +151,9 @@ type BulletDecision = {
   reason: string;
   value: string;
   state: SuggestionState;
+  framework?: 'PAR' | 'CAR';
+  needs_metric?: boolean;
+  metric_question?: string;
 };
 
 function formatPlan(plan: TailorInitialData['plan']) {
@@ -164,29 +189,109 @@ function normalizeSkills(skills: ParsedResumeData['skills']) {
     }));
 }
 
-function buildExportLines(detail: ApplicationDetail, summaryDecision: { value: string; state: SuggestionState }, bulletDecisions: BulletDecision[], skillsDecision: { value: string[]; state: SuggestionState }) {
-  const lines: ExportSection[] = [];
+interface ParsedResumeWithContact extends ParsedResumeData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  headline?: string;
+  location?: string;
+  links?: string[];
+  certifications?: string[] | { name?: string; issuer?: string; year?: string }[];
+}
 
-  lines.push({ heading: 'Target Role', body: `${detail.job_title} — ${detail.company}` });
+function extractContacts(resume: ParsedResumeWithContact | null, fallbackName: string): ResumeDocumentModel['header'] {
+  const name = (resume?.name && String(resume.name).trim()) || fallbackName || 'Your Name';
+  const contacts: string[] = [];
+  if (resume?.email) contacts.push(String(resume.email));
+  if (resume?.phone) contacts.push(String(resume.phone));
+  if (resume?.location) contacts.push(String(resume.location));
+  if (Array.isArray(resume?.links)) resume.links.forEach((l) => l && contacts.push(String(l)));
+  return {
+    name,
+    headline: resume?.headline ? String(resume.headline) : undefined,
+    contacts,
+  };
+}
 
-  if (summaryDecision.state === 'accepted' && summaryDecision.value.trim()) {
-    lines.push({ heading: 'Professional Summary', body: summaryDecision.value.trim() });
+function buildTailoredResumeDocument(
+  resume: ParsedResumeWithContact | null,
+  fallbackName: string,
+  summaryDecision: { value: string; state: SuggestionState },
+  bulletDecisions: BulletDecision[],
+  skillsDecision: { value: string[]; state: SuggestionState }
+): ResumeDocumentModel {
+  const header = extractContacts(resume, fallbackName);
+
+  const acceptedBullets = bulletDecisions.filter((d) => d.state === 'accepted' && d.value.trim());
+  const originalToAccepted = new Map<string, string>();
+  acceptedBullets.forEach((d) => originalToAccepted.set(d.original.trim(), d.value.trim()));
+
+  const summary =
+    summaryDecision.state === 'accepted' && summaryDecision.value.trim()
+      ? summaryDecision.value.trim()
+      : resume?.summary?.trim() || undefined;
+
+  const experience: ResumeExperienceEntry[] = (resume?.work_history || []).map((job) => {
+    const originalBullets = Array.isArray(job.highlights) && job.highlights.length > 0
+      ? job.highlights
+      : typeof (job as unknown as { summary?: string }).summary === 'string'
+        ? ((job as unknown as { summary: string }).summary.split(/\n+/).filter(Boolean))
+        : [];
+    const merged = originalBullets.map((b) => originalToAccepted.get(b.trim()) || b);
+    const unusedAccepted = acceptedBullets
+      .filter((d) => !originalBullets.some((b) => b.trim() === d.original.trim()))
+      .map((d) => d.value.trim());
+    return {
+      title: job.title || '',
+      company: job.company || '',
+      dates: [job.start || job.start_date, job.end || job.end_date].filter(Boolean).join(' – '),
+      bullets: merged.concat(unusedAccepted),
+    };
+  });
+
+  // If any accepted bullets don't match any work_history bullet AND there's no work_history, surface them as a Highlights section
+  if (experience.length === 0 && acceptedBullets.length > 0) {
+    experience.push({
+      title: 'Selected Highlights',
+      company: '',
+      bullets: acceptedBullets.map((d) => d.value.trim()),
+    });
   }
 
-  const acceptedBullets = bulletDecisions.filter((item) => item.state === 'accepted' && item.value.trim());
-  if (acceptedBullets.length > 0) {
-    lines.push({ heading: 'Tailored Experience Highlights', body: acceptedBullets.map((item) => `• ${item.value.trim()}`).join('\n') });
-  }
+  const skillsFromResume = normalizeSkills(resume?.skills);
+  const skills: ResumeSkillGroup[] = (() => {
+    if (skillsDecision.state === 'accepted' && skillsDecision.value.length > 0) {
+      return [{ category: 'Core skills', items: skillsDecision.value }];
+    }
+    if (skillsFromResume.length > 0) return skillsFromResume;
+    return [];
+  })();
 
-  if (skillsDecision.state === 'accepted' && skillsDecision.value.length > 0) {
-    lines.push({ heading: 'Prioritized Skills', body: skillsDecision.value.join(', ') });
-  }
+  const education = (resume?.education || []).map((ed) => ({
+    degree: [ed.degree, ed.field].filter(Boolean).join(', '),
+    school: ed.institution || '',
+    dates: ed.year || '',
+  }));
 
-  if (lines.length === 1) {
-    lines.push({ heading: 'Notes', body: 'No accepted changes yet. Review and accept suggestions before exporting.' });
-  }
+  const certifications = Array.isArray(resume?.certifications)
+    ? resume!.certifications!
+        .map((c) => (typeof c === 'string' ? c : [c.name, c.issuer, c.year].filter(Boolean).join(' — ')))
+        .filter(Boolean)
+    : undefined;
 
-  return lines;
+  const leadership = (resume?.leadership || resume?.leadership_stories || [])
+    .map((item) => (typeof item === 'string' ? item : item.text || item.title || item.story || ''))
+    .filter(Boolean) as string[];
+
+  return {
+    header,
+    summary,
+    experience,
+    skills,
+    education,
+    certifications,
+    leadership,
+  };
 }
 
 function getOriginalResumeSections(resume: ParsedResumeData | null) {
@@ -333,6 +438,9 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
         reason: item.reason,
         value: item.tailored,
         state: 'pending' as SuggestionState,
+        framework: item.framework,
+        needs_metric: item.needs_metric,
+        metric_question: item.metric_question,
       }))
     );
     setSkillsDecision({
@@ -387,6 +495,9 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
           original: item.original,
           tailored: item.value.trim(),
           reason: item.reason,
+          framework: item.framework,
+          needs_metric: item.needs_metric,
+          metric_question: item.metric_question,
         })),
       reordered_skills: skillsDecision.state === 'accepted' ? skillsDecision.value : [],
     };
@@ -429,10 +540,16 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
     setError('');
 
     try {
-      const sections = buildExportLines(detail, summaryDecision, bulletDecisions, skillsDecision);
-      const blob = await buildParagraphDocxBlob(sections);
-      downloadBlob(buildDownloadFilename([detail.company, detail.job_title], 'tailored-resume', 'docx'), blob);
-      setBanner('DOCX export downloaded.');
+      const resumeDoc = buildTailoredResumeDocument(
+        parsedResume as ParsedResumeWithContact | null,
+        initialData.userName,
+        summaryDecision,
+        bulletDecisions,
+        skillsDecision
+      );
+      const blob = await buildResumeDocxBlob(resumeDoc);
+      downloadBlob(buildDownloadFilename([resumeDoc.header.name, detail.job_title, detail.company], 'resume', 'docx'), blob);
+      setBanner('Tailored resume downloaded as DOCX.');
     } catch {
       setError('Unable to export the DOCX file on this device.');
     } finally {
@@ -451,10 +568,16 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
     setError('');
 
     try {
-      const sections = buildExportLines(detail, summaryDecision, bulletDecisions, skillsDecision);
-      const blob = await buildSimplePdfBlob(`${detail.job_title} — ${detail.company}`, sections);
-      downloadBlob(buildDownloadFilename([detail.company, detail.job_title], 'tailored-resume', 'pdf'), blob);
-      setBanner('PDF export downloaded.');
+      const resumeDoc = buildTailoredResumeDocument(
+        parsedResume as ParsedResumeWithContact | null,
+        initialData.userName,
+        summaryDecision,
+        bulletDecisions,
+        skillsDecision
+      );
+      const blob = await buildResumePdfBlob(resumeDoc);
+      downloadBlob(buildDownloadFilename([resumeDoc.header.name, detail.job_title, detail.company], 'resume', 'pdf'), blob);
+      setBanner('Tailored resume downloaded as PDF.');
     } catch {
       setError('Unable to export the PDF file on this device.');
     } finally {
@@ -510,7 +633,7 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
             disabled={generating || loadingDetail || !detail?.analysis_id || !initialData.activeResume || limitReached}
           >
             {generating ? <Loader2 size={16} className={styles.inlineSpin} /> : <Sparkles size={16} />}
-            Generate AI suggestions
+            Generate suggestions
           </button>
           <button
             type="button"
@@ -570,6 +693,54 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
               </p>
             </article>
           </section>
+
+          {detail.tailored?.content && (() => {
+            const c = detail.tailored.content as TailoredContent;
+            const hasRedFlags = Array.isArray(c.red_flags) && c.red_flags.length > 0;
+            const hasLength = !!c.length_guidance;
+            const hasSeniority = !!c.seniority_match;
+            const hasAtsFamily = !!c.ats_family && c.ats_family !== 'unknown';
+            if (!hasRedFlags && !hasLength && !hasSeniority && !hasAtsFamily) return null;
+            return (
+              <section style={{ display: 'grid', gap: 14, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', marginBottom: 18 }}>
+                {hasRedFlags && (
+                  <article style={{ padding: 18, background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 14 }}>
+                    <strong style={{ display: 'block', fontSize: 13, letterSpacing: 0.5, textTransform: 'uppercase', color: '#9a3412', marginBottom: 10 }}>Pre-flight review · {c.red_flags!.length} finding{c.red_flags!.length === 1 ? '' : 's'}</strong>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
+                      {c.red_flags!.map((flag) => (
+                        <li key={flag.type} style={{ fontSize: 13, lineHeight: 1.55, color: '#431407' }}>
+                          <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', background: flag.severity === 'high' ? '#dc2626' : flag.severity === 'medium' ? '#f59e0b' : '#64748b', color: 'white', marginRight: 8 }}>{flag.severity}</span>
+                          <strong>{flag.explanation}</strong>
+                          <div style={{ marginTop: 4, color: '#7c2d12' }}>Action: {flag.action}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                )}
+                {hasLength && (
+                  <article style={{ padding: 18, background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: 14 }}>
+                    <strong style={{ display: 'block', fontSize: 13, letterSpacing: 0.5, textTransform: 'uppercase', color: '#475569', marginBottom: 10 }}>Recommended length</strong>
+                    <div style={{ fontSize: 32, fontWeight: 800, color: '#0f172a' }}>{c.length_guidance!.recommended_pages} page{c.length_guidance!.recommended_pages > 1 ? 's' : ''}</div>
+                    <p style={{ fontSize: 13, color: '#475569', margin: '6px 0 0' }}>{c.length_guidance!.reason}</p>
+                  </article>
+                )}
+                {hasSeniority && (
+                  <article style={{ padding: 18, background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: 14 }}>
+                    <strong style={{ display: 'block', fontSize: 13, letterSpacing: 0.5, textTransform: 'uppercase', color: '#4338ca', marginBottom: 10 }}>Seniority fit</strong>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#312e81', textTransform: 'capitalize' }}>{c.seniority_match!.candidate_level} → {c.seniority_match!.target_level}</div>
+                    <p style={{ fontSize: 13, color: '#4338ca', margin: '6px 0 0' }}>{c.seniority_match!.gap_note}</p>
+                  </article>
+                )}
+                {hasAtsFamily && (
+                  <article style={{ padding: 18, background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 14 }}>
+                    <strong style={{ display: 'block', fontSize: 13, letterSpacing: 0.5, textTransform: 'uppercase', color: '#047857', marginBottom: 10 }}>Detected ATS</strong>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: '#064e3b', textTransform: 'capitalize' }}>{c.ats_family}</div>
+                    <p style={{ fontSize: 13, color: '#047857', margin: '6px 0 0' }}>Keyword placement tuned for this ATS family.</p>
+                  </article>
+                )}
+              </section>
+            );
+          })()}
 
           <section className={styles.splitLayout}>
             <article className={styles.panel}>
@@ -644,7 +815,12 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
                     <section key={`${item.original}-${index}`} className={styles.suggestionCard}>
                       <div className={styles.suggestionHeader}>
                         <div>
-                          <h4>Experience bullet {index + 1}</h4>
+                          <h4>
+                            Experience bullet {index + 1}
+                            {item.framework && (
+                              <span style={{ marginLeft: 10, padding: '3px 9px', borderRadius: 999, fontSize: 10, fontWeight: 800, letterSpacing: 0.5, background: item.framework === 'PAR' ? '#1e293b' : '#4338ca', color: 'white', verticalAlign: 'middle' }}>{item.framework}</span>
+                            )}
+                          </h4>
                           <span className={styles.suggestionMeta}>{item.reason}</span>
                         </div>
                         <span className={`${styles.stateBadge} ${styles[`state${item.state[0].toUpperCase()}${item.state.slice(1)}`]}`}>{item.state}</span>
@@ -664,6 +840,16 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
                           />
                         </div>
                       </div>
+                      {item.needs_metric && item.metric_question && (
+                        <div style={{ marginTop: 12, padding: '12px 14px', background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 10, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <span style={{ flexShrink: 0, marginTop: 2, width: 22, height: 22, borderRadius: 999, background: '#d97706', color: 'white', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>?</span>
+                          <div style={{ fontSize: 13, color: '#78350f' }}>
+                            <strong style={{ display: 'block', marginBottom: 2 }}>Add a metric to make this land</strong>
+                            <span>{item.metric_question}</span>
+                            <span style={{ display: 'block', marginTop: 6, fontSize: 12, color: '#92400e' }}>Edit the suggested bullet above to add the number — we won&apos;t invent it for you.</span>
+                          </div>
+                        </div>
+                      )}
                       <div className={styles.actionRow}>
                         <button type="button" className={styles.acceptButton} onClick={() => setBulletDecisions((current) => current.map((bullet, bulletIndex) => bulletIndex === index ? { ...bullet, state: 'accepted' } : bullet))}>
                           <Check size={15} /> Accept
@@ -748,11 +934,11 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
               <button type="button" className={styles.secondaryButton} onClick={() => window.location.reload()}>
                 <RefreshCw size={16} /> Refresh
               </button>
-              <button type="button" className={styles.secondaryButton} onClick={handleExportPdf} disabled={exporting || acceptedCount === 0}>
+              <button type="button" className={styles.secondaryButton} onClick={handleExportPdf} disabled={exporting || !parsedResume}>
                 {exporting ? <Loader2 size={16} className={styles.inlineSpin} /> : <Download size={16} />}
                 Export to PDF
               </button>
-              <button type="button" className={styles.primaryButton} onClick={handleExportDocx} disabled={exporting || acceptedCount === 0}>
+              <button type="button" className={styles.primaryButton} onClick={handleExportDocx} disabled={exporting || !parsedResume}>
                 {exporting ? <Loader2 size={16} className={styles.inlineSpin} /> : <Download size={16} />}
                 Export to DOCX
               </button>

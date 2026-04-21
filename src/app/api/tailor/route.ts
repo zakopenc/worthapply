@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { generateJSON } from '@/lib/gemini/client';
 import { buildTailoringPrompt } from '@/lib/gemini/prompts/tailor';
+import { detectAtsFamily } from '@/lib/ats-detection';
+import { scanResumeRedFlags } from '@/lib/resume-red-flags';
 import { getPlanLimits, getEffectivePlan, type Plan } from '@/lib/plans';
 import { analysisActionSchema } from '@/lib/validations';
 import { NextRequest, NextResponse } from 'next/server';
@@ -19,8 +21,27 @@ const tailoredResumeSaveSchema = z.object({
       original: z.string(),
       tailored: z.string(),
       reason: z.string(),
+      framework: z.enum(['PAR', 'CAR']).optional(),
+      needs_metric: z.boolean().optional(),
+      metric_question: z.string().optional(),
     })).optional(),
     reordered_skills: z.array(z.string()).optional(),
+    length_guidance: z.object({
+      recommended_pages: z.union([z.literal(1), z.literal(2)]),
+      reason: z.string(),
+    }).optional(),
+    seniority_match: z.object({
+      candidate_level: z.string(),
+      target_level: z.string(),
+      gap_note: z.string(),
+    }).optional(),
+    red_flags: z.array(z.object({
+      type: z.string(),
+      severity: z.enum(['low', 'medium', 'high']),
+      explanation: z.string(),
+      action: z.string(),
+    })).optional(),
+    ats_family: z.string().optional(),
   }),
   original_score: z.number().int().min(0).max(100),
   tailored_score: z.number().int().min(0).max(100),
@@ -112,7 +133,7 @@ export async function POST(request: NextRequest) {
     const [analysisResponse, resumeResponse] = await Promise.all([
       supabase
         .from('job_analyses')
-        .select('id, overall_score, verdict, matched_skills, skill_gaps, recruiter_concerns, seniority_analysis, job_title, company, location, employment_type, job_description_raw')
+        .select('id, overall_score, verdict, matched_skills, skill_gaps, recruiter_concerns, seniority_analysis, job_title, company, location, employment_type, job_description_raw, job_url')
         .eq('id', analysis_id)
         .eq('user_id', user.id)
         .single(),
@@ -144,14 +165,25 @@ export async function POST(request: NextRequest) {
     }
 
     try {
+      const atsFamily = detectAtsFamily(analysis.job_url);
+      const redFlags = scanResumeRedFlags(resume.parsed_data as Record<string, unknown>);
+
       const result = await generateJSON<{
         tailored_summary: string;
-        tailored_bullets: { original: string; tailored: string; reason: string }[];
+        tailored_bullets: { original: string; tailored: string; reason: string; framework?: 'PAR' | 'CAR'; needs_metric?: boolean; metric_question?: string }[];
         reordered_skills: string[];
-        ats_check: { passed: boolean; issues: string[]; keywords_matched: string[] };
+        ats_check: { passed: boolean; issues: string[]; keywords_matched: string[]; keywords_missing?: string[] };
         tone_check: { passed: boolean; flags: string[] };
+        length_guidance?: { recommended_pages: 1 | 2; reason: string };
+        seniority_match?: { candidate_level: string; target_level: string; gap_note: string };
         estimated_score_improvement: number;
-      }>(buildTailoringPrompt(resume.parsed_data as Record<string, unknown>, analysis));
+      }>(buildTailoringPrompt(resume.parsed_data as Record<string, unknown>, analysis, { ats_family: atsFamily, job_url: analysis.job_url }));
+
+      const enrichedContent = {
+        ...result,
+        red_flags: redFlags,
+        ats_family: atsFamily,
+      };
 
       let tailored;
 
@@ -159,7 +191,7 @@ export async function POST(request: NextRequest) {
         tailored = await createTailoredResumeVersionRecord(supabase, {
           applicationId: application_id,
           analysisId: analysis_id,
-          content: result,
+          content: enrichedContent,
           originalScore: analysis.overall_score,
           tailoredScore: Math.min(100, analysis.overall_score + result.estimated_score_improvement),
           atsCheck: result.ats_check,

@@ -161,16 +161,39 @@ export interface Application {
 }
 
 // Tailored Resume
+export type TailoredBulletFramework = 'PAR' | 'CAR';
+export type SeniorityLevel = 'entry' | 'mid' | 'senior' | 'lead' | 'manager' | 'director' | 'vp';
+export type AtsFamily = 'greenhouse' | 'lever' | 'workday' | 'ashby' | 'taleo' | 'icims' | 'smartrecruiters' | 'unknown';
+
+export interface TailoredBullet {
+  original: string;
+  tailored: string;
+  reason: string;
+  framework?: TailoredBulletFramework;
+  needs_metric?: boolean;
+  metric_question?: string;
+}
+
+export interface TailoredResumeContent {
+  tailored_summary?: string;
+  tailored_bullets?: TailoredBullet[];
+  reordered_skills?: string[];
+  length_guidance?: { recommended_pages: 1 | 2; reason: string };
+  seniority_match?: { candidate_level: SeniorityLevel; target_level: SeniorityLevel; gap_note: string };
+  red_flags?: { type: string; severity: 'low' | 'medium' | 'high'; explanation: string; action: string }[];
+  ats_family?: AtsFamily;
+}
+
 export interface TailoredResume {
   id: string;
   user_id: string;
   application_id: string;
   analysis_id: string;
   version: number;
-  content: Record<string, unknown>;
+  content: TailoredResumeContent | Record<string, unknown>;
   original_score: number;
   tailored_score: number;
-  ats_check: { passed: boolean; issues: string[]; keywords_matched: string[] };
+  ats_check: { passed: boolean; issues: string[]; keywords_matched: string[]; keywords_missing?: string[] };
   tone_check: { passed: boolean; flags: string[] };
   created_at: string;
 }
