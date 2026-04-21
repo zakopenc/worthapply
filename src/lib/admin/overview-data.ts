@@ -45,6 +45,8 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
     supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
+      // Include legacy 'lifetime' rows in the paid-plan count until the
+      // DB migration drops them. Safe to remove after migration applied.
       .in('plan', ['pro', 'premium', 'lifetime']),
     supabase.from('support_tickets').select('*', { count: 'exact', head: true }).eq('status', 'open'),
     supabase

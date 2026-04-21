@@ -136,7 +136,7 @@ export default function OfferEvaluationClient({ plan, isPremium, options, select
           <div className="bg-white rounded-2xl p-8 border-2 border-[#e8e2db]">
             <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4"><Lock className="w-6 h-6 text-amber-700" /></div>
             <h2 className="text-xl font-bold mb-2">Premium feature</h2>
-            <p className="text-[#6e665f] mb-6">Offer Evaluation is included with Premium and Lifetime. Current plan: <strong>{plan}</strong>.</p>
+            <p className="text-[#6e665f] mb-6">Offer Evaluation is included with the Premium plan. Current plan: <strong>{plan}</strong>.</p>
             <Link href="/pricing" className="inline-block px-6 py-3 bg-[#171411] text-white rounded-xl font-semibold">Upgrade to Premium</Link>
           </div>
         </div>

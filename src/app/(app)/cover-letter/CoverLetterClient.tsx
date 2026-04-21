@@ -109,8 +109,8 @@ function countWords(text: string) {
 
 export default function CoverLetterClient({ plan, options, analysis, initialCoverLetter }: CoverLetterClientProps) {
   const router = useRouter();
-  const isPaid = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
-  const planLabel = plan === 'lifetime' ? 'Lifetime access' : plan === 'premium' ? 'Premium access' : plan === 'pro' ? 'Pro access' : 'Free verdict only';
+  const isPaid = plan === 'pro' || plan === 'premium';
+  const planLabel = plan === 'premium' ? 'Premium access' : plan === 'pro' ? 'Pro access' : 'Free verdict only';
   const [coverLetter, setCoverLetter] = useState<GeneratedCoverLetter | null>(initialCoverLetter);
   const [draft, setDraft] = useState(initialCoverLetter?.content || '');
   const [emailDraft, setEmailDraft] = useState(initialCoverLetter?.email_body_content || '');
@@ -460,7 +460,7 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
           <div className={styles.generateText}>
             <h3 className={styles.generateTitle}>Get a recommendation verdict now</h3>
             <p className={styles.generateSubtitle}>
-              Free plans see whether a cover letter is worth writing. Full drafts with tone presets, email variants, and AI-tell lint unlock on Pro, Premium, or Lifetime.
+              Free plans see whether a cover letter is worth writing. Full drafts with tone presets, email variants, and AI-tell lint unlock on Pro or Premium.
             </p>
           </div>
           <button
@@ -618,7 +618,7 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
             <div className={styles.sectionEyebrow}>Paid unlock</div>
             <h3 className={styles.editorTitle}>Upgrade to generate the full letter</h3>
             <p className={styles.summaryText}>
-              Your free workspace can save the recommendation verdict, but the complete editable draft, email body variant, and download options are reserved for Pro, Premium, and Lifetime.
+              Your free workspace can save the recommendation verdict, but the complete editable draft, email body variant, and download options are reserved for Pro and Premium plans.
             </p>
             <div className={styles.actionRow}>
               <Link href="/pricing" className={styles.primaryButton}>Upgrade to generate full letter</Link>

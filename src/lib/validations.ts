@@ -47,12 +47,12 @@ export const generationRequestSchema = z.object({
 export const checkoutSchema = z.union([
   z.object({
     priceId: z.string().trim().min(1, { message: 'Price ID is required' }),
-    plan: z.enum(['pro_monthly', 'pro_annual', 'lifetime'], {
+    plan: z.enum(['pro_monthly', 'pro_annual', 'premium_monthly', 'premium_annual'], {
       message: 'Invalid plan',
     }),
   }).strict(),
   z.object({
-    interval: z.enum(['monthly', 'annual', 'lifetime'], {
+    interval: z.enum(['monthly', 'annual'], {
       message: 'Invalid billing interval',
     }),
   }).strict(),

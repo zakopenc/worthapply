@@ -16,6 +16,7 @@ function usersListHref(q: string | undefined, page: number): string {
 }
 
 function planBadgeClass(plan: string) {
+  // Legacy 'lifetime' rows render as premium for visual parity.
   if (plan === 'premium' || plan === 'lifetime') return styles.badgePremium;
   if (plan === 'pro') return styles.badgePro;
   return styles.badgeFree;

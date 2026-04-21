@@ -225,8 +225,8 @@ export default function AnalyzerPage() {
     }
   }, [searchParams]);
 
-  const isPaidPlan = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
-  const isPremiumPlan = plan === 'premium' || plan === 'lifetime';
+  const isPaidPlan = plan === 'pro' || plan === 'premium';
+  const isPremiumPlan = plan === 'premium';
   const planResultsCount = isPremiumPlan ? 30 : isPaidPlan ? 10 : 0;
 
   async function runAnalysis(payload: { title: string; company: string; description: string; url?: string }) {
@@ -673,7 +673,7 @@ export default function AnalyzerPage() {
                 <>
                   <div className="mb-5 flex flex-wrap items-center gap-3 text-sm">
                     <span className="rounded-full bg-stone-100 px-3 py-1.5 font-semibold text-stone-700">
-                      {isPremiumPlan ? 'Premium / Lifetime' : 'Pro'} plan
+                      {isPremiumPlan ? 'Premium' : 'Pro'} plan
                     </span>
                     <span className="rounded-full bg-secondary/10 px-3 py-1.5 font-semibold text-secondary">
                       {planResultsCount} jobs per search

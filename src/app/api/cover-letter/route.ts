@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     const limits = getPlanLimits(plan);
     const hasFullCoverLetterAccess = isPaidPlan(plan);
 
-    // Plan-tiered rate limit (burst guard) — free: 10/min, pro: 60/min, premium/lifetime: 120/min.
+    // Plan-tiered rate limit (burst guard) — free: 10/min, pro: 60/min, premium: 120/min.
     const rateLimit = await checkRateLimit(user.id, 'cover-letter', plan);
     if (!rateLimit.success) {
       return NextResponse.json(

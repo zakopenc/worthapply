@@ -1,9 +1,9 @@
 // ============================================
 // WorthApply Feature Gating System
-// Tier: free | pro | premium | lifetime
+// Tier: free | pro | premium
 // ============================================
 
-export type Plan = 'free' | 'pro' | 'premium' | 'lifetime';
+export type Plan = 'free' | 'pro' | 'premium';
 
 export interface PlanLimits {
   analyses_per_month: number | null; // null = unlimited
@@ -43,15 +43,6 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     tracker_jobs: null, // unlimited
     evidence_items: null, // unlimited
   },
-  lifetime: {
-    analyses_per_month: null, // unlimited
-    tailoring_per_month: null, // unlimited
-    cover_letters_per_month: null, // unlimited
-    job_searches_per_month: 30, // Same as Premium
-    linkedin_results_per_search: 30,
-    tracker_jobs: null, // unlimited
-    evidence_items: null, // unlimited
-  },
 };
 
 // Features gated by plan
@@ -86,7 +77,7 @@ export interface FeatureAccess {
 
   // LinkedIn Job Scraper
   linkedin_job_scraper: boolean;    // PRO+ (10 searches)
-  linkedin_job_scraper_premium: boolean; // PREMIUM (20 searches)
+  linkedin_job_scraper_premium: boolean; // PREMIUM (30 searches)
 
   // Tracker
   ghost_flag: boolean;              // PRO+
@@ -109,20 +100,15 @@ export interface FeatureAccess {
   // Premium-only features
   interview_prep: boolean;           // PREMIUM+
   salary_negotiation: boolean;       // PREMIUM+
-  custom_ai_training: boolean;       // PREMIUM+
-  strategy_call: boolean;            // PREMIUM+
 
   // Support
   email_support: boolean;            // PRO+
   priority_support: boolean;         // PREMIUM+
-  founding_member_badge: boolean;    // LIFETIME only
-  roadmap_input: boolean;            // LIFETIME only
 }
 
 export function getFeatureAccess(plan: Plan): FeatureAccess {
-  const isPaid = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
-  const isPremium = plan === 'premium' || plan === 'lifetime';
-  const isLifetime = plan === 'lifetime';
+  const isPaid = plan === 'pro' || plan === 'premium';
+  const isPremium = plan === 'premium';
 
   return {
     // Analyzer — free gets score + verdict + matched skills
@@ -154,7 +140,7 @@ export function getFeatureAccess(plan: Plan): FeatureAccess {
     cover_letter_editor: isPaid,
 
     // LinkedIn Job Scraper
-    linkedin_job_scraper: isPaid, // Pro gets 10, Premium gets 20
+    linkedin_job_scraper: isPaid, // Pro gets 10, Premium gets 30
     linkedin_job_scraper_premium: isPremium,
 
     // Tracker
@@ -178,14 +164,10 @@ export function getFeatureAccess(plan: Plan): FeatureAccess {
     // Premium-only features
     interview_prep: isPremium,
     salary_negotiation: isPremium,
-    custom_ai_training: isPremium,
-    strategy_call: isPremium,
 
     // Support
     email_support: isPaid,
     priority_support: isPremium,
-    founding_member_badge: isLifetime,
-    roadmap_input: isLifetime,
   };
 }
 
@@ -194,32 +176,50 @@ export function getPlanLimits(plan: Plan): PlanLimits {
 }
 
 export function isPaidPlan(plan: Plan): boolean {
-  return plan === 'pro' || plan === 'premium' || plan === 'lifetime';
+  return plan === 'pro' || plan === 'premium';
+}
+
+/**
+ * Normalises the stored `plan` column into the current Plan type.
+ * - 'lifetime' rows (legacy) are coerced to 'premium' so existing users
+ *   who previously bought a lifetime pass keep the highest tier.
+ * - Any unknown value collapses to 'free'.
+ */
+function normalisePlan(raw: string | null | undefined): Plan {
+  if (raw === 'pro' || raw === 'premium' || raw === 'free') return raw;
+  if (raw === 'lifetime') return 'premium'; // legacy: lifetime users get premium
+  return 'free';
 }
 
 /**
  * Returns the effective plan after checking subscription status.
- * Lifetime plans are never downgraded (no recurring subscription).
  * For subscription-based plans, only 'active' and 'trialing' are valid.
+ * Legacy 'lifetime' rows (no recurring subscription) upgrade to 'premium'
+ * regardless of subscription_status.
  */
 export function getEffectivePlan(
-  plan: Plan,
+  plan: string | null | undefined,
   subscriptionStatus: string | null | undefined
 ): Plan {
-  // Free and lifetime plans don't depend on subscription status
-  if (plan === 'free' || plan === 'lifetime') return plan;
+  // Legacy lifetime rows — always honor the purchase.
+  if (plan === 'lifetime') return 'premium';
 
-  // For subscription-based plans, check status
+  const normalised = normalisePlan(plan);
+
+  // Free plans don't depend on subscription status.
+  if (normalised === 'free') return 'free';
+
+  // For subscription-based plans, check status.
   const validStatuses = ['active', 'trialing'];
   if (!subscriptionStatus || !validStatuses.includes(subscriptionStatus)) {
     return 'free';
   }
 
-  return plan;
+  return normalised;
 }
 
 export function isPremiumPlan(plan: Plan): boolean {
-  return plan === 'premium' || plan === 'lifetime';
+  return plan === 'premium';
 }
 
 // Plan pricing (for display and Stripe integration)
@@ -227,7 +227,7 @@ export interface PlanPricing {
   id: Plan;
   name: string;
   price: number;
-  interval: 'month' | 'lifetime';
+  interval: 'month';
   description: string;
   features: string[];
   cta: string;
@@ -289,23 +289,6 @@ export const PLAN_PRICING: Record<Plan, PlanPricing> = {
     ],
     cta: 'Go Premium',
     stripePriceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID,
-  },
-  lifetime: {
-    id: 'lifetime',
-    name: 'Lifetime',
-    price: 499,
-    interval: 'lifetime',
-    description: 'One-time payment, forever access',
-    features: [
-      'Everything in Premium',
-      'Lifetime access (never pay again)',
-      'All future features included',
-      'Founding member badge',
-      'Direct input on roadmap',
-      'VIP support',
-    ],
-    cta: 'Get Lifetime Access',
-    stripePriceId: process.env.NEXT_PUBLIC_STRIPE_LIFETIME_PRICE_ID,
   },
 };
 

@@ -101,7 +101,7 @@ export default function FindJobsPage() {
     window.location.href = `/analyzer?${params.toString()}`;
   }
 
-  const isPro = userPlan === 'pro' || userPlan === 'premium' || userPlan === 'lifetime';
+  const isPro = userPlan === 'pro' || userPlan === 'premium';
 
   return (
     <>

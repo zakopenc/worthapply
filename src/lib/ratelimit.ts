@@ -9,7 +9,6 @@ import { Redis } from '@upstash/redis';
 //   free      : 10  req/min  (generous for exploration; daily budget is 20 total)
 //   pro       : 60  req/min  (paying user; effectively never hits during normal use)
 //   premium   : 120 req/min  (power user; same)
-//   lifetime  : 120 req/min  (same as premium)
 //   (unknown) : 20  req/min  (safe fallback for unrecognised plans)
 //
 // These caps exist to block burst abuse / scripted attacks, not to ration
@@ -19,13 +18,12 @@ import { Redis } from '@upstash/redis';
 // Per-endpoint keys keep endpoints independent: hammering /api/tailor
 // doesn't drain your /api/cover-letter quota.
 
-type TierName = 'free' | 'pro' | 'premium' | 'lifetime' | 'default';
+type TierName = 'free' | 'pro' | 'premium' | 'default';
 
 const TIER_RPM: Record<TierName, number> = {
   free: 10,
   pro: 60,
   premium: 120,
-  lifetime: 120,
   default: 20,
 };
 
@@ -43,7 +41,6 @@ const limiters: Record<TierName, Ratelimit | null> = {
   free: null,
   pro: null,
   premium: null,
-  lifetime: null,
   default: null,
 };
 

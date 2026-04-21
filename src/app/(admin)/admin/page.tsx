@@ -62,7 +62,7 @@ export default async function AdminOverviewPage() {
           <div className={`${styles.card} ${styles.cardStatic}`}>
             <span className={`${styles.metric} ${styles.metricNeutral}`}>{data.paidPlans}</span>
             <span className={styles.cardTitle}>Paid plans</span>
-            <span className={styles.cardHint}>Pro, Premium, or Lifetime</span>
+            <span className={styles.cardHint}>Pro or Premium</span>
           </div>
           <Link href="/admin/users" className={styles.card}>
             <span className={`${styles.metric} ${styles.metricNeutral}`}>→</span>

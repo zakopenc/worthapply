@@ -45,8 +45,8 @@ const navItems = [
 
 export default function Sidebar({ userName, plan }: SidebarProps) {
   const pathname = usePathname();
-  const isPaidPlan = plan === 'pro' || plan === 'premium' || plan === 'lifetime';
-  const planLabel = plan === 'premium' ? 'Premium' : plan === 'lifetime' ? 'Lifetime' : plan === 'pro' ? 'Pro' : 'Free Plan';
+  const isPaidPlan = plan === 'pro' || plan === 'premium';
+  const planLabel = plan === 'premium' ? 'Premium' : plan === 'pro' ? 'Pro' : 'Free Plan';
 
   return (
     <>

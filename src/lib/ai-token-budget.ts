@@ -42,7 +42,6 @@ const DAILY_BUDGET: Record<Plan, number> = {
   free: 20,      // ≈ 10 analyses or 6-7 tailorings
   pro: 150,      // ≈ ~50 tailorings + chat
   premium: 400,  // ≈ full-throttle job search day
-  lifetime: 400,
 };
 
 // Minimum budget for unknown plans (defensive).

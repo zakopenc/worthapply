@@ -4,7 +4,7 @@ import { verifyAdmin, writeAuditLog } from '@/lib/admin/service';
 import { z } from 'zod';
 
 const schema = z.object({
-  plan: z.enum(['free', 'pro', 'premium', 'lifetime']),
+  plan: z.enum(['free', 'pro', 'premium']),
   subscription_status: z.enum(['active', 'trialing', 'past_due', 'canceled']).nullable(),
   reason: z.string().trim().min(3).max(300),
 });

@@ -136,30 +136,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
     return;
   }
 
-  // Lifetime purchases (mode: 'payment') have no subscription
+  // All current plans are subscription-based — one-time payments are no longer supported.
   if (!session.subscription) {
-    // One-time payment (lifetime plan)
-    const { error } = await supabaseAdmin
-      .from('profiles')
-      .update({
-        plan: plan || 'lifetime',
-        stripe_customer_id: session.customer as string,
-        subscription_status: 'lifetime',
-      })
-      .eq('id', userId);
-
-    if (error) {
-      console.error('Error updating profile after lifetime checkout:', error);
-    } else {
-      console.log(`Lifetime plan activated for user ${redactId(userId)}`);
-      await captureServer(userId, 'paid_conversion', {
-        plan: plan || 'lifetime',
-        stripe_customer_id: session.customer,
-        amount_total: session.amount_total,
-        currency: session.currency,
-        source: 'stripe_webhook',
-      });
-    }
+    console.error(`Unexpected non-subscription checkout session for user ${redactId(userId)}`);
     return;
   }
 

@@ -37,15 +37,10 @@ export async function POST(request: NextRequest) {
             plan: 'pro_monthly' as const,
             priceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || '',
           }
-        : parsed.data.interval === 'annual'
-          ? {
-              plan: 'pro_annual' as const,
-              priceId: process.env.STRIPE_PRO_ANNUAL_PRICE_ID || '',
-            }
-          : {
-              plan: 'lifetime' as const,
-              priceId: process.env.STRIPE_LIFETIME_PRICE_ID || '',
-            };
+        : {
+            plan: 'pro_annual' as const,
+            priceId: process.env.STRIPE_PRO_ANNUAL_PRICE_ID || '',
+          };
 
     const { priceId, plan } = normalizedCheckout;
     const checkoutConfig = getCheckoutConfigByPlan(plan);
@@ -73,17 +68,12 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    if (profile?.plan === 'lifetime') {
-      return NextResponse.json({ error: 'Lifetime access is already active on this account' }, { status: 400 });
-    }
-
     if (
-      checkoutConfig.planType === 'pro' &&
-      profile?.plan === 'pro' &&
+      profile?.plan === checkoutConfig.planType &&
       profile.subscription_status &&
       profile.subscription_status !== 'canceled'
     ) {
-      return NextResponse.json({ error: 'An active Pro subscription already exists for this account' }, { status: 400 });
+      return NextResponse.json({ error: `An active ${checkoutConfig.planType} subscription already exists for this account` }, { status: 400 });
     }
 
     let customerId = profile?.stripe_customer_id;

@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
-/** Plans admins can assign via this form (lifetime is not assignable here). */
 type SelectablePlan = 'free' | 'pro' | 'premium';
 type SubStatus = 'active' | 'trialing' | 'past_due' | 'canceled';
 
 function initialSelectablePlan(currentPlan: string): SelectablePlan {
   if (currentPlan === 'free' || currentPlan === 'pro' || currentPlan === 'premium') return currentPlan;
-  // Existing lifetime (or unknown) — default dropdown to a paid tier; admin must confirm in dialog.
+  // Legacy lifetime rows or unknown — default to premium.
   return 'premium';
 }
 
@@ -27,7 +26,7 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
-  const isLifetimeUser = currentPlan === 'lifetime';
+  const isLegacyLifetimeUser = currentPlan === 'lifetime';
 
   useEffect(() => {
     setPlan(initialSelectablePlan(currentPlan));
@@ -70,9 +69,9 @@ export function RepairPlanForm({ userId, currentPlan, currentStatus }: AdminActi
       <h3 className={styles.actionTitle}>Repair plan</h3>
       <div className={styles.formRow}>
         <label className={styles.label}>Plan</label>
-        {isLifetimeUser && (
+        {isLegacyLifetimeUser && (
           <p style={{ marginBottom: 8, fontSize: 13, color: '#57534e' }}>
-            User is currently on <strong>lifetime</strong>. Choose free, pro, or premium below to replace it.
+            User is on a legacy <strong>lifetime</strong> record. The lifetime tier is discontinued — pick free, pro, or premium to replace it.
           </p>
         )}
         <select value={plan} onChange={e => setPlan(e.target.value as SelectablePlan)} className={styles.select}>

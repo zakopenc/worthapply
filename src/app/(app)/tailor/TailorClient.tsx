@@ -125,7 +125,7 @@ export interface TailorApplicationOption {
 }
 
 export interface TailorInitialData {
-  plan: 'free' | 'pro' | 'premium' | 'lifetime';
+  plan: 'free' | 'pro' | 'premium';
   userName: string;
   features: {
     before_after_score: boolean;
@@ -159,7 +159,6 @@ type BulletDecision = {
 };
 
 function formatPlan(plan: TailorInitialData['plan']) {
-  if (plan === 'lifetime') return 'Lifetime';
   if (plan === 'premium') return 'Premium';
   if (plan === 'pro') return 'Pro';
   return 'Free';
@@ -550,7 +549,7 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
   const handleExportDocx = async () => {
     if (!detail) return;
     if (!initialData.features.docx_download) {
-      setError('DOCX export is available on Pro, Premium, and Lifetime plans.');
+      setError('DOCX export is available on Pro and Premium plans.');
       return;
     }
 
@@ -578,7 +577,7 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
   const handleExportPdf = async () => {
     if (!detail) return;
     if (!initialData.features.docx_download) {
-      setError('PDF export is available on Pro, Premium, and Lifetime plans.');
+      setError('PDF export is available on Pro and Premium plans.');
       return;
     }
 
@@ -606,7 +605,7 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
   const handleExportAnnotated = async () => {
     if (!detail) return;
     if (!initialData.features.docx_download) {
-      setError('Annotated export is available on Pro, Premium, and Lifetime plans.');
+      setError('Annotated export is available on Pro and Premium plans.');
       return;
     }
 
@@ -1014,7 +1013,7 @@ export default function TailorClient({ initialData }: { initialData: TailorIniti
               <AlertTriangle size={18} />
               <div>
                 <strong>Free tailoring limit reached</strong>
-                <p>You have used {usage.used} of {usage.limit} tailorings this month. Pro, Premium, and Lifetime plans unlock unlimited tailoring.</p>
+                <p>You have used {usage.used} of {usage.limit} tailorings this month. Pro and Premium plans unlock unlimited tailoring.</p>
               </div>
               <Link href="/pricing" className={styles.inlineLink}>Upgrade</Link>
             </section>
