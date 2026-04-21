@@ -6,14 +6,16 @@ import { Redis } from '@upstash/redis';
 // Each user has their own per-endpoint bucket, with the bucket size
 // depending on their plan:
 //
-//   free      : 10  req/min  (generous for exploration; daily budget is 20 total)
-//   pro       : 60  req/min  (paying user; effectively never hits during normal use)
-//   premium   : 120 req/min  (power user; same)
-//   (unknown) : 20  req/min  (safe fallback for unrecognised plans)
+//   free      : 30  req/min  (generous for iteration; daily budget caps total cost anyway)
+//   pro       : 120 req/min  (paying user; never hits during normal use)
+//   premium   : 240 req/min  (power user; never hits)
+//   (unknown) : 30  req/min  (safe fallback for unrecognised plans)
 //
 // These caps exist to block burst abuse / scripted attacks, not to ration
 // product usage. The daily AI credit budget (src/lib/ai-token-budget.ts)
-// is the primary long-horizon cost control.
+// is the primary long-horizon cost control — it prevents any plan from
+// spending more than their tier's daily credits regardless of how fast
+// they click, so we can leave these per-minute caps comfortably high.
 //
 // Per-endpoint keys keep endpoints independent: hammering /api/tailor
 // doesn't drain your /api/cover-letter quota.
@@ -21,10 +23,10 @@ import { Redis } from '@upstash/redis';
 type TierName = 'free' | 'pro' | 'premium' | 'default';
 
 const TIER_RPM: Record<TierName, number> = {
-  free: 10,
-  pro: 60,
-  premium: 120,
-  default: 20,
+  free: 30,
+  pro: 120,
+  premium: 240,
+  default: 30,
 };
 
 function makeLimiter(rpm: number): Ratelimit | null {
@@ -143,7 +145,7 @@ export function buildRateLimitErrorBody(result: RateLimitResult, scope: string) 
     tier: result.tier,
     limit_per_minute: result.limit,
     upgrade_hint: result.tier === 'free' || result.tier === 'default'
-      ? 'Pro raises this to 60/min per feature. Premium raises it to 120/min.'
+      ? 'Pro raises this to 120/min per feature. Premium raises it to 240/min.'
       : undefined,
   };
 }
