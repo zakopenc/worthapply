@@ -1,72 +1,152 @@
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
-// Per-minute sliding-window rate limit, backed by Upstash Redis.
-// A single limiter instance is reused — each call gets its own bucket
-// via a namespaced key (user_id:scope).
+// ── Plan-tiered per-minute rate limits (backed by Upstash Redis) ─────────
 //
-// 20 requests per minute per bucket. A "bucket" is (user_id, scope),
-// so each AI endpoint has its own 20-rpm quota — hitting the tailor
-// endpoint doesn't burn your cover-letter quota. The daily AI token
-// budget (src/lib/ai-token-budget.ts) handles longer-horizon cost
-// control; this rate limiter is purely a burst/abuse guard.
-let ratelimit: Ratelimit | null = null;
+// Each user has their own per-endpoint bucket, with the bucket size
+// depending on their plan:
+//
+//   free      : 10  req/min  (generous for exploration; daily budget is 20 total)
+//   pro       : 60  req/min  (paying user; effectively never hits during normal use)
+//   premium   : 120 req/min  (power user; same)
+//   lifetime  : 120 req/min  (same as premium)
+//   (unknown) : 20  req/min  (safe fallback for unrecognised plans)
+//
+// These caps exist to block burst abuse / scripted attacks, not to ration
+// product usage. The daily AI credit budget (src/lib/ai-token-budget.ts)
+// is the primary long-horizon cost control.
+//
+// Per-endpoint keys keep endpoints independent: hammering /api/tailor
+// doesn't drain your /api/cover-letter quota.
+
+type TierName = 'free' | 'pro' | 'premium' | 'lifetime' | 'default';
+
+const TIER_RPM: Record<TierName, number> = {
+  free: 10,
+  pro: 60,
+  premium: 120,
+  lifetime: 120,
+  default: 20,
+};
+
+function makeLimiter(rpm: number): Ratelimit | null {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
+  return new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(rpm, '1 m'),
+    analytics: true,
+    prefix: `ratelimit:${rpm}`,
+  });
+}
+
+const limiters: Record<TierName, Ratelimit | null> = {
+  free: null,
+  pro: null,
+  premium: null,
+  lifetime: null,
+  default: null,
+};
 
 if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-  ratelimit = new Ratelimit({
-    redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(20, '1 m'),
-    analytics: true,
+  (Object.keys(TIER_RPM) as TierName[]).forEach((tier) => {
+    limiters[tier] = makeLimiter(TIER_RPM[tier]);
   });
 }
 
 let warnedNoRedis = false;
 const IS_PROD = process.env.NODE_ENV === 'production';
 
+export interface RateLimitResult {
+  success: boolean;
+  limit: number;
+  remaining: number;
+  reset: number;           // epoch ms when the bucket resets
+  retryAfterSeconds: number; // seconds until the user can retry (>=1)
+  tier: TierName;
+}
+
 /**
  * Checks if the given identifier has exceeded the rate limit.
  *
  * @param identifier  Usually the authenticated user id.
- * @param scope       Optional endpoint scope so each endpoint gets its own
- *                    bucket (e.g. 'cover-letter', 'tailor'). Defaults to
- *                    'global' for legacy unscoped callers.
+ * @param scope       Endpoint scope ('cover-letter', 'tailor', ...). Each
+ *                    scope has its own independent bucket.
+ * @param plan        Optional plan — when provided, a higher bucket is used
+ *                    for paid tiers. Falls back to 'default' for unknown plans.
  *
- * Behavior when Redis is not configured or unreachable:
- *   - Development:  fail-OPEN (allow the request) with a single warning log
- *                   so local dev doesn't require Upstash.
- *   - Production:   fail-CLOSED (deny the request) with an error log so
- *                   misconfigured infrastructure can't silently disable all
- *                   rate limiting.
+ * Fail-CLOSED in production if Redis is unavailable, fail-OPEN in dev.
  */
-export async function checkRateLimit(identifier: string, scope: string = 'global') {
+export async function checkRateLimit(
+  identifier: string,
+  scope: string = 'global',
+  plan?: string
+): Promise<RateLimitResult> {
+  const tier: TierName = plan && plan in limiters ? (plan as TierName) : 'default';
+  const limiter = limiters[tier];
   const key = `${identifier}:${scope}`;
 
-  if (!ratelimit) {
+  if (!limiter) {
     if (!warnedNoRedis) {
       if (IS_PROD) {
         console.error('[ratelimit] CRITICAL: Upstash Redis not configured in production. Failing CLOSED — all rate-limited endpoints will 429 until UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are set.');
       } else {
-        console.warn('[ratelimit] Upstash Redis not configured — rate limiting disabled in development. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to test rate limiting.');
+        console.warn('[ratelimit] Upstash Redis not configured — rate limiting disabled in development.');
       }
       warnedNoRedis = true;
     }
+    const success = !IS_PROD;
     return {
-      success: !IS_PROD,
-      limit: 0,
-      remaining: 0,
-      reset: 0,
+      success,
+      limit: TIER_RPM[tier],
+      remaining: success ? TIER_RPM[tier] : 0,
+      reset: Date.now() + 60_000,
+      retryAfterSeconds: success ? 0 : 60,
+      tier,
     };
   }
 
   try {
-    return await ratelimit.limit(key);
+    const result = await limiter.limit(key);
+    const retryAfterSeconds = result.success
+      ? 0
+      : Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: result.reset,
+      retryAfterSeconds,
+      tier,
+    };
   } catch (error) {
     console.error('[ratelimit] Redis call failed:', error);
+    const success = !IS_PROD;
     return {
-      success: !IS_PROD,
-      limit: 0,
-      remaining: 0,
-      reset: 0,
+      success,
+      limit: TIER_RPM[tier],
+      remaining: success ? TIER_RPM[tier] : 0,
+      reset: Date.now() + 60_000,
+      retryAfterSeconds: success ? 0 : 60,
+      tier,
     };
   }
+}
+
+/**
+ * Build a 429 response body for AI-endpoint rate-limit rejections. Use this
+ * instead of hand-rolling error messages so clients get consistent shape.
+ */
+export function buildRateLimitErrorBody(result: RateLimitResult, scope: string) {
+  return {
+    error: `You're hitting our per-minute limit on ${scope}. Try again in ${result.retryAfterSeconds}s.`,
+    rate_limited: true,
+    scope,
+    retry_after_seconds: result.retryAfterSeconds,
+    reset_at: new Date(result.reset).toISOString(),
+    tier: result.tier,
+    limit_per_minute: result.limit,
+    upgrade_hint: result.tier === 'free' || result.tier === 'default'
+      ? 'Pro raises this to 60/min per feature. Premium raises it to 120/min.'
+      : undefined,
+  };
 }

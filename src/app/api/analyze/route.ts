@@ -4,7 +4,7 @@ import { buildAnalysisPrompt } from '@/lib/gemini/prompts/analyze';
 import { getFeatureAccess, getPlanLimits, getEffectivePlan, type Plan } from '@/lib/plans';
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeJobSchema } from '@/lib/validations';
-import { checkRateLimit } from '@/lib/ratelimit';
+import { checkRateLimit, buildRateLimitErrorBody } from '@/lib/ratelimit';
 import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { captureServer } from '@/lib/analytics/posthog-server';
@@ -59,11 +59,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const rateLimit = await checkRateLimit(user.id, 'analyze');
-    if (!rateLimit.success) {
-      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
-    }
-
     const body = await request.json();
     const parsed = analyzeJobSchema.safeParse(body);
 
@@ -114,6 +109,14 @@ export async function POST(request: NextRequest) {
     const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
     const features = getFeatureAccess(plan);
+
+    const rateLimit = await checkRateLimit(user.id, 'analyze', plan);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        buildRateLimitErrorBody(rateLimit, 'analyze'),
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } }
+      );
+    }
 
     const budget = await reserveAiBudget(user.id, plan, 'analyze');
     if (!budget.allowed) {

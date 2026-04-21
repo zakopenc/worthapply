@@ -8,7 +8,7 @@ import { analysisActionSchema } from '@/lib/validations';
 import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { createTailoredResumeVersionRecord } from '@/lib/versioned-workspace-records';
-import { checkRateLimit } from '@/lib/ratelimit';
+import { checkRateLimit, buildRateLimitErrorBody } from '@/lib/ratelimit';
 import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { logAiError } from '@/lib/admin/log-ai-error';
 import { z } from 'zod';
@@ -72,15 +72,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limiting
-    const rateLimit = await checkRateLimit(user.id, 'tailor');
-    if (!rateLimit.success) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      );
-    }
-
     const body = await request.json();
     const parsed = analysisActionSchema.safeParse(body);
 
@@ -105,6 +96,14 @@ export async function POST(request: NextRequest) {
     const rawPlan = (profile?.plan || 'free') as Plan;
     const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
+
+    const rateLimit = await checkRateLimit(user.id, 'tailor', plan);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        buildRateLimitErrorBody(rateLimit, 'tailor'),
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } }
+      );
+    }
 
     const budget = await reserveAiBudget(user.id, plan, 'tailor');
     if (!budget.allowed) {

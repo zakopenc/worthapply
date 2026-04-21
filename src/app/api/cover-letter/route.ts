@@ -6,7 +6,7 @@ import { analysisActionSchema } from '@/lib/validations';
 import { NextRequest, NextResponse } from 'next/server';
 import { CURRENT_MONTH, releaseMonthlyUsage, reserveMonthlyUsage } from '@/lib/usage-tracking';
 import { createCoverLetterVersionRecord } from '@/lib/versioned-workspace-records';
-import { checkRateLimit } from '@/lib/ratelimit';
+import { checkRateLimit, buildRateLimitErrorBody } from '@/lib/ratelimit';
 import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { logAiError } from '@/lib/admin/log-ai-error';
 import { z } from 'zod';
@@ -45,15 +45,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limiting
-    const rateLimit = await checkRateLimit(user.id, 'cover-letter');
-    if (!rateLimit.success) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      );
-    }
-
     const body = await request.json();
     const parsed = coverLetterGenerateSchema.safeParse(body);
     if (!parsed.success) {
@@ -78,6 +69,15 @@ export async function POST(request: NextRequest) {
     const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
     const hasFullCoverLetterAccess = isPaidPlan(plan);
+
+    // Plan-tiered rate limit (burst guard) — free: 10/min, pro: 60/min, premium/lifetime: 120/min.
+    const rateLimit = await checkRateLimit(user.id, 'cover-letter', plan);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        buildRateLimitErrorBody(rateLimit, 'cover-letter'),
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } }
+      );
+    }
 
     // Only consume AI budget for plans that actually generate a full letter.
     // Free-plan verdicts are computed deterministically — no AI call.

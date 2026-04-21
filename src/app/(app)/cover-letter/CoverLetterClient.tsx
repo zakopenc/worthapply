@@ -159,7 +159,14 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
     const payload = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      setError(payload.error || 'Unable to generate a cover letter right now.');
+      if (response.status === 429 && payload.rate_limited && typeof payload.retry_after_seconds === 'number') {
+        const secs = Math.max(1, payload.retry_after_seconds);
+        const upgrade = payload.upgrade_hint ? ` ${payload.upgrade_hint}` : '';
+        setError(`You're clicking faster than we generate. Try again in ${secs}s.${upgrade}`);
+        startRetryCountdown(secs);
+      } else {
+        setError(payload.error || 'Unable to generate a cover letter right now.');
+      }
       setLoading(false);
       return;
     }
@@ -172,6 +179,27 @@ export default function CoverLetterClient({ plan, options, analysis, initialCove
     setBanner(isPaid ? 'Cover letter draft generated and saved.' : 'Verdict saved. Upgrade to unlock the full draft.');
     setLoading(false);
   };
+
+  const [retryCountdown, setRetryCountdown] = useState<number>(0);
+  const startRetryCountdown = (seconds: number) => {
+    setRetryCountdown(seconds);
+  };
+
+  useEffect(() => {
+    if (retryCountdown <= 0) return;
+    const id = window.setInterval(() => {
+      setRetryCountdown((s) => {
+        const next = s - 1;
+        if (next <= 0) {
+          setError('');
+          return 0;
+        }
+        setError((current) => current.replace(/in \d+s\./, `in ${next}s.`));
+        return next;
+      });
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [retryCountdown]);
 
   const handleSaveEdits = async () => {
     if (!analysis || !coverLetter) return;

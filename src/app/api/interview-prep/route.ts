@@ -3,7 +3,7 @@ import { generateJSON } from '@/lib/gemini/client';
 import { buildInterviewPrepPrompt, type InterviewStage } from '@/lib/gemini/prompts/interview-prep';
 import { getEffectivePlan, isPremiumPlan, type Plan } from '@/lib/plans';
 import { NextRequest, NextResponse } from 'next/server';
-import { checkRateLimit } from '@/lib/ratelimit';
+import { checkRateLimit, buildRateLimitErrorBody } from '@/lib/ratelimit';
 import { reserveAiBudget, refundAiBudget } from '@/lib/ai-token-budget';
 import { logAiError } from '@/lib/admin/log-ai-error';
 import { z } from 'zod';
@@ -39,11 +39,6 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const rateLimit = await checkRateLimit(user.id, 'interview-prep');
-    if (!rateLimit.success) {
-      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
-    }
-
     const body = await request.json();
     const parsed = generateSchema.safeParse(body);
     if (!parsed.success) {
@@ -60,6 +55,14 @@ export async function POST(request: NextRequest) {
     const plan = getEffectivePlan((profile?.plan || 'free') as Plan, profile?.subscription_status);
     if (!isPremiumPlan(plan)) {
       return NextResponse.json({ error: 'Interview Prep Studio is a Premium feature.', upgrade_required: true }, { status: 403 });
+    }
+
+    const rateLimit = await checkRateLimit(user.id, 'interview-prep', plan);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        buildRateLimitErrorBody(rateLimit, 'interview-prep'),
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } }
+      );
     }
 
     const budget = await reserveAiBudget(user.id, plan, 'interview_prep');
