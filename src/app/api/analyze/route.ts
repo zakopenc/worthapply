@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
     const limits = getPlanLimits(plan);
     const features = getFeatureAccess(plan);
 
-    const rateLimit = await checkRateLimit(user.id, 'analyze', plan);
+    const rateLimit = await checkRateLimit(user.id, 'analyze', rawPlan);
     if (!rateLimit.success) {
       return NextResponse.json(
         buildRateLimitErrorBody(rateLimit, 'analyze'),

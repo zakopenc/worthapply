@@ -55,12 +55,13 @@ export async function POST(request: NextRequest) {
       .select('plan, subscription_status')
       .eq('id', user.id)
       .single();
-    const plan = getEffectivePlan((profile?.plan || 'free') as Plan, profile?.subscription_status);
+    const rawPlan = (profile?.plan || 'free') as Plan;
+    const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     if (!isPremiumPlan(plan)) {
       return NextResponse.json({ error: 'Offer Evaluation is a Premium feature.', upgrade_required: true }, { status: 403 });
     }
 
-    const rateLimit = await checkRateLimit(user.id, 'offer-evaluation', plan);
+    const rateLimit = await checkRateLimit(user.id, 'offer-evaluation', rawPlan);
     if (!rateLimit.success) {
       return NextResponse.json(
         buildRateLimitErrorBody(rateLimit, 'offer-evaluation'),
