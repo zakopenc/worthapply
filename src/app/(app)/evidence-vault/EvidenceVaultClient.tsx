@@ -292,7 +292,7 @@ function FormDrawer({ initial, onClose, onSave }: FormDrawerProps) {
               </label>
               <textarea
                 rows={2}
-                value={(form as Record<string, string>)[field]}
+                value={(form as Record<string, unknown>)[field] as string}
                 onChange={(e) => set(field, e.target.value)}
                 placeholder={field === 'situation' ? 'Context and background' : field === 'action_taken' ? 'What you specifically did' : 'What happened as a result'}
                 className="w-full px-4 py-3 rounded-xl border border-outline-variant/30 text-sm bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-secondary/30 resize-none"
