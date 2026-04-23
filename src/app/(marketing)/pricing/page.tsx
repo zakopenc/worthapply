@@ -121,15 +121,90 @@ export default function PricingPage() {
                 popular={false}
                 features={[
                   'Everything in Professional',
-                  'Interview Prep Copilot — role-specific Q&A from your experience',
-                  'Evidence Vault — reusable story bank for every application',
-                  '30 LinkedIn job searches per month',
-                  'Offer Evaluation & Salary Negotiation Copilot',
+                  'Interview Prep Copilot — stage-specific questions + STAR answer outlines',
+                  'Evidence Vault — AI extracts your story bank from your resume',
+                  '30 LinkedIn job searches/month (up to 30 results each)',
+                  'Offer Evaluation — 4-year comp projections + negotiation scripts',
                   'Priority support',
                 ]}
               />
             </FadeUp>
           </StaggerGroup>
+        </div>
+      </section>
+
+      {/* Full Feature Comparison Table */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <RevealOnScroll>
+            <h2 className="text-2xl lg:text-3xl font-extrabold text-[#171411] tracking-tight text-center mb-10">
+              Full Feature Comparison
+            </h2>
+          </RevealOnScroll>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b-2 border-gray-200">
+                  <th className="text-left py-4 pr-4 text-[#6e665f] font-semibold w-1/2">Feature</th>
+                  <th className="text-center py-4 px-3 font-bold text-[#171411]">Free</th>
+                  <th className="text-center py-4 px-3 font-bold text-secondary">Pro</th>
+                  <th className="text-center py-4 px-3 font-bold text-purple-700">Premium</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { section: 'Analysis' },
+                  { feature: 'Job analyses per month', free: '1', pro: 'Unlimited', premium: 'Unlimited' },
+                  { feature: 'Fit score (0–100)', free: '✓', pro: '✓', premium: '✓' },
+                  { feature: 'Apply/Skip decision', free: '✓', pro: '✓', premium: '✓' },
+                  { feature: 'Decision reasoning + what to fix', free: '—', pro: '✓', premium: '✓' },
+                  { feature: '7-dimension scoring', free: '—', pro: '✓', premium: '✓' },
+                  { feature: 'Gap breakdown + unsupported must-haves', free: '—', pro: '✓', premium: '✓' },
+
+                  { section: 'Resume & Applications' },
+                  { feature: 'Resume tailors per month', free: '2', pro: 'Unlimited', premium: 'Unlimited' },
+                  { feature: 'ATS keyword alignment', free: '—', pro: '✓', premium: '✓' },
+                  { feature: 'Cover letter verdicts per month', free: '3', pro: 'Unlimited', premium: 'Unlimited' },
+                  { feature: 'Cover letter generation + editor', free: '—', pro: '✓', premium: '✓' },
+                  { feature: 'Application tracking', free: '8 apps', pro: 'Unlimited', premium: 'Unlimited' },
+
+                  { section: 'Outreach & Discovery' },
+                  { feature: 'Outreach Copilot (recruiter + referral)', free: '—', pro: '✓', premium: '✓' },
+                  { feature: 'LinkedIn job searches/month', free: '—', pro: '10', premium: '30' },
+                  { feature: 'LinkedIn results per search', free: '—', pro: '10', premium: '30' },
+
+                  { section: 'Interview & Offers' },
+                  { feature: 'Interview Prep Copilot', free: '—', pro: '—', premium: '✓' },
+                  { feature: 'Evidence Vault (story bank)', free: '—', pro: '—', premium: '✓' },
+                  { feature: 'Offer Evaluation', free: '—', pro: '—', premium: '✓' },
+                  { feature: 'Salary Negotiation Copilot', free: '—', pro: '—', premium: '✓' },
+
+                  { section: 'Support' },
+                  { feature: 'Email support', free: '—', pro: '✓', premium: '✓' },
+                  { feature: 'Priority support', free: '—', pro: '—', premium: '✓' },
+                ].map((row, idx) => {
+                  if ('section' in row) {
+                    return (
+                      <tr key={idx}>
+                        <td colSpan={4} className="pt-6 pb-2 text-xs font-black uppercase tracking-widest text-[#9a8f85]">
+                          {row.section}
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return (
+                    <tr key={idx} className="border-b border-gray-100">
+                      <td className="py-3 pr-4 text-[#3d362f]">{row.feature}</td>
+                      <td className="py-3 px-3 text-center text-[#6e665f]">{row.free}</td>
+                      <td className="py-3 px-3 text-center font-semibold text-secondary">{row.pro}</td>
+                      <td className="py-3 px-3 text-center font-semibold text-purple-700">{row.premium}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
