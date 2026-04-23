@@ -19,6 +19,7 @@ import {
   LogOut,
   MessageCircleQuestion,
   HandCoins,
+  SendHorizonal,
 } from 'lucide-react';
 import { SignOutButton } from '@/components/app/SignOutButton';
 import styles from './Sidebar.module.css';
@@ -35,6 +36,7 @@ const navItems = [
   { href: '/resume', label: 'Resume & Evidence', icon: FileText },
   { href: '/tailor', label: 'Resume Tailoring', icon: WandSparkles },
   { href: '/cover-letter', label: 'Cover Letter', icon: NotebookPen },
+  { href: '/outreach', label: 'Outreach Copilot', icon: SendHorizonal },
   { href: '/interview-prep', label: 'Interview Prep', icon: MessageCircleQuestion },
   { href: '/offer-evaluation', label: 'Offer & Negotiation', icon: HandCoins },
   { href: '/applications', label: 'Applications', icon: BriefcaseBusiness },

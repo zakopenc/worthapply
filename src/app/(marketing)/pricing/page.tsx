@@ -88,64 +88,46 @@ export default function PricingPage() {
             </div>
             </FadeUp>
 
-            {/* Pro Plan — Coming Soon */}
+            {/* Pro Plan */}
             <FadeUp>
-            <div className="relative" aria-label="Pro plan — coming soon">
-              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                <span className="px-5 py-2.5 rounded-full bg-gray-900 text-white font-bold text-xs uppercase tracking-widest shadow-xl">
-                  Coming Soon
-                </span>
-              </div>
-              <div className="blur-[5px] opacity-60 pointer-events-none select-none" aria-hidden="true">
-                <PricingCard
-                  name="Pro"
-                  description="Best for active job seekers"
-                  price={39}
-                  priceId={process.env.STRIPE_PRO_PRICE_ID!}
-                  plan="pro"
-                  popular={true}
-                  features={[
-                    'Unlimited job analyses',
-                    'Full gap breakdown + what to fix',
-                    'Apply/Skip decision with reasoning',
-                    'Outreach Copilot — recruiter & referral messages',
-                    'Unlimited resume tailoring + ATS optimization',
-                    'Unlimited cover letters',
-                    '10 LinkedIn job searches/month',
-                    'Unlimited tracking + email support',
-                  ]}
-                />
-              </div>
-            </div>
+              <PricingCard
+                name="Professional"
+                description="For serious job seekers"
+                price={39}
+                priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+                plan="pro"
+                popular={true}
+                features={[
+                  'Unlimited job analyses',
+                  'Full gap breakdown + what to fix',
+                  'Apply/Skip decision with reasoning',
+                  'Outreach Copilot — recruiter & referral messages',
+                  'Unlimited resume tailoring + ATS optimization',
+                  'Unlimited cover letters',
+                  '10 LinkedIn job searches/month',
+                  'Unlimited tracking + email support',
+                ]}
+              />
             </FadeUp>
 
-            {/* Premium Plan — Coming Soon */}
+            {/* Premium Plan */}
             <FadeUp>
-            <div className="relative" aria-label="Premium plan — coming soon">
-              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                <span className="px-5 py-2.5 rounded-full bg-gray-900 text-white font-bold text-xs uppercase tracking-widest shadow-xl">
-                  Coming Soon
-                </span>
-              </div>
-              <div className="blur-[5px] opacity-60 pointer-events-none select-none" aria-hidden="true">
-                <PricingCard
-                  name="Premium"
-                  description="For power users"
-                  price={79}
-                  priceId={process.env.STRIPE_PREMIUM_PRICE_ID!}
-                  plan="premium"
-                  popular={false}
-                  features={[
-                    'Everything in Professional',
-                    'Interview Prep Copilot — role-specific Q&A from your experience',
-                    'Evidence Vault — reusable story bank for every application',
-                    '30 LinkedIn job searches per month',
-                    'Offer Evaluation & Salary Negotiation Copilot',
-                    'Priority support',
-                  ]}
-                />
-              </div>
-            </div>
+              <PricingCard
+                name="Premium"
+                description="For executives & high earners"
+                price={79}
+                priceId={process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID!}
+                plan="premium"
+                popular={false}
+                features={[
+                  'Everything in Professional',
+                  'Interview Prep Copilot — role-specific Q&A from your experience',
+                  'Evidence Vault — reusable story bank for every application',
+                  '30 LinkedIn job searches per month',
+                  'Offer Evaluation & Salary Negotiation Copilot',
+                  'Priority support',
+                ]}
+              />
             </FadeUp>
           </StaggerGroup>
         </div>

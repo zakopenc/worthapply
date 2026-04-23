@@ -21,6 +21,7 @@ export type AiEndpointKind =
   | 'cover_letter'
   | 'interview_prep'
   | 'offer_evaluation'
+  | 'outreach'
   | 'chat'
   | 'natural_voice'
   | 'resume_parse';
@@ -32,6 +33,7 @@ export const AI_CREDIT_COST: Record<AiEndpointKind, number> = {
   cover_letter: 2,
   interview_prep: 4,
   offer_evaluation: 4,
+  outreach: 2,
   chat: 1,
   natural_voice: 1,
   resume_parse: 2,
