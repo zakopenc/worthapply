@@ -21,6 +21,7 @@ import {
 
 export interface EvidenceItem {
   id: string;
+  story_id: string | null;
   title: string;
   category: string;
   situation: string | null;
@@ -29,6 +30,8 @@ export interface EvidenceItem {
   metrics: string[];
   skills: string[];
   tags: string[];
+  best_used_for: string[];
+  relevant_roles: string[];
   confidence: number;
   needs_clarification: boolean;
   questions_to_improve: string[];
@@ -43,12 +46,13 @@ interface Props {
 }
 
 const CATEGORY_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  achievement:      { label: 'Achievement',     color: 'text-green-800',  bg: 'bg-green-50 border-green-200' },
-  project:          { label: 'Project',         color: 'text-blue-800',   bg: 'bg-blue-50 border-blue-200' },
-  leadership:       { label: 'Leadership',      color: 'text-purple-800', bg: 'bg-purple-50 border-purple-200' },
-  technical:        { label: 'Technical',       color: 'text-cyan-800',   bg: 'bg-cyan-50 border-cyan-200' },
-  stakeholder:      { label: 'Stakeholder',     color: 'text-orange-800', bg: 'bg-orange-50 border-orange-200' },
-  'problem-solving':{ label: 'Problem Solving', color: 'text-rose-800',   bg: 'bg-rose-50 border-rose-200' },
+  achievement:       { label: 'Achievement',      color: 'text-green-800',   bg: 'bg-green-50 border-green-200' },
+  project:           { label: 'Project',          color: 'text-blue-800',    bg: 'bg-blue-50 border-blue-200' },
+  leadership:        { label: 'Leadership',       color: 'text-purple-800',  bg: 'bg-purple-50 border-purple-200' },
+  technical:         { label: 'Technical',        color: 'text-cyan-800',    bg: 'bg-cyan-50 border-cyan-200' },
+  stakeholder:       { label: 'Stakeholder',      color: 'text-orange-800',  bg: 'bg-orange-50 border-orange-200' },
+  'problem-solving': { label: 'Problem Solving',  color: 'text-rose-800',    bg: 'bg-rose-50 border-rose-200' },
+  failure_recovery:  { label: 'Failure & Recovery', color: 'text-slate-800', bg: 'bg-slate-50 border-slate-200' },
 };
 
 const CATEGORIES = Object.keys(CATEGORY_CONFIG) as (keyof typeof CATEGORY_CONFIG)[];

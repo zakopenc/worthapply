@@ -10,13 +10,15 @@ import { logAiError } from '@/lib/admin/log-ai-error';
 const createSchema = z.object({
   action: z.literal('create'),
   title: z.string().min(1).max(200),
-  category: z.enum(['achievement', 'project', 'leadership', 'technical', 'stakeholder', 'problem-solving']),
+  category: z.enum(['achievement', 'project', 'leadership', 'technical', 'stakeholder', 'problem-solving', 'failure_recovery']),
   situation: z.string().max(2000).optional(),
   action_taken: z.string().max(2000).optional(),
   result: z.string().max(2000).optional(),
   metrics: z.array(z.string().max(200)).max(10).optional(),
   skills: z.array(z.string().max(100)).max(20).optional(),
   tags: z.array(z.string().max(50)).max(10).optional(),
+  best_used_for: z.array(z.string().max(50)).max(5).optional(),
+  relevant_roles: z.array(z.string().max(100)).max(10).optional(),
   confidence: z.number().min(0).max(100).optional(),
 });
 
@@ -27,7 +29,7 @@ const extractSchema = z.object({
 const updateSchema = z.object({
   id: z.string().uuid(),
   title: z.string().min(1).max(200).optional(),
-  category: z.enum(['achievement', 'project', 'leadership', 'technical', 'stakeholder', 'problem-solving']).optional(),
+  category: z.enum(['achievement', 'project', 'leadership', 'technical', 'stakeholder', 'problem-solving', 'failure_recovery']).optional(),
   situation: z.string().max(2000).optional(),
   action_taken: z.string().max(2000).optional(),
   result: z.string().max(2000).optional(),
@@ -87,7 +89,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
     }
-    const { title, category, situation, action_taken, result, metrics, skills, tags, confidence } = parsed.data;
+    const { title, category, situation, action_taken, result, metrics, skills, tags, best_used_for, relevant_roles, confidence } = parsed.data;
     const { data: item, error } = await supabase
       .from('evidence_items')
       .insert({
@@ -100,6 +102,8 @@ export async function POST(request: NextRequest) {
         metrics: metrics || [],
         skills: skills || [],
         tags: tags || [],
+        best_used_for: best_used_for || [],
+        relevant_roles: relevant_roles || [],
         confidence: confidence ?? 80,
         needs_clarification: false,
         questions_to_improve: [],
@@ -150,6 +154,7 @@ export async function POST(request: NextRequest) {
 
       const rows = units.map((u) => ({
         user_id: user.id,
+        story_id: u.story_id || null,
         title: u.title,
         category: u.category,
         situation: u.situation || null,
@@ -157,6 +162,8 @@ export async function POST(request: NextRequest) {
         result: u.result || null,
         metrics: u.metrics || [],
         skills: u.skills || [],
+        best_used_for: u.best_used_for || [],
+        relevant_roles: u.relevant_roles || [],
         confidence: u.confidence ?? 80,
         needs_clarification: u.needs_clarification ?? false,
         questions_to_improve: u.questions_to_improve || [],

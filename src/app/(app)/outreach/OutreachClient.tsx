@@ -27,10 +27,12 @@ interface OutreachResult {
   suggest_outreach: boolean;
   why: string;
   best_target_order: string[];
-  primary_message: string;
-  follow_up_1: string;
-  follow_up_2: string;
-  risks_to_avoid: string[];
+  recruiter_message: string;
+  referral_message: string;
+  short_linkedin_message: string;
+  follow_up_message: string;
+  why_this_message_works: string[];
+  things_to_avoid: string[];
   best_time_to_send: string;
   confidence: number;
 }
@@ -344,17 +346,49 @@ export default function OutreachClient({ plan, options, initialApplicationId }: 
                   </div>
                 </div>
 
-                {/* Messages */}
-                <MessageCard label="Primary message" message={result.primary_message} index={1} />
-                <MessageCard label="Follow-up 1 (5–7 days)" message={result.follow_up_1} index={2} />
-                <MessageCard label="Follow-up 2 (10–14 days)" message={result.follow_up_2} index={3} />
+                {/* Messages — context-aware based on target type */}
+                {(targetType === 'recruiter' || targetType === 'hiring_manager') && result.recruiter_message && (
+                  <MessageCard
+                    label={targetType === 'hiring_manager' ? 'Hiring manager message' : 'Recruiter message'}
+                    message={result.recruiter_message}
+                    index={1}
+                  />
+                )}
+                {(targetType === 'employee_referral' || targetType === 'alumni') && result.referral_message && (
+                  <MessageCard
+                    label={targetType === 'alumni' ? 'Alumni outreach' : 'Referral ask'}
+                    message={result.referral_message}
+                    index={1}
+                  />
+                )}
+                {result.short_linkedin_message && (
+                  <MessageCard label="LinkedIn connection note (≤150 chars)" message={result.short_linkedin_message} index={2} />
+                )}
+                {result.follow_up_message && (
+                  <MessageCard label="Follow-up (5–7 days)" message={result.follow_up_message} index={3} />
+                )}
 
-                {/* Risks */}
-                {result.risks_to_avoid?.length > 0 && (
-                  <div className="bg-white rounded-2xl border border-outline-variant/20 p-5">
-                    <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant mb-3">Risks to avoid</p>
+                {/* Why it works */}
+                {result.why_this_message_works?.length > 0 && (
+                  <div className="bg-green-50 rounded-2xl border border-green-200 p-5">
+                    <p className="text-xs font-black uppercase tracking-widest text-green-800 mb-3">Why this works</p>
                     <ul className="space-y-2">
-                      {result.risks_to_avoid.map((risk, idx) => (
+                      {result.why_this_message_works.map((reason, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-green-900">
+                          <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                          <span>{reason}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Things to avoid */}
+                {result.things_to_avoid?.length > 0 && (
+                  <div className="bg-white rounded-2xl border border-outline-variant/20 p-5">
+                    <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant mb-3">Things to avoid</p>
+                    <ul className="space-y-2">
+                      {result.things_to_avoid.map((risk, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm text-on-surface">
                           <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                           <span>{risk}</span>
