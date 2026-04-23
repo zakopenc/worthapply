@@ -36,13 +36,13 @@ const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentP
 // CircularTestimonials removed — was rendering fabricated testimonials. Reintroduce when real user quotes exist.
 
 export const metadata: Metadata = {
-  title: 'WorthApply — The Job Probability Engine',
+  title: 'WorthApply — Know your fit before you apply',
   description:
-    'WorthApply scores your interview probability across 7 signals before you apply. Not a resume builder — a Job Probability Engine. Evidence-based, no fabrication. Free plan available.',
+    'Fit-first job search. Analyze your real fit for a role in 10 seconds before tailoring your resume. Evidence-based, no fabrication. Free plan available.',
   alternates: { canonical: 'https://www.worthapply.com' },
   openGraph: {
-    title: 'WorthApply — The Job Probability Engine',
-    description: 'Score your interview probability before you apply. Not a resume builder — a decision engine.',
+    title: 'WorthApply — Know your fit before you apply',
+    description: 'Fit-first job search. Built for selective applicants targeting competitive roles.',
     url: 'https://www.worthapply.com',
     siteName: 'WorthApply',
     images: [{ url: 'https://www.worthapply.com/og-image.png', width: 1200, height: 630 }],
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WorthApply — The Job Probability Engine',
-    description: 'Score your interview probability before you apply. Evidence-based. No fabrication.',
+    title: 'WorthApply — Know your fit before you apply',
+    description: 'Fit-first job search. Evidence-based. No fabrication.',
     images: ['https://www.worthapply.com/og-image.png'],
   },
 };
@@ -70,12 +70,12 @@ export default function HomePage() {
             {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 mb-8 animate-fade-in">
               <ShieldCheck className="w-4 h-4 text-secondary" weight="duotone" />
-              <span className="text-sm font-medium text-[#171411]">Job Probability Engine · Not a resume builder.</span>
+              <span className="text-sm font-medium text-[#171411]">Fit-first. Evidence-based. No fabrication.</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-[4.5rem] font-extrabold text-[#171411] tracking-tight leading-[1.0] mb-6 animate-slide-up">
-              Know your interview probability{' '}
+              Know your fit{' '}
               <span className="block bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
                 before you apply.
               </span>
@@ -83,7 +83,7 @@ export default function HomePage() {
 
             {/* Subheadline */}
             <p className="text-lg text-[#6e665f] leading-relaxed mb-8 max-w-3xl mx-auto animate-slide-up animation-delay-100">
-              WorthApply is a Job Probability Engine — not a resume builder. It scores your real interview chances across 7 signals, tells you whether to apply, and then gives you every tool to improve that probability.
+              WorthApply helps serious applicants decide which jobs are actually worth pursuing, tailor honestly using their real experience, and run a disciplined search from first analysis to interview.
             </p>
 
             {/* Dual CTAs */}
@@ -93,7 +93,7 @@ export default function HomePage() {
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-secondary to-primary text-white rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-200"
               >
                 <Sparkle className="w-5 h-5" weight="duotone" />
-                Calculate your probability — free
+                Get a free fit audit for 3 jobs
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" weight="bold" />
               </Link>
               <Link
@@ -144,7 +144,7 @@ export default function HomePage() {
                 <div className="grid sm:grid-cols-[1.3fr_1fr] gap-8 p-8">
                   {/* Left: decision + role + skills + next step */}
                   <div>
-                    <div className="text-[10px] font-black text-[#8a7b70] uppercase tracking-[0.14em] mb-3">Interview Probability Analysis</div>
+                    <div className="text-[10px] font-black text-[#8a7b70] uppercase tracking-[0.14em] mb-3">Apply/Skip Decision</div>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(234,179,8,0.12)] text-[#854d0e] text-sm font-black mb-4">
                       ✦ TAILOR FIRST
                     </div>
@@ -174,7 +174,7 @@ export default function HomePage() {
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <span className="text-2xl font-black text-[#171411]">76%</span>
-                        <span className="text-[10px] text-[#8a7b70] font-semibold">Interview Probability</span>
+                        <span className="text-[10px] text-[#8a7b70] font-semibold">Fit Score</span>
                       </div>
                     </div>
                     <div className="w-full space-y-1.5">
@@ -199,26 +199,26 @@ export default function HomePage() {
 
             {/* Quick FAQ Links */}
             <div className="mt-12 flex flex-wrap items-center justify-center gap-4 text-sm">
-              <a
-                href="#faq-analysis"
+              <a 
+                href="#faq-analysis" 
                 className="group flex items-center gap-2 text-[#6e665f] hover:text-primary transition-colors"
               >
                 <Question className="w-4 h-4" weight="bold" />
-                <span className="group-hover:underline">How does the probability engine work?</span>
+                <span className="group-hover:underline">How does the analyzer work?</span>
               </a>
-              <a
-                href="#faq-fabrication"
+              <a 
+                href="#faq-fabrication" 
                 className="group flex items-center gap-2 text-[#6e665f] hover:text-primary transition-colors"
               >
                 <Question className="w-4 h-4" weight="bold" />
-                <span className="group-hover:underline">Is this a resume builder?</span>
+                <span className="group-hover:underline">Will it write fake experience?</span>
               </a>
-              <a
-                href="#faq-difference"
+              <a 
+                href="#faq-difference" 
                 className="group flex items-center gap-2 text-[#6e665f] hover:text-primary transition-colors"
               >
                 <Question className="w-4 h-4" weight="bold" />
-                <span className="group-hover:underline">Free vs Pro vs Premium?</span>
+                <span className="group-hover:underline">What makes you different?</span>
               </a>
             </div>
           </div>
@@ -236,13 +236,13 @@ export default function HomePage() {
             </FadeUp>
             <FadeUp className="flex flex-col items-center">
               <Target className="w-10 h-10 text-secondary mb-3" weight="duotone" />
-              <div className="font-bold text-[#171411] text-lg mb-1">Probability Engine</div>
-              <div className="text-sm text-[#6e665f]">Score your odds before you apply</div>
+              <div className="font-bold text-[#171411] text-lg mb-1">Fit-First Analysis</div>
+              <div className="text-sm text-[#6e665f]">Know before you apply</div>
             </FadeUp>
             <FadeUp className="flex flex-col items-center">
               <Star className="w-10 h-10 text-secondary mb-3" weight="fill" />
-              <div className="font-bold text-[#171411] text-lg mb-1">Not a Resume Builder</div>
-              <div className="text-sm text-[#6e665f]">A decision engine that improves probability</div>
+              <div className="font-bold text-[#171411] text-lg mb-1">Evidence-Based</div>
+              <div className="text-sm text-[#6e665f]">Tied to your real experience</div>
             </FadeUp>
           </StaggerGroup>
         </div>
@@ -268,10 +268,10 @@ export default function HomePage() {
             <FadeUp>
               <GradientCard glowOnHover>
                 <Target className="w-8 h-8 text-secondary mb-4" weight="duotone" />
-                <h3 className="font-bold text-[#171411] text-lg mb-2">Probability before effort</h3>
+                <h3 className="font-bold text-[#171411] text-lg mb-2">Fit before effort</h3>
                 <p className="text-[#6e665f] text-sm">
-                  We calculate your interview probability <em>before</em> you spend hours tailoring. If the
-                  odds aren&apos;t there, we say so — and tell you exactly what to fix.
+                  We tell you whether to apply <em>before</em> you spend hours tailoring. If the fit isn&apos;t
+                  there, we say so.
                 </p>
               </GradientCard>
             </FadeUp>
@@ -309,8 +309,8 @@ export default function HomePage() {
               Not another keyword stuffer.
             </h2>
             <p className="text-lg text-[#6e665f] max-w-xl mx-auto leading-relaxed">
-              Resume builders optimize your document. WorthApply{' '}
-              <span className="text-[#c68a71] font-semibold">optimizes your probability of getting the call.</span>
+              Every other tool optimizes your resume for the machine.{' '}
+              <span className="text-[#c68a71] font-semibold">We optimize your strategy for the human.</span>
             </p>
           </RevealOnScroll>
 
@@ -681,7 +681,7 @@ export default function HomePage() {
 
           <StaggerGroup className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { value: 'Probability First', label: 'The only engine that scores your interview odds before you tailor' },
+              { value: 'Fit-First', label: 'The only tool that analyzes fit before tailoring' },
               { value: 'Evidence-Based', label: 'Every suggestion tied to your real experience' },
               { value: '$39/mo', label: 'Unlimited analyses &mdash; no per-use caps' },
             ].map((stat) => (
@@ -721,14 +721,14 @@ export default function HomePage() {
               {
                 step: '2',
                 icon: FileMagnifyingGlass,
-                title: 'Calculate',
-                description: 'Paste any job description. WorthApply calculates your interview probability across 7 signals and gives you an Apply/Skip verdict in 10 seconds.',
+                title: 'Analyze',
+                description: 'Paste any job description. Get your fit score, matched skills, and a verdict in 10 seconds.',
               },
               {
                 step: '3',
                 icon: Sparkle,
-                title: 'Boost Your Probability',
-                description: 'Use every tool — tailoring, outreach, interview prep — to close the gap and convert your probability into an offer.',
+                title: 'Land Interviews',
+                description: 'Tailor your resume, generate cover letters, and apply with confidence. Watch the interviews roll in.',
               }
             ].map((step) => (
               <FadeUp key={step.step} className="text-center">
@@ -762,10 +762,10 @@ export default function HomePage() {
           <div className="bg-white rounded-[34px] px-10 py-14 sm:px-14">
             <div className="text-center mb-14">
               <h2 className="text-3xl lg:text-4xl font-extrabold text-[#171411] tracking-tight leading-[1.1] mb-4">
-                Every tool to boost your probability
+                Everything you need in one workflow
               </h2>
               <p className="text-lg text-[#6e665f] leading-relaxed max-w-2xl mx-auto">
-                The engine scores your odds. Each tool below improves them — from first analysis to signed offer.
+                Stop juggling multiple tools. WorthApply brings decision-making, tailoring, and tracking together.
               </p>
             </div>
 
@@ -774,7 +774,7 @@ export default function HomePage() {
                 {
                   icon: Target,
                   title: 'Apply/Skip Decision Engine',
-                  description: 'Scores your interview probability across 7 signals. Returns one of 5 verdicts before you invest a minute in tailoring',
+                  description: '5-signal verdict — Apply Now, Tailor First, Apply if Referred, Stretch, or Skip — before you touch your resume',
                   badge: null,
                 },
                 {
@@ -860,8 +860,8 @@ export default function HomePage() {
           items={[
             {
               id: "faq-analysis",
-              question: "How does the Job Probability Engine work?",
-              answer: "Paste any job description. WorthApply calculates your interview probability across 7 signals — role alignment, seniority, skills, experience depth, domain relevance, evidence strength, and risk level — and returns one of 5 verdicts: Apply Now, Tailor First, Apply if Referred, Stretch if Priority Company, or Skip. Free users get the verdict. Pro users get the full probability breakdown, gap analysis, and a ranked fix list."
+              question: "How does the job analysis work?",
+              answer: "Paste any job description. WorthApply scores your fit across 7 dimensions — role alignment, seniority, skills, experience depth, domain relevance, evidence strength, and risk level — then gives you one of 5 decisions: Apply Now, Tailor First, Apply if Referred, Stretch if Priority Company, or Skip. Free users get the decision. Pro users get the full reasoning, gap breakdown, and what to fix."
             },
             {
               question: "What is the Outreach Copilot?",
@@ -878,12 +878,12 @@ export default function HomePage() {
             {
               id: "faq-difference",
               question: "What's the difference between Free, Pro, and Premium?",
-              answer: "Free: 1 probability analysis/month, Apply/Skip verdict, 2 resume tailors, 3 cover letter verdicts, track 8 applications. Pro ($39/mo): unlimited analyses, full probability breakdown + gap fix list, Outreach Copilot, unlimited tailoring + ATS, unlimited cover letters, 10 LinkedIn searches/month. Premium ($79/mo): everything in Pro plus Interview Prep Copilot, Evidence Vault, 30 LinkedIn searches, and Offer & Salary Negotiation Copilot."
+              answer: "Free: 1 analysis/month, fit score, Apply/Skip decision, 2 resume tailors, 3 cover letter verdicts, track 8 applications. Pro ($39/mo): unlimited analyses, full gap breakdown, Outreach Copilot, unlimited tailoring + ATS, unlimited cover letters, 10 LinkedIn searches/month. Premium ($79/mo): everything in Pro plus Interview Prep Copilot, Evidence Vault, 30 LinkedIn searches, and Offer & Salary Negotiation Copilot."
             },
             {
               id: "faq-fabrication",
-              question: "Is WorthApply a resume builder?",
-              answer: "No. WorthApply is a Job Probability Engine — the resume tailoring, cover letters, and ATS tools exist to improve your interview probability after the engine tells you a role is worth pursuing. Every suggestion is grounded in your actual experience. We will never fabricate achievements, invent metrics, or stuff keywords."
+              question: "Will WorthApply fabricate experience on my resume?",
+              answer: "No. Every suggestion is tied to your actual experience. If your background doesn't support a claim, we say so. We distinguish between missing evidence (you may have it but didn't show it) and actual gaps — and we're honest about both. No keyword stuffing, no invented metrics."
             }
           ]}
           subtitle="Everything you need to know about WorthApply"
@@ -903,7 +903,7 @@ export default function HomePage() {
                   We won&apos;t waste your time — or your story.
                 </h2>
                 <p className="text-lg mb-10 max-w-xl mx-auto" style={{color: 'rgba(247,240,233,0.7)'}}>
-                  The Job Probability Engine — score your odds, then use every tool to improve them. Zero guessing, zero fabrication.
+                  From Apply/Skip decisions to interview prep and salary negotiation — one platform, zero fabrication.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
@@ -939,14 +939,14 @@ export default function HomePage() {
       <WebSiteSchema
         name="WorthApply"
         url="https://worthapply.com"
-        description="Job Probability Engine. WorthApply scores your interview probability across 7 signals before you apply — then gives you every tool to improve your odds."
+        description="Fit-first job search platform. WorthApply analyzes your real fit for a role before you tailor your resume, with evidence-based suggestions tied to your actual experience."
       />
 
       <OrganizationSchema
         name="WorthApply"
         url="https://worthapply.com"
         logo="https://worthapply.com/logo.png"
-        description="Job Probability Engine. WorthApply scores your interview probability across 7 signals before you apply — then gives you every tool to improve your odds."
+        description="Fit-first job search platform. WorthApply analyzes your real fit for a role before you tailor your resume, with evidence-based suggestions tied to your actual experience."
         sameAs={[
           'https://twitter.com/worthapply',
           'https://linkedin.com/company/worthapply',
@@ -955,7 +955,7 @@ export default function HomePage() {
       
       <ProductSchema
         name="WorthApply Pro"
-        description="Job Probability Engine. Scores your interview probability across 7 signals before you apply — then gives you every tool to improve it."
+        description="Fit-first job search platform. Analyzes your real fit for a role before you tailor, with evidence-based suggestions tied to your actual experience."
         image="https://worthapply.com/og-image.png"
         offers={[
           {

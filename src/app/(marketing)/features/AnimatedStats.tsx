@@ -13,9 +13,9 @@ interface Capability {
 const capabilities: Capability[] = [
   {
     icon: Target,
-    title: "Probability Engine",
+    title: "Fit-First",
     description:
-      "Calculates your real interview probability across 7 signals before you apply. Not a resume builder — a decision engine that prevents wasted effort.",
+      "The only tool that tells you whether to apply before you tailor. Stop investing hours in roles that were never going to convert.",
   },
   {
     icon: ShieldCheck,
@@ -27,13 +27,13 @@ const capabilities: Capability[] = [
     icon: Stack,
     title: "Selective, Not Spam",
     description:
-      "Built for people running 10–15 high-probability applications, not 100+ blind ones. Quality over volume is the whole point.",
+      "Built for people running 10–15 strong applications, not 100+ blind ones. Quality over volume is the whole point.",
   },
   {
     icon: CurrencyCircleDollar,
     title: "Unlimited at $39/mo",
     description:
-      "No per-use caps. Run probability checks on every role you're considering and use every tool to improve your odds — all in one plan.",
+      "No per-use caps, no analysis limits. Run fit checks on every role you're considering and tailor as many resumes as you need.",
   },
 ];
 
@@ -58,10 +58,10 @@ export function AnimatedStats() {
             What makes it different
           </span>
           <h2 className="text-4xl lg:text-5xl font-extrabold text-[#171411] mb-4 tracking-tight">
-            A Job Probability Engine, not a resume builder
+            A fit-first tool, not another keyword stuffer
           </h2>
           <p className="text-lg text-[#6e665f]">
-            Four principles no other job search tool combines
+            Built on four principles no other resume tool combines
           </p>
         </motion.div>
 
