@@ -31,12 +31,12 @@ const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentP
 // CircularTestimonials removed — was rendering fabricated testimonials. Reintroduce when real user quotes exist.
 
 export const metadata: Metadata = {
-  title: 'WorthApply — Stop wasting hours on jobs you were never likely to land',
+  title: 'WorthApply — Know your fit before you apply',
   description:
     'Fit-first job search. Analyze your real fit for a role in 10 seconds before tailoring your resume. Evidence-based, no fabrication. Free plan available.',
   alternates: { canonical: 'https://www.worthapply.com' },
   openGraph: {
-    title: 'WorthApply — Stop wasting hours on jobs you were never likely to land',
+    title: 'WorthApply — Know your fit before you apply',
     description: 'Fit-first job search. Built for selective applicants targeting competitive roles.',
     url: 'https://www.worthapply.com',
     siteName: 'WorthApply',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WorthApply — Stop wasting hours on jobs you were never likely to land',
+    title: 'WorthApply — Know your fit before you apply',
     description: 'Fit-first job search. Evidence-based. No fabrication.',
     images: ['https://www.worthapply.com/og-image.png'],
   },
@@ -70,9 +70,9 @@ export default function HomePage() {
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-[4.5rem] font-extrabold text-[#171411] tracking-tight leading-[1.0] mb-6 animate-slide-up">
-              Stop wasting hours on jobs{' '}
+              Know your fit{' '}
               <span className="block bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-                you were never likely to land.
+                before you apply.
               </span>
             </h1>
 
