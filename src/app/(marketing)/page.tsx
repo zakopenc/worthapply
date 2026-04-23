@@ -257,7 +257,7 @@ export default function HomePage() {
           </div>
 
           <h2 className="text-3xl lg:text-4xl font-extrabold text-[#171411] tracking-tight leading-[1.1] mb-6">
-            We won&apos;t waste your time &mdash; or your story
+            Honest by design. Selective by principle.
           </h2>
           <p className="text-lg text-[#6e665f] leading-relaxed max-w-3xl mx-auto mb-12">
             Most resume tools fabricate achievements, stuff keywords, and push you to apply to 100+ jobs
@@ -300,280 +300,303 @@ export default function HomePage() {
       </section>
 
       {/* Objection-Handling Section: Not Another Keyword Stuffer */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-[#171411] tracking-tight leading-[1.1] mb-4">
-              Not Another Keyword Stuffer
+      <section className="py-28" style={{background: '#0d0c0b'}}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <RevealOnScroll className="text-center mb-16">
+            <span className="inline-block text-[10px] font-black text-[#4f463e] uppercase tracking-[0.25em] mb-5">Why WorthApply</span>
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.05] mb-5">
+              Not another keyword stuffer.
             </h2>
-            <p className="text-lg text-[#6e665f] leading-relaxed max-w-3xl mx-auto">
-              We&apos;re different from generic resume tools and slow manual approaches
+            <p className="text-lg text-[#6e665f] max-w-xl mx-auto leading-relaxed">
+              Every other tool optimizes your resume for the machine.{' '}
+              <span className="text-[#c68a71] font-semibold">We optimize your strategy for the human.</span>
             </p>
-          </div>
+          </RevealOnScroll>
 
-          <StaggerGroup className="grid md:grid-cols-3 gap-8">
-            {/* Other Tools Column */}
-            <FadeUp className="p-6 rounded-2xl border-2 border-red-200 bg-red-50">
-              <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <X className="w-6 h-6 text-red-600" weight="bold" />
+          {/* 3-col comparison */}
+          <StaggerGroup className="grid md:grid-cols-3 gap-5 items-stretch">
+
+            {/* Other Tools */}
+            <FadeUp>
+              <div className="h-full rounded-2xl border border-[#1f1b17] p-7 flex flex-col" style={{background: '#141210'}}>
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-[#1f1b17]">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{background: 'rgba(239,68,68,0.08)'}}>
+                    <X className="w-4 h-4 text-red-500" weight="bold" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#e8e2db] text-sm leading-tight">Other Tools</p>
+                    <p className="text-[11px] text-[#3d362f] mt-0.5">Jobscan · Rezi · Resume.io</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-[#171411]">Other Tools</h3>
-                <p className="text-sm text-[#6e665f] mt-1">Jobscan, Rezi, Resume.io</p>
+                <ul className="space-y-3.5 flex-1">
+                  {[
+                    'Keyword spam that gets flagged',
+                    'Apply to 100+ jobs blindly',
+                    'No fit check before tailoring',
+                    'Generic template-driven rewrites',
+                    'Fabricate achievements freely',
+                    'No outreach or interview tools',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{background: 'rgba(239,68,68,0.08)'}}>
+                        <X className="w-2.5 h-2.5 text-red-500" weight="bold" />
+                      </div>
+                      <span className="text-sm text-[#3d362f] leading-snug">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-3">
-                {[
-                  'Generic resume rewrites',
-                  'Keyword spam that ATS flags',
-                  'Apply to 100+ jobs blindly',
-                  'No fit analysis before tailoring',
-                  'Fabricate achievements',
-                  'One-size-fits-all templates'
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm">
-                    <X className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" weight="bold" />
-                    <span className="text-[#3d362f]">{item}</span>
-                  </li>
-                ))}
-              </ul>
             </FadeUp>
 
-            {/* WorthApply Column (Highlighted) */}
-            <FadeUp className="p-6 rounded-2xl border-4 border-green-600 bg-green-50 relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-1.5 rounded-full text-sm font-bold">
-                Best Choice
-              </div>
-              <div className="text-center mb-6 mt-2">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle className="w-6 h-6 text-green-600" weight="fill" />
+            {/* WorthApply — elevated center */}
+            <FadeUp>
+              <div className="h-full rounded-2xl p-7 flex flex-col relative -mt-3 -mb-3 shadow-[0_0_80px_rgba(198,138,113,0.1)]"
+                style={{background: 'linear-gradient(160deg, #1e1610 0%, #150e09 100%)', border: '1.5px solid rgba(198,138,113,0.25)'}}>
+                {/* Top badge */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-white text-[10px] font-black uppercase tracking-[0.18em] px-5 py-1.5 rounded-full whitespace-nowrap"
+                  style={{background: 'linear-gradient(90deg, #9d6148, #c68a71)'}}>
+                  Our approach
                 </div>
-                <h3 className="text-xl font-bold text-[#171411]">WorthApply</h3>
-                <p className="text-sm text-[#6e665f] mt-1">Fit-first approach</p>
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b mt-3" style={{borderColor: 'rgba(198,138,113,0.15)'}}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{background: 'rgba(198,138,113,0.12)'}}>
+                    <CheckCircle className="w-4 h-4 text-[#c68a71]" weight="fill" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-sm leading-tight">WorthApply</p>
+                    <p className="text-[11px] mt-0.5" style={{color: 'rgba(198,138,113,0.6)'}}>Fit-first · Evidence-based</p>
+                  </div>
+                </div>
+                <ul className="space-y-3.5 flex-1">
+                  {[
+                    'Score fit across 7 dimensions first',
+                    'Apply to 10–15 high-fit roles only',
+                    'Analyze before tailoring — always',
+                    'Suggestions grounded in your resume',
+                    'Zero fabrication, ever',
+                    'Outreach, interview prep & negotiation',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{background: 'rgba(198,138,113,0.12)'}}>
+                        <CheckCircle className="w-2.5 h-2.5 text-[#c68a71]" weight="fill" />
+                      </div>
+                      <span className="text-sm text-[#e8e2db] font-medium leading-snug">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-3">
-                {[
-                  'Analyze fit BEFORE applying',
-                  'Tailor based on YOUR experience',
-                  'Focus on 10-12 high-fit roles',
-                  'Fit verdict with evidence gaps flagged',
-                  'Evidence-backed suggestions only',
-                  'Tells you when not to apply'
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" weight="fill" />
-                    <span className="text-[#171411] font-medium">{item}</span>
-                  </li>
-                ))}
-              </ul>
             </FadeUp>
 
-            {/* Manual Approach Column */}
-            <FadeUp className="p-6 rounded-2xl border-2 border-gray-200 bg-gray-50">
-              <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Warning className="w-6 h-6 text-gray-600" weight="duotone" />
+            {/* Manual Approach */}
+            <FadeUp>
+              <div className="h-full rounded-2xl border border-[#1f1b17] p-7 flex flex-col" style={{background: '#141210'}}>
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-[#1f1b17]">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{background: 'rgba(161,138,120,0.08)'}}>
+                    <Warning className="w-4 h-4 text-[#6e665f]" weight="duotone" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#e8e2db] text-sm leading-tight">Manual Approach</p>
+                    <p className="text-[11px] text-[#3d362f] mt-0.5">DIY job search</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-[#171411]">Manual Approach</h3>
-                <p className="text-sm text-[#6e665f] mt-1">DIY job search</p>
+                <ul className="space-y-3.5 flex-1">
+                  {[
+                    '3–4 hours per application',
+                    'Guess if you\'re even qualified',
+                    'Same resume for every role',
+                    '2–5% average response rate',
+                    'Burnout from constant rejection',
+                    'No system, no data, no leverage',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{background: 'rgba(161,138,120,0.08)'}}>
+                        <Warning className="w-2.5 h-2.5 text-[#4f463e]" weight="duotone" />
+                      </div>
+                      <span className="text-sm text-[#3d362f] leading-snug">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-3">
-                {[
-                  '3-4 hours per application',
-                  'Guess if you\'re qualified',
-                  'Generic resume for all jobs',
-                  '2-5% response rate',
-                  'Burnout from rejections',
-                  'No data-driven insights'
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm">
-                    <Warning className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" weight="duotone" />
-                    <span className="text-[#3d362f]">{item}</span>
-                  </li>
-                ))}
-              </ul>
             </FadeUp>
           </StaggerGroup>
 
           {/* CTA */}
-          <RevealOnScroll className="text-center mt-12">
+          <RevealOnScroll className="text-center mt-16">
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-secondary to-primary text-white rounded-xl font-semibold text-lg hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-semibold text-lg text-white hover:-translate-y-0.5 transition-all duration-200"
+              style={{background: 'linear-gradient(135deg, #9d6148 0%, #c68a71 100%)', boxShadow: '0 14px 40px rgba(157,97,72,0.3)'}}
             >
               <Sparkle className="w-5 h-5" weight="duotone" />
-              Try the Smarter Way Free
+              Try the smarter way free
               <ArrowRight className="w-5 h-5" weight="bold" />
             </Link>
+            <p className="text-xs text-[#3d362f] mt-4">No credit card required · Free plan available</p>
           </RevealOnScroll>
         </div>
       </section>
 
       {/* Comparison Table Section */}
-      <section className="py-24 bg-gradient-to-b from-[#fbf8f4] to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <RevealOnScroll className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-[#171411] tracking-tight leading-[1.1] mb-4">
-              See How We Compare
+      <section className="py-28 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <RevealOnScroll className="text-center mb-16">
+            <span className="inline-block text-[10px] font-black text-[#9a8f85] uppercase tracking-[0.25em] mb-5">Competitor comparison</span>
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-[#171411] tracking-tight leading-[1.05] mb-5">
+              See how we compare
             </h2>
-            <p className="text-lg text-[#6e665f] leading-relaxed mb-2">
-              We analyzed the top 3 competitors so you don&apos;t have to
+            <p className="text-lg text-[#6e665f] max-w-xl mx-auto leading-relaxed">
+              We analyzed the top alternatives so you don&apos;t have to.
             </p>
-            <p className="text-sm text-[#9a8f85]">
-              Updated April 2026 • Based on public pricing and features
-            </p>
+            <p className="text-xs text-[#c4bab4] mt-3 font-medium">Updated April 2026 · Based on public pricing and features</p>
           </RevealOnScroll>
 
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full align-middle">
-              <div className="overflow-hidden border border-gray-200 rounded-2xl">
-                <table className="min-w-full divide-y divide-gray-200 bg-white">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-4 text-left text-sm font-semibold text-[#171411] sticky left-0 bg-gray-50">
-                        Feature
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-center bg-[rgba(198,138,113,0.08)] border-x-2 border-[#84523c]">
-                        <div className="font-bold text-[#84523c] text-lg">WorthApply</div>
-                        <div className="text-xs text-[#6e665f] font-normal mt-1">$39/mo</div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-center">
-                        <div className="font-semibold text-[#171411]">Jobscan</div>
-                        <div className="text-xs text-[#6e665f] font-normal mt-1">$49/mo</div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-center">
-                        <div className="font-semibold text-[#171411]">Rezi</div>
-                        <div className="text-xs text-[#6e665f] font-normal mt-1">$29/mo</div>
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-center">
-                        <div className="font-semibold text-[#171411]">Teal</div>
-                        <div className="text-xs text-[#6e665f] font-normal mt-1">$29/mo</div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {[
-                      {
-                        feature: 'Apply/Skip Decision Engine',
-                        worthapply: '✅ 5 decisions',
-                        jobscan: '❌',
-                        rezi: '❌',
-                        teal: '❌'
-                      },
-                      {
-                        feature: 'Fit-First Analysis (before tailoring)',
-                        worthapply: '✅',
-                        jobscan: '❌',
-                        rezi: '❌',
-                        teal: '❌'
-                      },
-                      {
-                        feature: 'Resume Tailoring + ATS Optimization',
-                        worthapply: '✅',
-                        jobscan: '✅',
-                        rezi: '✅',
-                        teal: '✅'
-                      },
-                      {
-                        feature: 'Outreach Copilot (recruiter + referral)',
-                        worthapply: '✅ Pro',
-                        jobscan: '❌',
-                        rezi: '❌',
-                        teal: '❌'
-                      },
-                      {
-                        feature: 'Cover Letter Generator',
-                        worthapply: '✅',
-                        jobscan: '✅',
-                        rezi: '✅',
-                        teal: '✅'
-                      },
-                      {
-                        feature: 'LinkedIn Job Scraper',
-                        worthapply: '✅ Pro/Premium',
-                        jobscan: '❌',
-                        rezi: '❌',
-                        teal: '⚠️ Limited'
-                      },
-                      {
-                        feature: 'Evidence-Based (no fabrication)',
-                        worthapply: '✅',
-                        jobscan: '⚠️',
-                        rezi: '❌',
-                        teal: '⚠️'
-                      },
-                      {
-                        feature: 'Interview Prep Copilot',
-                        worthapply: '✅ Premium',
-                        jobscan: '❌',
-                        rezi: '❌',
-                        teal: '❌'
-                      },
-                      {
-                        feature: 'Evidence Vault (story bank)',
-                        worthapply: '✅ Premium',
-                        jobscan: '❌',
-                        rezi: '❌',
-                        teal: '❌'
-                      },
-                      {
-                        feature: 'Offer & Salary Negotiation Copilot',
-                        worthapply: '✅ Premium',
-                        jobscan: '❌',
-                        rezi: '❌',
-                        teal: '❌'
-                      },
-                      {
-                        feature: 'Unlimited Analyses',
-                        worthapply: '✅ $39',
-                        jobscan: '✅ $89',
-                        rezi: '❌ 10/mo',
-                        teal: '❌ 5/mo'
-                      },
-                      {
-                        feature: 'Application Tracking',
-                        worthapply: '✅',
-                        jobscan: '⚠️ Basic',
-                        rezi: '❌',
-                        teal: '✅'
-                      },
-                    ].map((row, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-6 py-4 text-sm font-medium text-[#171411] whitespace-nowrap sticky left-0 bg-inherit">
-                          {row.feature}
-                        </td>
-                        <td className="px-6 py-4 text-center text-sm bg-[rgba(198,138,113,0.06)] border-x-2 border-[#84523c] font-semibold">
-                          {row.worthapply}
-                        </td>
-                        <td className="px-6 py-4 text-center text-sm text-[#6e665f]">
-                          {row.jobscan}
-                        </td>
-                        <td className="px-6 py-4 text-center text-sm text-[#6e665f]">
-                          {row.rezi}
-                        </td>
-                        <td className="px-6 py-4 text-center text-sm text-[#6e665f]">
-                          {row.teal}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+          {(() => {
+            type CellVal = boolean | { yes?: boolean; partial?: boolean; label?: string };
 
-          {/* Footer Notes */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-[#9a8f85] mb-4">
-              ✅ = Full support • ⚠️ = Partial/Basic • ❌ = Not available
-            </p>
-            <Link 
-              href="/compare" 
-              className="inline-flex items-center gap-2 text-primary hover:underline font-semibold"
-            >
-              See Detailed Comparison
-              <ArrowRight className="w-4 h-4" weight="bold" />
-            </Link>
-          </div>
+            const COL = 'grid-cols-[2fr_1fr_1fr_1fr_1fr]';
+
+            const renderCell = (val: CellVal, isWA = false) => {
+              if (val === false) {
+                return (
+                  <div className="flex justify-center">
+                    <div className="w-5 h-5 rounded-full bg-[#f0ede9] flex items-center justify-center">
+                      <X className="w-2.5 h-2.5 text-[#c4bab4]" weight="bold" />
+                    </div>
+                  </div>
+                );
+              }
+              const v = val as { yes?: boolean; partial?: boolean; label?: string };
+              if (v.partial) {
+                return (
+                  <div className="flex flex-col items-center gap-0.5">
+                    <div className="w-5 h-5 rounded-full bg-amber-50 flex items-center justify-center">
+                      <Warning className="w-2.5 h-2.5 text-amber-500" weight="fill" />
+                    </div>
+                    {v.label && <span className="text-[10px] text-amber-600 font-semibold leading-none">{v.label}</span>}
+                  </div>
+                );
+              }
+              return (
+                <div className="flex flex-col items-center gap-0.5">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center" style={isWA ? {background: 'rgba(198,138,113,0.15)'} : {background: 'rgba(34,197,94,0.1)'}}>
+                    <CheckCircle className="w-2.5 h-2.5" style={isWA ? {color: '#c68a71'} : {color: '#16a34a'}} weight="fill" />
+                  </div>
+                  {v.label && <span className="text-[10px] font-bold leading-none" style={isWA ? {color: '#c68a71'} : {color: '#16a34a'}}>{v.label}</span>}
+                </div>
+              );
+            };
+
+            const groups: { category: string; rows: { feature: string; wa: CellVal; jobscan: CellVal; rezi: CellVal; teal: CellVal }[] }[] = [
+              {
+                category: 'Strategy & Fit',
+                rows: [
+                  { feature: 'Apply/Skip Decision Engine', wa: { yes: true, label: '5 signals' }, jobscan: false, rezi: false, teal: false },
+                  { feature: 'Fit-first analysis (before tailoring)', wa: { yes: true }, jobscan: false, rezi: false, teal: false },
+                  { feature: 'Evidence-based — no fabrication', wa: { yes: true }, jobscan: { partial: true }, rezi: false, teal: { partial: true } },
+                ],
+              },
+              {
+                category: 'Documents',
+                rows: [
+                  { feature: 'Resume tailoring + ATS optimization', wa: { yes: true }, jobscan: { yes: true }, rezi: { yes: true }, teal: { yes: true } },
+                  { feature: 'Cover letter generator', wa: { yes: true }, jobscan: { yes: true }, rezi: { yes: true }, teal: { yes: true } },
+                  { feature: 'Unlimited analyses', wa: { yes: true, label: '$39' }, jobscan: { yes: true, label: '$89' }, rezi: { partial: true, label: '10/mo' }, teal: { partial: true, label: '5/mo' } },
+                ],
+              },
+              {
+                category: 'Outreach & Discovery',
+                rows: [
+                  { feature: 'Outreach Copilot (recruiter + referral)', wa: { yes: true, label: 'Pro' }, jobscan: false, rezi: false, teal: false },
+                  { feature: 'LinkedIn job discovery', wa: { yes: true, label: 'Pro/Premium' }, jobscan: false, rezi: false, teal: { partial: true, label: 'Limited' } },
+                ],
+              },
+              {
+                category: 'Interview & Offers',
+                rows: [
+                  { feature: 'Interview Prep Copilot', wa: { yes: true, label: 'Premium' }, jobscan: false, rezi: false, teal: false },
+                  { feature: 'Evidence Vault (story bank)', wa: { yes: true, label: 'Premium' }, jobscan: false, rezi: false, teal: false },
+                  { feature: 'Offer & Salary Negotiation', wa: { yes: true, label: 'Premium' }, jobscan: false, rezi: false, teal: false },
+                ],
+              },
+              {
+                category: 'Tracking',
+                rows: [
+                  { feature: 'Application tracking', wa: { yes: true }, jobscan: { partial: true, label: 'Basic' }, rezi: false, teal: { yes: true } },
+                ],
+              },
+            ];
+
+            return (
+              <>
+                {/* Product header cards */}
+                <div className={`grid ${COL} gap-3 mb-3`}>
+                  <div className="hidden md:block" />
+                  <div className="rounded-2xl p-5 text-center relative"
+                    style={{background: 'linear-gradient(160deg, #1e1610 0%, #150e09 100%)', border: '1.5px solid rgba(198,138,113,0.3)'}}>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1 rounded-full whitespace-nowrap"
+                      style={{background: 'linear-gradient(90deg, #9d6148, #c68a71)'}}>
+                      Best value
+                    </div>
+                    <div className="font-black text-white text-sm mt-1">WorthApply</div>
+                    <div className="text-[10px] mt-1 font-semibold" style={{color: 'rgba(198,138,113,0.7)'}}>from $39/mo</div>
+                  </div>
+                  {[{ name: 'Jobscan', price: '$49/mo' }, { name: 'Rezi', price: '$29/mo' }, { name: 'Teal', price: '$29/mo' }].map((p) => (
+                    <div key={p.name} className="rounded-2xl p-5 text-center bg-[#f9f7f5] border border-[#e8e2db]">
+                      <div className="font-bold text-[#171411] text-sm">{p.name}</div>
+                      <div className="text-[10px] text-[#9a8f85] mt-1 font-medium">{p.price}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Rows */}
+                <div className="rounded-2xl overflow-hidden border border-[#e8e2db]">
+                  {groups.map((group, gi) => (
+                    <div key={gi}>
+                      {/* Category header */}
+                      <div className={`grid ${COL} bg-[#f5f2ef] border-b border-[#e8e2db] px-5 py-2.5`}>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9a8f85]">{group.category}</span>
+                        <div /><div /><div /><div />
+                      </div>
+                      {/* Feature rows */}
+                      {group.rows.map((row, ri) => (
+                        <div key={ri} className={`grid ${COL} border-b border-[#f0ede9] last:border-0 ${ri % 2 === 1 ? 'bg-[#fdfcfb]' : 'bg-white'}`}>
+                          <div className="px-5 py-4 flex items-center">
+                            <span className="text-sm text-[#3d362f] font-medium">{row.feature}</span>
+                          </div>
+                          <div className="px-3 py-4 flex items-center justify-center" style={{background: 'rgba(198,138,113,0.04)'}}>
+                            {renderCell(row.wa, true)}
+                          </div>
+                          <div className="px-3 py-4 flex items-center justify-center">{renderCell(row.jobscan)}</div>
+                          <div className="px-3 py-4 flex items-center justify-center">{renderCell(row.rezi)}</div>
+                          <div className="px-3 py-4 flex items-center justify-center">{renderCell(row.teal)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Legend + CTA */}
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-5 text-xs text-[#9a8f85]">
+                    {[
+                      { icon: <CheckCircle className="w-2.5 h-2.5 text-green-600" weight="fill" />, bg: 'bg-green-50', label: 'Full support' },
+                      { icon: <Warning className="w-2.5 h-2.5 text-amber-500" weight="fill" />, bg: 'bg-amber-50', label: 'Partial' },
+                      { icon: <X className="w-2.5 h-2.5 text-[#c4bab4]" weight="bold" />, bg: 'bg-[#f0ede9]', label: 'Not available' },
+                    ].map((l) => (
+                      <div key={l.label} className="flex items-center gap-1.5">
+                        <div className={`w-4 h-4 rounded-full ${l.bg} flex items-center justify-center`}>{l.icon}</div>
+                        <span>{l.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <Link href="/compare" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                    See detailed comparison
+                    <ArrowRight className="w-4 h-4" weight="bold" />
+                  </Link>
+                </div>
+              </>
+            );
+          })()}
         </div>
       </section>
 
