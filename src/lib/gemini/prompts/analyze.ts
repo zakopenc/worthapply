@@ -39,6 +39,20 @@ Analyze the fit between this candidate and this job like a world-class recruiter
 - Missing core requirements should drag the sub-scores down materially.
 - A candidate can still reach "apply" with some gaps only if the proven strengths are strong and relevant on the dimension scores.
 
+## APPLY/SKIP DECISION RULES
+Based on the full analysis, generate a concrete application decision:
+- APPLY_NOW: Strong match, apply immediately with minimal changes
+- TAILOR_FIRST: Good potential but resume needs targeted edits before applying
+- APPLY_IF_REFERRED: Gaps exist that a referral would offset; cold application has low odds
+- STRETCH_IF_PRIORITY_COMPANY: Below typical bar but worth trying if the company is a top target
+- SKIP: Material gaps with no realistic path — spending effort here is not worth it
+Rules for decision:
+- Be conservative. Defaulting to APPLY_NOW for mediocre fits is dishonest and wastes the user's time.
+- APPLY_IF_REFERRED is for cases where the candidate has relevant experience but is missing 1-2 must-haves.
+- SKIP is appropriate when >= 2 hard must-haves are unmet and not transferable.
+- decision_reasoning must be concrete bullets, not generic platitudes.
+- what_to_fix_before_applying: actionable items only — no vague advice like "add more details".
+
 ## OUTPUT QUALITY BAR
 - Extract realistic job metadata from the job description when possible.
 - matched_skills: include the strongest, highest-signal matches first.
@@ -78,6 +92,22 @@ Analyze the fit between this candidate and this job like a world-class recruiter
     "user_level": "Mid-Senior",
     "assessment": "Candidate is slightly below the role level but has strong potential",
     "is_match": true
-  }
+  },
+  "apply_decision": "TAILOR_FIRST",
+  "decision_reasoning": [
+    "Strong skills match but two must-have requirements lack direct evidence",
+    "Experience scope is relevant but slightly below the expected seniority"
+  ],
+  "biggest_strengths": [
+    "Production React experience with ownership of full front-end delivery"
+  ],
+  "biggest_risks": [
+    "No evidence of Kubernetes in production — listed as required, not preferred"
+  ],
+  "what_to_fix_before_applying": [
+    "Reframe any container or cloud operations experience to address the Kubernetes gap",
+    "Quantify the scope of delivery in current role to match expected seniority level"
+  ],
+  "recommended_next_step": "Tailor your resume summary and experience bullets to address the Kubernetes gap before applying."
 }`;
 }

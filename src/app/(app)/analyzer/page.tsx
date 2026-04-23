@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
+type ApplyDecision = 'APPLY_NOW' | 'TAILOR_FIRST' | 'APPLY_IF_REFERRED' | 'STRETCH_IF_PRIORITY_COMPANY' | 'SKIP';
+
 interface AnalysisResult {
   id: string;
   overall_score: number;
@@ -59,6 +61,13 @@ interface AnalysisResult {
     title?: string;
     company?: string;
   };
+  // Apply/Skip Engine fields
+  apply_decision?: ApplyDecision;
+  decision_reasoning?: string[];
+  biggest_strengths?: string[];
+  biggest_risks?: string[];
+  what_to_fix_before_applying?: string[];
+  recommended_next_step?: string;
 }
 
 interface LinkedInJob {
@@ -112,6 +121,39 @@ const verdictConfig = {
     border: 'border-red-200',
     ringColor: '#ef4444',
     badge: 'bg-red-100 text-red-800 border-red-200',
+  },
+};
+
+const decisionConfig: Record<string, { label: string; sublabel: string; badge: string; icon: string }> = {
+  APPLY_NOW: {
+    label: 'Apply Now',
+    sublabel: 'Strong match — submit with minimal changes',
+    badge: 'bg-green-100 text-green-800 border-green-200',
+    icon: '→',
+  },
+  TAILOR_FIRST: {
+    label: 'Tailor First',
+    sublabel: 'Good potential — sharpen your resume before applying',
+    badge: 'bg-amber-100 text-amber-800 border-amber-200',
+    icon: '✏',
+  },
+  APPLY_IF_REFERRED: {
+    label: 'Apply If Referred',
+    sublabel: 'Gaps exist — a referral significantly improves your odds',
+    badge: 'bg-blue-100 text-blue-800 border-blue-200',
+    icon: '🤝',
+  },
+  STRETCH_IF_PRIORITY_COMPANY: {
+    label: 'Stretch Role',
+    sublabel: 'Below typical bar — worth trying only if this is a top target',
+    badge: 'bg-purple-100 text-purple-800 border-purple-200',
+    icon: '↑',
+  },
+  SKIP: {
+    label: 'Skip This Role',
+    sublabel: "Material gaps with no clear path — don't invest time here",
+    badge: 'bg-red-100 text-red-800 border-red-200',
+    icon: '✕',
   },
 };
 
@@ -370,6 +412,7 @@ export default function AnalyzerPage() {
   }
 
   const verdict = results ? verdictConfig[results.verdict] : null;
+  const decision = results?.apply_decision ? decisionConfig[results.apply_decision] : null;
   const visibleMatches = showAllMatches ? results?.matched_skills : results?.matched_skills?.slice(0, 3);
   const visibleGaps = showAllGaps ? results?.skill_gaps : results?.skill_gaps?.slice(0, 3);
 
@@ -430,15 +473,66 @@ export default function AnalyzerPage() {
         <div className="mb-8 grid grid-cols-1 xl:grid-cols-12 gap-6">
           <div className={`xl:col-span-4 rounded-2xl p-8 border ${verdict.bg} ${verdict.border} flex flex-col items-center text-center`}>
             <ScoreRing score={results.overall_score} color={verdict.ringColor} />
-            <div className="mt-4">
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-black border uppercase tracking-wider ${verdict.badge} mb-3`}>
-                {verdict.label}
-              </span>
-              <p className="text-sm text-on-surface-variant">{verdict.sublabel}</p>
+
+            {/* Apply/Skip Decision — shown to all users */}
+            <div className="mt-4 w-full">
+              {decision ? (
+                <div className="text-center">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-black border uppercase tracking-wider ${decision.badge} mb-2`}>
+                    {decision.label}
+                  </span>
+                  <p className="text-sm text-on-surface-variant">{decision.sublabel}</p>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-black border uppercase tracking-wider ${verdict.badge} mb-2`}>
+                    {verdict.label}
+                  </span>
+                  <p className="text-sm text-on-surface-variant">{verdict.sublabel}</p>
+                </div>
+              )}
             </div>
 
-            {results.seniority_analysis && (
-              <div className="mt-6 w-full p-4 bg-white/60 rounded-xl border border-outline-variant/20 text-left">
+            {/* Recommended Next Step — shown to all users */}
+            {results.recommended_next_step && (
+              <div className="mt-4 w-full p-4 bg-white/70 rounded-xl border border-outline-variant/20 text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-1">Next Step</p>
+                <p className="text-sm text-on-surface leading-relaxed">{results.recommended_next_step}</p>
+              </div>
+            )}
+
+            {/* Decision Reasoning — Pro+ only */}
+            {results.decision_reasoning && results.decision_reasoning.length > 0 && (
+              <div className="mt-3 w-full p-4 bg-white/60 rounded-xl border border-outline-variant/20 text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Why this decision</p>
+                <ul className="space-y-1.5">
+                  {results.decision_reasoning.map((reason, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-xs text-on-surface leading-relaxed">
+                      <span className="text-secondary font-black mt-0.5 shrink-0">·</span>
+                      <span>{reason}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* What to fix — Pro+ only */}
+            {results.what_to_fix_before_applying && results.what_to_fix_before_applying.length > 0 && (
+              <div className="mt-3 w-full p-4 bg-white/60 rounded-xl border border-outline-variant/20 text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Fix before applying</p>
+                <ul className="space-y-1.5">
+                  {results.what_to_fix_before_applying.map((fix, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-xs text-on-surface leading-relaxed">
+                      <span className="text-amber-600 font-black mt-0.5 shrink-0">→</span>
+                      <span>{fix}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {results.seniority_analysis?.role_level && (
+              <div className="mt-3 w-full p-4 bg-white/60 rounded-xl border border-outline-variant/20 text-left">
                 <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Seniority Match</p>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-on-surface-variant">Role:</span>
@@ -451,7 +545,7 @@ export default function AnalyzerPage() {
               </div>
             )}
 
-            <div className="mt-4 w-full p-4 bg-white/70 rounded-xl border border-outline-variant/20 text-left">
+            <div className="mt-3 w-full p-4 bg-white/70 rounded-xl border border-outline-variant/20 text-left">
               <div className="flex items-center gap-2 mb-2">
                 <BrainCircuit className="w-4 h-4 text-secondary" />
                 <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">How the score works</p>

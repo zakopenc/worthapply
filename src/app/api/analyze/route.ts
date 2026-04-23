@@ -29,6 +29,13 @@ type GeminiAnalysis = {
   skill_gaps: { skill: string; impact: string; suggestion: string }[];
   recruiter_concerns: { concern: string; severity: string; mitigation: string }[];
   seniority_analysis: { role_level: string; user_level: string; assessment: string; is_match: boolean };
+  // Apply/Skip Engine fields
+  apply_decision?: 'APPLY_NOW' | 'TAILOR_FIRST' | 'APPLY_IF_REFERRED' | 'STRETCH_IF_PRIORITY_COMPANY' | 'SKIP';
+  decision_reasoning?: string[];
+  biggest_strengths?: string[];
+  biggest_risks?: string[];
+  what_to_fix_before_applying?: string[];
+  recommended_next_step?: string;
 };
 
 /** Clamp sub-scores, derive overall + verdict on the server (ignores model overall/verdict). */
@@ -193,6 +200,14 @@ export async function POST(request: NextRequest) {
         seniority_analysis: features.seniority_match
           ? analysis.seniority_analysis
           : { role_level: '', user_level: '', assessment: 'Upgrade to Pro to see seniority analysis', is_match: true },
+        // apply_decision + recommended_next_step visible to all plans
+        apply_decision: analysis.apply_decision,
+        recommended_next_step: analysis.recommended_next_step,
+        // Detailed reasoning gated to Pro+
+        decision_reasoning: features.missing_skills ? analysis.decision_reasoning : undefined,
+        biggest_strengths: analysis.biggest_strengths,
+        biggest_risks: features.missing_skills ? analysis.biggest_risks : undefined,
+        what_to_fix_before_applying: features.missing_skills ? analysis.what_to_fix_before_applying : undefined,
       };
 
       const { data: savedAnalysis, error: saveError } = await supabase
@@ -215,6 +230,12 @@ export async function POST(request: NextRequest) {
           skill_gaps: analysis.skill_gaps,
           recruiter_concerns: analysis.recruiter_concerns,
           seniority_analysis: analysis.seniority_analysis,
+          apply_decision: analysis.apply_decision || null,
+          decision_reasoning: analysis.decision_reasoning || null,
+          biggest_strengths: analysis.biggest_strengths || null,
+          biggest_risks: analysis.biggest_risks || null,
+          what_to_fix_before_applying: analysis.what_to_fix_before_applying || null,
+          recommended_next_step: analysis.recommended_next_step || null,
           analysis_metadata: {
             model: geminiKey ? 'gemini-3.1-pro-preview' : 'mock',
             timestamp: new Date().toISOString(),

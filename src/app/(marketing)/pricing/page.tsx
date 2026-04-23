@@ -5,8 +5,8 @@ import PricingCard from '@/components/marketing/PricingCard';
 import { RevealOnScroll, StaggerGroup, FadeUp } from '@/components/ui/motion';
 
 export const metadata: Metadata = {
-  title: 'Pricing — Unlimited Job Fit Analyses at $39/mo',
-  description: 'Simple, transparent pricing. Free plan available. Pro plan at $39/mo includes unlimited analyses, resume tailoring, cover letter generator, and application tracking. 7-day money-back guarantee.',
+  title: 'Pricing — Know Your Fit Before You Apply',
+  description: 'Simple, transparent pricing. Free plan available. Pro at $39/mo includes unlimited analyses, gap breakdown, Outreach Copilot, and ATS optimization. 7-day money-back guarantee.',
   alternates: { canonical: 'https://www.worthapply.com/pricing' },
 };
 
@@ -58,23 +58,31 @@ export default function PricingPage() {
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <CheckCircle size={20} weight="fill" className="text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-[#3d362f]">3 job analyses per month</span>
+                  <span className="text-[#3d362f]">1 full job analysis per month</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle size={20} weight="fill" className="text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-[#3d362f]">Basic resume tailoring</span>
+                  <span className="text-[#3d362f]">Fit score + Apply/Skip decision</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle size={20} weight="fill" className="text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-[#3d362f]">Application tracking</span>
+                  <span className="text-[#3d362f]">Matched strengths</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle size={20} weight="fill" className="text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#3d362f]">2 resume tailors + 3 cover letter verdicts</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle size={20} weight="fill" className="text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#3d362f]">Track up to 8 applications</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <X size={20} weight="bold" className="text-gray-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-400">LinkedIn job scraper</span>
+                  <span className="text-gray-400">Gap breakdown + what to fix</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <X size={20} weight="bold" className="text-gray-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-400">Cover letter generator</span>
+                  <span className="text-gray-400">Outreach Copilot</span>
                 </div>
               </div>
             </div>
@@ -98,12 +106,13 @@ export default function PricingPage() {
                   popular={true}
                   features={[
                     'Unlimited job analyses',
-                    'Advanced resume tailoring',
-                    'Cover letter generator',
+                    'Full gap breakdown + what to fix',
+                    'Apply/Skip decision with reasoning',
+                    'Outreach Copilot — recruiter & referral messages',
+                    'Unlimited resume tailoring + ATS optimization',
+                    'Unlimited cover letters',
                     '10 LinkedIn job searches/month',
-                    'Application tracking',
-                    'Pipeline tracker',
-                    'Email support'
+                    'Unlimited tracking + email support',
                   ]}
                 />
               </div>
@@ -127,12 +136,12 @@ export default function PricingPage() {
                   plan="premium"
                   popular={false}
                   features={[
-                    'Everything in Pro',
+                    'Everything in Professional',
+                    'Interview Prep Copilot — role-specific Q&A from your experience',
+                    'Evidence Vault — reusable story bank for every application',
                     '30 LinkedIn job searches per month',
-                    'AI Interview Prep Studio',
-                    'Offer Evaluation & Negotiation Copilot',
-                    '4-year total-comp projections',
-                    'Priority email support'
+                    'Offer Evaluation & Salary Negotiation Copilot',
+                    'Priority support',
                   ]}
                 />
               </div>
