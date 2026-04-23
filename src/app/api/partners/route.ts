@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(resendKey);
     await resend.emails.send({
       from: 'WorthApply Partners <noreply@worthapply.com>',
-      to: 'ZakE@worthapply.com',
+      to: 'info@worthapply.com',
       replyTo: email,
       subject: `[Partner Lead] ${name} — ${ROLE_LABELS[roleType]}`,
       html: `
