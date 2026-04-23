@@ -97,8 +97,12 @@ export interface FeatureAccess {
   ghost_flag_in_digest: boolean;     // PRO+
   digest_time_customization: boolean; // PRO+
 
+  // Outreach
+  outreach_copilot: boolean;         // PRO+
+
   // Premium-only features
   interview_prep: boolean;           // PREMIUM+
+  evidence_vault: boolean;           // PREMIUM+
   salary_negotiation: boolean;       // PREMIUM+
 
   // Support
@@ -161,8 +165,12 @@ export function getFeatureAccess(plan: Plan): FeatureAccess {
     ghost_flag_in_digest: isPaid,
     digest_time_customization: isPaid,
 
+    // Outreach
+    outreach_copilot: isPaid,
+
     // Premium-only features
     interview_prep: isPremium,
+    evidence_vault: isPremium,
     salary_negotiation: isPremium,
 
     // Support

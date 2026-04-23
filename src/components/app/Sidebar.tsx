@@ -20,6 +20,7 @@ import {
   MessageCircleQuestion,
   HandCoins,
   SendHorizonal,
+  BookMarked,
 } from 'lucide-react';
 import { SignOutButton } from '@/components/app/SignOutButton';
 import styles from './Sidebar.module.css';
@@ -38,6 +39,7 @@ const navItems = [
   { href: '/cover-letter', label: 'Cover Letter', icon: NotebookPen },
   { href: '/outreach', label: 'Outreach Copilot', icon: SendHorizonal },
   { href: '/interview-prep', label: 'Interview Prep', icon: MessageCircleQuestion },
+  { href: '/evidence-vault', label: 'Evidence Vault', icon: BookMarked },
   { href: '/offer-evaluation', label: 'Offer & Negotiation', icon: HandCoins },
   { href: '/applications', label: 'Applications', icon: BriefcaseBusiness },
   { href: '/tracker', label: 'Pipeline Tracker', icon: FileSearch },
