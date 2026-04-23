@@ -138,6 +138,7 @@ export default function MarketingNav() {
           <Link href="/pricing" className={styles.navLink}>Pricing</Link>
           <Link href="/compare" className={styles.navLink}>Compare</Link>
           <Link href="/about" className={styles.navLink}>About</Link>
+          <Link href="/partners" className={styles.navLink}>For coaches</Link>
         </nav>
 
         <div className={styles.desktopActions}>
@@ -163,6 +164,7 @@ export default function MarketingNav() {
           <Link href="/pricing" onClick={() => setMobileOpen(false)}>Pricing</Link>
           <Link href="/compare" onClick={() => setMobileOpen(false)}>Compare</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)}>About</Link>
+          <Link href="/partners" onClick={() => setMobileOpen(false)}>For coaches</Link>
         </div>
         <div className={styles.mobileActions}>
           <Link href="/login" className={styles.signIn} onClick={() => setMobileOpen(false)}>Sign in</Link>
