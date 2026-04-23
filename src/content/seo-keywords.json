@@ -41,8 +41,8 @@
         "The problem: most people either over-apply or under-apply",
         "The 5 things that actually determine if you're qualified",
         "How to read a job description honestly (not optimistically)",
-        "The 70% rule Ã¢ÂÂ what it really means",
-        "Skills vs. experience vs. culture fit Ã¢ÂÂ which matters most?",
+        "The 70% rule ÃÂ¢ÃÂÃÂ what it really means",
+        "Skills vs. experience vs. culture fit ÃÂ¢ÃÂÃÂ which matters most?",
         "A simple scoring framework you can use right now",
         "When to apply even if you're not 100% qualified",
         "When to skip even if you're technically qualified",
@@ -74,7 +74,7 @@
         "What Jobscan does well (honest assessment)",
         "Jobscan's key limitations in 2026",
         "The fundamental problem: optimizing without knowing if you should apply",
-        "WorthApply vs Jobscan Ã¢ÂÂ feature by feature table",
+        "WorthApply vs Jobscan ÃÂ¢ÃÂÃÂ feature by feature table",
         "Pricing comparison",
         "Who should use Jobscan vs WorthApply",
         "Other alternatives worth considering: Teal, Rezi, Resume Worded",
@@ -102,7 +102,7 @@
       "category": "guides",
       "status": "published",
       "outline": [
-        "What is a job fit score Ã¢ÂÂ definition",
+        "What is a job fit score ÃÂ¢ÃÂÃÂ definition",
         "Job fit score vs ATS score: what's the difference?",
         "The 4 dimensions of job fit: skills, experience, keywords, culture",
         "Why traditional ATS tools only measure one dimension",
@@ -167,7 +167,7 @@
         "What tailoring actually means vs what people think it means",
         "Step 1: Identify the 5-8 core requirements of the role",
         "Step 2: Map your real experience to each requirement",
-        "Step 3: Reframe, don't reinvent Ã¢ÂÂ language that surfaces hidden fit",
+        "Step 3: Reframe, don't reinvent ÃÂ¢ÃÂÃÂ language that surfaces hidden fit",
         "Step 4: Quantify what's already there (not invent numbers)",
         "Step 5: Write a summary that speaks directly to the role",
         "Common tailoring mistakes that hurt you",
@@ -290,11 +290,11 @@
       "outline": [
         "Why most advice about getting interviews is wrong",
         "The interview rate math: what's normal vs what's fixable",
-        "Factor 1: Fit Ã¢ÂÂ are you applying to the right roles?",
-        "Factor 2: Resume quality Ã¢ÂÂ are you communicating fit clearly?",
-        "Factor 3: ATS Ã¢ÂÂ is your resume even being read?",
-        "Factor 4: Volume vs quality Ã¢ÂÂ the right balance",
-        "Factor 5: Follow-up Ã¢ÂÂ what most people skip",
+        "Factor 1: Fit ÃÂ¢ÃÂÃÂ are you applying to the right roles?",
+        "Factor 2: Resume quality ÃÂ¢ÃÂÃÂ are you communicating fit clearly?",
+        "Factor 3: ATS ÃÂ¢ÃÂÃÂ is your resume even being read?",
+        "Factor 4: Volume vs quality ÃÂ¢ÃÂÃÂ the right balance",
+        "Factor 5: Follow-up ÃÂ¢ÃÂÃÂ what most people skip",
         "A 2-week experiment: 10 targeted applications vs 50 generic ones",
         "Tools that actually help",
         "FAQ"
@@ -501,7 +501,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 12000,
       "competition": "high",
-      "priority": 16,
+      "priority": 100,
       "word_count": 1500,
       "cta_type": "demo",
       "category": "guides",
@@ -519,6 +519,33 @@
       ]
     },
     {
+      "id": 51,
+      "slug": "youre-not-underqualified-youre-unreadable",
+      "title": "You're Not Underqualified. You're Unreadable.",
+      "target_keyword": "why am I not getting job interviews",
+      "secondary_keywords": [
+        "resume not getting interviews",
+        "qualified but no callbacks",
+        "why is my resume being ignored",
+        "resume getting past ATS"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 3400,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The qualifications trap: why being right for the job isn't enough",
+        "What 'unreadable' actually means in a resume context",
+        "The three signals that make recruiters skip a qualified candidate",
+        "How fit analysis reveals the gap between qualified and hireable",
+        "FAQ"
+      ],
+      "priority": 101
+    },
+    {
       "id": 17,
       "slug": "how-to-write-a-resume-summary",
       "title": "How to Write a Resume Summary That Actually Gets Read (With Examples)",
@@ -532,7 +559,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 14500,
       "competition": "high",
-      "priority": 17,
+      "priority": 102,
       "word_count": 1800,
       "cta_type": "demo",
       "category": "guides",
@@ -542,11 +569,38 @@
         "Resume summary vs. objective: which one to use",
         "The 3-sentence formula for a summary that works",
         "What to include: keywords, experience, value proposition",
-        "What to exclude: clichÃÂ©s, vague traits, filler phrases",
+        "What to exclude: clichÃÂÃÂ©s, vague traits, filler phrases",
         "10 resume summary examples by role and level",
         "How to tailor your summary for each job without rewriting from scratch",
         "FAQ"
       ]
+    },
+    {
+      "id": 52,
+      "slug": "why-tailoring-still-gets-ignored",
+      "title": "Why Tailoring Your Resume Still Gets You Ignored",
+      "target_keyword": "tailored resume not getting interviews",
+      "secondary_keywords": [
+        "resume tailoring not working",
+        "customized resume no response",
+        "tailoring resume tips",
+        "why tailored applications fail"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1200,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why tailoring became conventional wisdom (and why it's incomplete)",
+        "The problem: tailoring a bad fit is still a bad fit",
+        "What hiring managers actually screen for before reading the resume",
+        "Tailoring for fit vs tailoring for keywords — a critical distinction",
+        "FAQ"
+      ],
+      "priority": 103
     },
     {
       "id": 18,
@@ -562,7 +616,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 9800,
       "competition": "medium",
-      "priority": 18,
+      "priority": 104,
       "word_count": 1700,
       "cta_type": "demo",
       "category": "guides",
@@ -579,6 +633,33 @@
       ]
     },
     {
+      "id": 53,
+      "slug": "when-high-fit-score-means-dont-apply",
+      "title": "When a High Fit Score Still Means Don't Apply",
+      "target_keyword": "when not to apply for a job",
+      "secondary_keywords": [
+        "should I apply for this job",
+        "job fit score",
+        "overqualified job application",
+        "red flags in job descriptions"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 880,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "demo",
+      "status": "pending",
+      "outline": [
+        "Fit score is necessary but not sufficient",
+        "The 4 red flags that override a strong skills match",
+        "Cultural and structural mismatches that resumes can't capture",
+        "How to interpret fit data alongside context signals",
+        "FAQ"
+      ],
+      "priority": 105
+    },
+    {
       "id": 19,
       "slug": "how-to-write-a-cover-letter",
       "title": "How to Write a Cover Letter in 2026 That Hiring Managers Actually Read",
@@ -592,7 +673,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 22000,
       "competition": "high",
-      "priority": 19,
+      "priority": 106,
       "word_count": 2000,
       "cta_type": "demo",
       "category": "guides",
@@ -601,7 +682,7 @@
         "Do hiring managers actually read cover letters in 2026?",
         "When a cover letter matters most (and when to skip it)",
         "The cover letter structure that works: 4 paragraphs",
-        "Paragraph 1: The hook Ã¢ÂÂ don't start with 'I am applying for'",
+        "Paragraph 1: The hook ÃÂ¢ÃÂÃÂ don't start with 'I am applying for'",
         "Paragraph 2: Why you're a strong fit (use specifics)",
         "Paragraph 3: Why this company, not just any company",
         "Paragraph 4: The close",
@@ -609,6 +690,33 @@
         "Using fit analysis to write a more targeted cover letter",
         "FAQ"
       ]
+    },
+    {
+      "id": 54,
+      "slug": "how-to-ask-for-a-referral-without-sounding-desperate",
+      "title": "How to Ask for a Referral Without Sounding Desperate",
+      "target_keyword": "how to ask someone for a job referral",
+      "secondary_keywords": [
+        "job referral request email",
+        "asking for a referral networking",
+        "how to get a referral for a job",
+        "referral request message"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 2100,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why referral requests fail (it's not about being pushy)",
+        "The mindset shift: from asking for a favor to sharing information",
+        "The three-tier referral ask with word-for-word templates",
+        "What to say after the referral — following up without friction",
+        "FAQ"
+      ],
+      "priority": 107
     },
     {
       "id": 20,
@@ -624,7 +732,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 7200,
       "competition": "medium",
-      "priority": 20,
+      "priority": 108,
       "word_count": 2000,
       "cta_type": "demo",
       "category": "guides",
@@ -635,11 +743,39 @@
         "About section: tell a story, not a job description",
         "How to optimize your experience section for LinkedIn's algorithm",
         "Skills section: which ones to add and how to prioritize",
-        "Open to Work: banner vs. private signal Ã¢ÂÂ which is better?",
+        "Open to Work: banner vs. private signal ÃÂ¢ÃÂÃÂ which is better?",
         "How to use LinkedIn to research job fit before applying",
         "Connecting with recruiters: what to say",
         "FAQ"
       ]
+    },
+    {
+      "id": 55,
+      "slug": "why-100-applications-is-worse-than-20",
+      "title": "Why 100 Applications Is Often Worse Than 20",
+      "target_keyword": "how many jobs should I apply to",
+      "secondary_keywords": [
+        "spray and pray job search",
+        "too many job applications",
+        "job search strategy volume vs quality",
+        "targeted job applications"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1600,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The spray-and-pray math: why volume feels productive but isn't",
+        "How low-fit applications actively harm your search",
+        "The confidence erosion problem: 95 rejections before one yes",
+        "What the data says about targeted vs. volume applications",
+        "The practical middle ground: how to tier your applications",
+        "FAQ"
+      ],
+      "priority": 109
     },
     {
       "id": 21,
@@ -655,7 +791,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 9400,
       "competition": "medium",
-      "priority": 21,
+      "priority": 110,
       "word_count": 1800,
       "cta_type": "demo",
       "category": "guides",
@@ -673,6 +809,33 @@
       ]
     },
     {
+      "id": 56,
+      "slug": "the-job-description-lie",
+      "title": "The Job Description Lie Nobody Talks About",
+      "target_keyword": "job description vs actual job",
+      "secondary_keywords": [
+        "job description inaccurate",
+        "misleading job postings",
+        "job description red flags",
+        "what job descriptions really mean"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1900,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why job descriptions are written by committees for impossible people",
+        "The wishlist problem: must-have vs nice-to-have buried in the same bullet",
+        "How to read between the lines of a job posting",
+        "The difference between a signal-rich and signal-poor description",
+        "FAQ"
+      ],
+      "priority": 111
+    },
+    {
       "id": 22,
       "slug": "how-to-negotiate-salary",
       "title": "How to Negotiate Salary (Without Losing the Offer)",
@@ -686,7 +849,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 18000,
       "competition": "high",
-      "priority": 22,
+      "priority": 112,
       "word_count": 2000,
       "cta_type": "demo",
       "category": "guides",
@@ -704,9 +867,36 @@
       ]
     },
     {
+      "id": 57,
+      "slug": "what-recruiters-actually-do-with-your-resume",
+      "title": "What Recruiters Actually Do With Your Resume (It's Not What You Think)",
+      "target_keyword": "what do recruiters do with resumes",
+      "secondary_keywords": [
+        "how recruiters review resumes",
+        "recruiter resume screening",
+        "ATS vs human review",
+        "recruiter hiring process"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 2400,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The 6-second scan is real — but that's not the whole story",
+        "How ATS, sourcers, and hiring managers each see your resume differently",
+        "What actually triggers a recruiter to forward or pass",
+        "The role-fit signal recruiters look for that most candidates miss",
+        "FAQ"
+      ],
+      "priority": 113
+    },
+    {
       "id": 23,
       "slug": "job-search-burnout",
-      "title": "Job Search Burnout Is Real Ã¢ÂÂ Here's How to Recover and Search Smarter",
+      "title": "Job Search Burnout Is Real ÃÂ¢ÃÂÃÂ Here's How to Recover and Search Smarter",
       "target_keyword": "job search burnout",
       "secondary_keywords": [
         "job hunting burnout",
@@ -717,7 +907,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 4100,
       "competition": "low",
-      "priority": 23,
+      "priority": 114,
       "word_count": 1700,
       "cta_type": "demo",
       "category": "guides",
@@ -735,6 +925,33 @@
       ]
     },
     {
+      "id": 58,
+      "slug": "stop-optimizing-for-ats",
+      "title": "Stop Optimizing Your Resume for Robots",
+      "target_keyword": "ATS resume optimization",
+      "secondary_keywords": [
+        "ATS resume tips",
+        "beat applicant tracking system",
+        "ATS friendly resume",
+        "ATS keywords resume"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 3800,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "What ATS actually does (and doesn't do) in 2026",
+        "Why keyword stuffing works until it doesn't",
+        "The human filter that comes after ATS — and why it matters more",
+        "What you should optimize for instead",
+        "FAQ"
+      ],
+      "priority": 115
+    },
+    {
       "id": 24,
       "slug": "how-to-get-job-with-no-experience",
       "title": "How to Get a Job With No Experience: What Actually Works in 2026",
@@ -748,7 +965,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 16000,
       "competition": "high",
-      "priority": 24,
+      "priority": 116,
       "word_count": 2000,
       "cta_type": "demo",
       "category": "guides",
@@ -766,6 +983,33 @@
       ]
     },
     {
+      "id": 59,
+      "slug": "why-you-keep-losing-at-final-round",
+      "title": "Why You Keep Getting to the Final Round and Losing",
+      "target_keyword": "rejected after final interview",
+      "secondary_keywords": [
+        "failed final round interview",
+        "lost job offer final interview",
+        "final interview rejection",
+        "why didn't I get the job after final round"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 2200,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "You got the final round — something went wrong after that",
+        "The 4 most common final-round failure modes",
+        "When the problem is fit, not performance",
+        "How to diagnose your pattern from feedback (or lack of it)",
+        "FAQ"
+      ],
+      "priority": 117
+    },
+    {
       "id": 25,
       "slug": "how-to-explain-employment-gap",
       "title": "How to Explain an Employment Gap on Your Resume and in Interviews",
@@ -779,7 +1023,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 8300,
       "competition": "medium",
-      "priority": 25,
+      "priority": 118,
       "word_count": 1700,
       "cta_type": "demo",
       "category": "guides",
@@ -796,6 +1040,34 @@
       ]
     },
     {
+      "id": 60,
+      "slug": "the-real-reason-you-arent-getting-callbacks",
+      "title": "The Real Reason You're Not Getting Callbacks",
+      "target_keyword": "why am I not getting job callbacks",
+      "secondary_keywords": [
+        "job application no response",
+        "applying to jobs no callbacks",
+        "why won't employers call me back",
+        "no response to job applications"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 2800,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Ruling out the obvious: format, ATS, and basic errors",
+        "The fit problem: applying to roles where the match is invisible",
+        "The signal problem: your resume doesn't communicate what you actually did",
+        "The volume problem: spreading too thin across too many roles",
+        "A diagnostic framework to find your actual bottleneck",
+        "FAQ"
+      ],
+      "priority": 119
+    },
+    {
       "id": 26,
       "slug": "best-time-to-apply-for-jobs",
       "title": "The Best Time to Apply for Jobs (By Day, Month, and Season)",
@@ -809,7 +1081,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 5600,
       "competition": "low",
-      "priority": 26,
+      "priority": 120,
       "word_count": 1400,
       "cta_type": "demo",
       "category": "guides",
@@ -826,6 +1098,33 @@
       ]
     },
     {
+      "id": 61,
+      "slug": "overqualified-on-paper-right-fit-in-person",
+      "title": "Overqualified on Paper, Right Fit in Person: What to Do",
+      "target_keyword": "overqualified for a job",
+      "secondary_keywords": [
+        "told I'm overqualified",
+        "overqualified job rejection",
+        "how to handle overqualified rejection",
+        "applying to lower level job"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 4100,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why 'overqualified' is often a proxy for a different concern",
+        "The three real fears behind the rejection",
+        "How to address overqualification proactively in cover letters and interviews",
+        "When to apply anyway — and when the mismatch is genuine",
+        "FAQ"
+      ],
+      "priority": 121
+    },
+    {
       "id": 27,
       "slug": "how-to-use-linkedin-to-find-a-job",
       "title": "How to Use LinkedIn to Find a Job in 2026 (Beyond Just Applying)",
@@ -839,7 +1138,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 11000,
       "competition": "high",
-      "priority": 27,
+      "priority": 122,
       "word_count": 1900,
       "cta_type": "demo",
       "category": "guides",
@@ -856,6 +1155,33 @@
       ]
     },
     {
+      "id": 62,
+      "slug": "the-myth-of-the-perfect-resume",
+      "title": "The Myth of the Perfect Resume",
+      "target_keyword": "perfect resume tips",
+      "secondary_keywords": [
+        "ideal resume format",
+        "best resume advice",
+        "resume that gets interviews",
+        "what makes a great resume"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1500,
+      "competition": "high",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why resume perfection is a moving target",
+        "The uncomfortable truth: fit matters more than formatting",
+        "What a 'good enough' resume actually looks like",
+        "Where to spend your optimization energy instead",
+        "FAQ"
+      ],
+      "priority": 123
+    },
+    {
       "id": 28,
       "slug": "kickresume-alternative",
       "title": "Kickresume Alternative in 2026: More Than a Pretty Resume Builder",
@@ -868,7 +1194,7 @@
       "search_intent": "commercial",
       "estimated_monthly_searches": 900,
       "competition": "very low",
-      "priority": 28,
+      "priority": 124,
       "word_count": 1600,
       "cta_type": "signup",
       "category": "comparison",
@@ -884,6 +1210,33 @@
       ]
     },
     {
+      "id": 63,
+      "slug": "why-networking-feels-fake",
+      "title": "Why Networking Feels Fake (And How to Do It Anyway)",
+      "target_keyword": "job search networking tips",
+      "secondary_keywords": [
+        "how to network for a job",
+        "networking feels uncomfortable",
+        "networking without being fake",
+        "professional networking advice"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 3200,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why most networking advice produces cringe",
+        "The reciprocity problem: what most people get wrong about giving first",
+        "Two types of networking — transactional vs relational",
+        "A practical framework for networking without pretending",
+        "FAQ"
+      ],
+      "priority": 125
+    },
+    {
       "id": 29,
       "slug": "how-to-get-a-tech-job",
       "title": "How to Get a Tech Job in 2026: Resume, Applications, and What Actually Works",
@@ -897,7 +1250,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 8500,
       "competition": "medium",
-      "priority": 29,
+      "priority": 126,
       "word_count": 2000,
       "cta_type": "demo",
       "category": "guides",
@@ -914,6 +1267,33 @@
       ]
     },
     {
+      "id": 64,
+      "slug": "what-a-low-match-score-actually-tells-you",
+      "title": "What a Low Match Score Actually Tells You About a Job",
+      "target_keyword": "job match score meaning",
+      "secondary_keywords": [
+        "low job fit score",
+        "job match percentage",
+        "resume job match",
+        "what does fit score mean"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 720,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1100,
+      "cta_type": "demo",
+      "status": "pending",
+      "outline": [
+        "A low score isn't always a stop sign",
+        "The difference between a skills gap and a career gap",
+        "What to do with a 60% match vs. a 40% match",
+        "When to apply anyway — and how to frame the gap",
+        "FAQ"
+      ],
+      "priority": 127
+    },
+    {
       "id": 30,
       "slug": "how-to-get-a-product-manager-job",
       "title": "How to Get a Product Manager Job in 2026 (Even Without a PM Title Yet)",
@@ -927,7 +1307,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 6200,
       "competition": "medium",
-      "priority": 30,
+      "priority": 128,
       "word_count": 2000,
       "cta_type": "demo",
       "category": "guides",
@@ -944,6 +1324,33 @@
       ]
     },
     {
+      "id": 65,
+      "slug": "why-dream-company-applications-fail",
+      "title": "Why Applying to Your Dream Company First Is a Mistake",
+      "target_keyword": "how to get job at dream company",
+      "secondary_keywords": [
+        "applying to Google Amazon Meta",
+        "dream company job application",
+        "how to get hired at top company",
+        "big tech job application strategy"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1800,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Dream companies as practice: why this is backwards",
+        "How to calibrate your pitch before the highest-stakes application",
+        "The role specificity problem at large companies",
+        "A sequencing strategy that actually protects your chances",
+        "FAQ"
+      ],
+      "priority": 129
+    },
+    {
       "id": 31,
       "slug": "what-to-do-when-rejected-from-job",
       "title": "Rejected From a Job? Here's What to Do Next (Step by Step)",
@@ -957,7 +1364,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 4800,
       "competition": "low",
-      "priority": 31,
+      "priority": 130,
       "word_count": 1500,
       "cta_type": "demo",
       "category": "guides",
@@ -973,6 +1380,33 @@
       ]
     },
     {
+      "id": 66,
+      "slug": "the-hidden-cost-of-applying-to-every-job",
+      "title": "The Hidden Cost of Applying to Every Job You See",
+      "target_keyword": "applying to too many jobs",
+      "secondary_keywords": [
+        "job application fatigue",
+        "too many applications job search",
+        "how to be more selective job search",
+        "job search burnout applications"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1100,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The illusion of productivity in a high-volume search",
+        "How undifferentiated applications erode your interview skills",
+        "The compounding cost of bad-fit interviews",
+        "What selective applicants do differently",
+        "FAQ"
+      ],
+      "priority": 131
+    },
+    {
       "id": 32,
       "slug": "ats-resume-format",
       "title": "ATS Resume Format: The Exact Layout That Gets You Past the Robots",
@@ -986,7 +1420,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 7400,
       "competition": "medium",
-      "priority": 32,
+      "priority": 132,
       "word_count": 1700,
       "cta_type": "demo",
       "category": "guides",
@@ -1003,6 +1437,33 @@
       ]
     },
     {
+      "id": 67,
+      "slug": "salary-negotiation-when-to-say-a-number",
+      "title": "The Salary Question: When to Give a Number and When Not To",
+      "target_keyword": "when to give salary expectations",
+      "secondary_keywords": [
+        "salary expectations interview",
+        "should I give salary range",
+        "salary negotiation first number",
+        "how to answer salary question"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 4600,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The conventional wisdom about anchoring — and where it breaks down",
+        "When deflecting hurts you more than it helps",
+        "Reading the context: recruiter screen vs late-stage negotiation",
+        "How to give a number confidently when you have to",
+        "FAQ"
+      ],
+      "priority": 133
+    },
+    {
       "id": 33,
       "slug": "how-many-jobs-to-apply-to",
       "title": "How Many Jobs Should You Apply to Per Week? The Answer Might Surprise You",
@@ -1016,7 +1477,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 3900,
       "competition": "low",
-      "priority": 33,
+      "priority": 134,
       "word_count": 1500,
       "cta_type": "demo",
       "category": "guides",
@@ -1032,6 +1493,33 @@
       ]
     },
     {
+      "id": 68,
+      "slug": "what-keep-your-resume-on-file-means",
+      "title": "What 'We'll Keep Your Resume on File' Actually Means",
+      "target_keyword": "what does keep resume on file mean",
+      "secondary_keywords": [
+        "we'll keep your resume on file rejection",
+        "job rejection response",
+        "resume on file meaning",
+        "polite rejection job application"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 890,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1000,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Translating the polite rejection",
+        "The rare case where it actually means something",
+        "What to do after a rejection letter",
+        "How to turn a no into a future yes",
+        "FAQ"
+      ],
+      "priority": 135
+    },
+    {
       "id": 34,
       "slug": "zety-alternative",
       "title": "Zety Alternative in 2026: When You Need More Than a Resume Builder",
@@ -1045,7 +1533,7 @@
       "search_intent": "commercial",
       "estimated_monthly_searches": 1600,
       "competition": "low",
-      "priority": 34,
+      "priority": 136,
       "word_count": 1600,
       "cta_type": "signup",
       "category": "comparison",
@@ -1058,6 +1546,33 @@
         "Who should use Zety vs WorthApply",
         "FAQ"
       ]
+    },
+    {
+      "id": 69,
+      "slug": "the-follow-up-email-that-gets-read",
+      "title": "The Only Follow-Up Email That Actually Gets Read",
+      "target_keyword": "follow up email after job application",
+      "secondary_keywords": [
+        "how to follow up on job application email",
+        "follow up after interview email",
+        "job application follow up template",
+        "when to follow up on job application"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 5400,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why most follow-up emails fail immediately",
+        "What 'value-add' actually means in a follow-up context",
+        "The timing window: when to send and when to wait",
+        "Word-for-word templates that work at each stage",
+        "FAQ"
+      ],
+      "priority": 137
     },
     {
       "id": 35,
@@ -1073,7 +1588,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 7100,
       "competition": "medium",
-      "priority": 35,
+      "priority": 138,
       "word_count": 1900,
       "cta_type": "demo",
       "category": "guides",
@@ -1089,6 +1604,33 @@
       ]
     },
     {
+      "id": 70,
+      "slug": "culture-fit-real-or-cop-out",
+      "title": "Culture Fit: Real Signal or Hiring Cop-Out?",
+      "target_keyword": "culture fit job interview",
+      "secondary_keywords": [
+        "what is culture fit hiring",
+        "rejected for culture fit",
+        "culture fit discrimination",
+        "how to assess company culture"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 2900,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "What 'culture fit' means when it's legitimate",
+        "What it means when it's a cover for bias",
+        "How to evaluate culture before you're in the room",
+        "Asking the right questions to reveal real culture in interviews",
+        "FAQ"
+      ],
+      "priority": 139
+    },
+    {
       "id": 36,
       "slug": "job-ghosting-after-applying",
       "title": "Getting Ghosted After Applying? Here's the Real Reason (and the Fix)",
@@ -1102,7 +1644,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 5300,
       "competition": "low",
-      "priority": 36,
+      "priority": 140,
       "word_count": 1600,
       "cta_type": "demo",
       "category": "guides",
@@ -1119,6 +1661,33 @@
       ]
     },
     {
+      "id": 71,
+      "slug": "why-your-linkedin-is-hurting-your-search",
+      "title": "Why Your LinkedIn Profile Is Quietly Hurting Your Job Search",
+      "target_keyword": "LinkedIn profile job search tips",
+      "secondary_keywords": [
+        "LinkedIn profile mistakes",
+        "optimize LinkedIn for job search",
+        "LinkedIn profile for job seekers",
+        "how to improve LinkedIn profile"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 3700,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The signals recruiters check before they look at your resume",
+        "The 5 LinkedIn mistakes that silently disqualify you",
+        "What a recruiter-ready profile actually looks like",
+        "Headline and About section: the two highest-leverage fixes",
+        "FAQ"
+      ],
+      "priority": 141
+    },
+    {
       "id": 37,
       "slug": "resume-keywords-how-to-find-them",
       "title": "How to Find the Right Resume Keywords for Any Job Description",
@@ -1132,7 +1701,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 13500,
       "competition": "high",
-      "priority": 37,
+      "priority": 142,
       "word_count": 1800,
       "cta_type": "demo",
       "category": "guides",
@@ -1150,6 +1719,33 @@
       ]
     },
     {
+      "id": 72,
+      "slug": "the-words-that-kill-your-application",
+      "title": "The 3 Phrases That Kill Your Application Before Anyone Reads It",
+      "target_keyword": "resume mistakes job application",
+      "secondary_keywords": [
+        "common resume mistakes",
+        "resume red flags",
+        "words to avoid on resume",
+        "resume phrases that hurt you"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 2100,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1100,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The phrases that signal a generic application",
+        "Why 'results-driven professional' and its cousins are invisible",
+        "How to replace filler with signal",
+        "The 30-second test to audit your own resume",
+        "FAQ"
+      ],
+      "priority": 143
+    },
+    {
       "id": 38,
       "slug": "how-to-get-marketing-job",
       "title": "How to Get a Marketing Job in 2026: What the Hiring Market Actually Wants",
@@ -1163,7 +1759,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 5900,
       "competition": "medium",
-      "priority": 38,
+      "priority": 144,
       "word_count": 1800,
       "cta_type": "demo",
       "category": "guides",
@@ -1180,6 +1776,33 @@
       ]
     },
     {
+      "id": 73,
+      "slug": "when-to-walk-away-from-a-job-offer",
+      "title": "When to Walk Away From a Job Offer (Even a Good One)",
+      "target_keyword": "should I take this job offer",
+      "secondary_keywords": [
+        "declining a job offer",
+        "when to reject job offer",
+        "job offer red flags",
+        "should I accept this job"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 3300,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The pressure to accept: financial, social, and psychological",
+        "Red flags in the offer stage that predict a bad job",
+        "The 5 questions to ask yourself before saying yes",
+        "How to decline gracefully without burning a bridge",
+        "FAQ"
+      ],
+      "priority": 145
+    },
+    {
       "id": 39,
       "slug": "applicant-tracking-system-explained",
       "title": "How Applicant Tracking Systems Work (And How to Beat Them)",
@@ -1193,7 +1816,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 6800,
       "competition": "medium",
-      "priority": 39,
+      "priority": 146,
       "word_count": 1700,
       "cta_type": "demo",
       "category": "guides",
@@ -1205,9 +1828,36 @@
         "Why ATS scores don't equal human scores",
         "Common ATS systems and how they differ: Greenhouse, Lever, Workday, iCIMS",
         "How to optimize for ATS without gaming the system",
-        "What ATS cannot see Ã¢ÂÂ your hidden advantages",
+        "What ATS cannot see ÃÂ¢ÃÂÃÂ your hidden advantages",
         "FAQ"
       ]
+    },
+    {
+      "id": 74,
+      "slug": "why-the-best-jobs-never-get-posted",
+      "title": "Why the Best Jobs Never Get Posted",
+      "target_keyword": "hidden job market",
+      "secondary_keywords": [
+        "hidden job market strategy",
+        "unadvertised jobs",
+        "jobs not posted online",
+        "how to find unlisted jobs"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 4800,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why companies hire before they post",
+        "How referrals and relationships shortcut the process",
+        "What the hidden job market actually looks like in practice",
+        "How to position yourself to be found rather than applying blind",
+        "FAQ"
+      ],
+      "priority": 147
     },
     {
       "id": 40,
@@ -1223,7 +1873,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 9200,
       "competition": "medium",
-      "priority": 40,
+      "priority": 148,
       "word_count": 2000,
       "cta_type": "demo",
       "category": "guides",
@@ -1237,9 +1887,36 @@
         "Tip 5: The follow-up sequence that gets responses",
         "Tip 6: Use AI tools that don't fabricate your experience",
         "Tip 7: Track your pipeline like a sales funnel",
-        "Tip 8: Protect your mental energy Ã¢ÂÂ job search is a marathon",
+        "Tip 8: Protect your mental energy ÃÂ¢ÃÂÃÂ job search is a marathon",
         "FAQ"
       ]
+    },
+    {
+      "id": 75,
+      "slug": "the-interview-question-thats-a-trap",
+      "title": "The Interview Question That's Actually a Trap",
+      "target_keyword": "tricky interview questions",
+      "secondary_keywords": [
+        "interview trick questions",
+        "interview questions with hidden meaning",
+        "how to answer hard interview questions",
+        "interview questions employers really asking"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 5100,
+      "competition": "high",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "Why some interview questions aren't really asking what they ask",
+        "The 'greatest weakness' trap and others like it",
+        "What interviewers are actually trying to learn",
+        "How to answer strategically without being dishonest",
+        "FAQ"
+      ],
+      "priority": 149
     },
     {
       "id": 41,
@@ -1254,7 +1931,7 @@
       "search_intent": "commercial",
       "estimated_monthly_searches": 700,
       "competition": "very low",
-      "priority": 41,
+      "priority": 150,
       "word_count": 1500,
       "cta_type": "signup",
       "category": "comparison",
@@ -1266,6 +1943,33 @@
         "Who each tool is best for",
         "FAQ"
       ]
+    },
+    {
+      "id": 76,
+      "slug": "what-your-references-are-actually-saying",
+      "title": "Your References Aren't Saying What You Think They Are",
+      "target_keyword": "job reference what they say",
+      "secondary_keywords": [
+        "what do references say about you",
+        "job reference check questions",
+        "bad reference from employer",
+        "how to prepare references for a job"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1700,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The gap between what you think they'll say and what they actually say",
+        "What reference checkers are listening for (it's not praise)",
+        "How to prep your references properly without coaching them",
+        "The reference you should never use — and the one you're forgetting",
+        "FAQ"
+      ],
+      "priority": 151
     },
     {
       "id": 42,
@@ -1281,7 +1985,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 4700,
       "competition": "medium",
-      "priority": 42,
+      "priority": 152,
       "word_count": 1900,
       "cta_type": "demo",
       "category": "guides",
@@ -1298,6 +2002,33 @@
       ]
     },
     {
+      "id": 77,
+      "slug": "qualified-but-never-hears-back",
+      "title": "The Qualified Candidate Who Never Hears Back (And Why)",
+      "target_keyword": "qualified but not getting interviews",
+      "secondary_keywords": [
+        "qualified candidate rejected",
+        "not getting interviews despite qualifications",
+        "why am I not getting interviews with experience",
+        "overqualified underqualified rejection"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 2500,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The gap between being qualified and being hireable",
+        "Why qualified candidates get filtered out before a human sees them",
+        "The three signals that make the difference",
+        "How to close the gap without lying or inflating your experience",
+        "FAQ"
+      ],
+      "priority": 153
+    },
+    {
       "id": 43,
       "slug": "how-to-ask-for-referral-job",
       "title": "How to Ask for a Job Referral Without Making It Weird",
@@ -1311,7 +2042,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 3600,
       "competition": "low",
-      "priority": 43,
+      "priority": 154,
       "word_count": 1500,
       "cta_type": "demo",
       "category": "guides",
@@ -1328,6 +2059,33 @@
       ]
     },
     {
+      "id": 78,
+      "slug": "the-case-for-applying-to-fewer-jobs",
+      "title": "The Counterintuitive Case for Applying to Fewer Jobs",
+      "target_keyword": "should I apply to fewer jobs",
+      "secondary_keywords": [
+        "quality over quantity job applications",
+        "targeted job search",
+        "fewer better job applications",
+        "job search focus strategy"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 960,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1200,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The math most job seekers get wrong",
+        "Why 5 great applications outperform 50 mediocre ones",
+        "How selective applying improves interview performance",
+        "Building a tiered application system that works",
+        "FAQ"
+      ],
+      "priority": 155
+    },
+    {
       "id": 44,
       "slug": "job-interview-preparation-guide",
       "title": "How to Prepare for a Job Interview: A Step-by-Step Guide for 2026",
@@ -1341,7 +2099,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 27000,
       "competition": "high",
-      "priority": 44,
+      "priority": 156,
       "word_count": 2200,
       "cta_type": "demo",
       "category": "guides",
@@ -1359,6 +2117,33 @@
       ]
     },
     {
+      "id": 79,
+      "slug": "ghosted-after-interview-what-it-means",
+      "title": "Ghosted After an Interview? Here's What It Actually Means",
+      "target_keyword": "ghosted after job interview",
+      "secondary_keywords": [
+        "no response after interview",
+        "employer ghosting after interview",
+        "interview ghosting",
+        "job ghosting what to do"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 6200,
+      "competition": "medium",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "signup",
+      "status": "pending",
+      "outline": [
+        "The uncomfortable truth about why companies go silent",
+        "What ghosting usually signals about the company",
+        "When following up helps and when it hurts",
+        "How to protect your energy and move on without closure",
+        "FAQ"
+      ],
+      "priority": 157
+    },
+    {
       "id": 45,
       "slug": "linkedin-easy-apply-tips",
       "title": "LinkedIn Easy Apply: When to Use It and When to Avoid It",
@@ -1372,7 +2157,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 4400,
       "competition": "low",
-      "priority": 45,
+      "priority": 158,
       "word_count": 1500,
       "cta_type": "demo",
       "category": "guides",
@@ -1388,6 +2173,33 @@
       ]
     },
     {
+      "id": 80,
+      "slug": "fit-first-beats-tailoring",
+      "title": "Fit-First: Why Knowing Before Applying Beats Tailoring Every Time",
+      "target_keyword": "job fit assessment before applying",
+      "secondary_keywords": [
+        "should I apply for this job",
+        "job fit analysis",
+        "how to assess job fit",
+        "before you apply job checklist"
+      ],
+      "search_intent": "informational",
+      "estimated_monthly_searches": 1400,
+      "competition": "low",
+      "category": "insights",
+      "word_count": 1300,
+      "cta_type": "demo",
+      "status": "pending",
+      "outline": [
+        "The traditional sequence: apply → tailor → hope",
+        "Why fit assessment inverts the process (and why that matters)",
+        "What you learn from fit analysis that a job description can't tell you",
+        "How WorthApply surfaces fit signal before you spend an hour tailoring",
+        "FAQ"
+      ],
+      "priority": 159
+    },
+    {
       "id": 46,
       "slug": "how-to-get-finance-job",
       "title": "How to Get a Finance Job in 2026: Resume, Credentials, and Strategy",
@@ -1401,7 +2213,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 5100,
       "competition": "medium",
-      "priority": 46,
+      "priority": 160,
       "word_count": 1900,
       "cta_type": "demo",
       "category": "guides",
@@ -1430,7 +2242,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 3800,
       "competition": "low",
-      "priority": 47,
+      "priority": 161,
       "word_count": 1500,
       "cta_type": "demo",
       "category": "guides",
@@ -1459,7 +2271,7 @@
       "search_intent": "commercial",
       "estimated_monthly_searches": 6500,
       "competition": "medium",
-      "priority": 48,
+      "priority": 162,
       "word_count": 1700,
       "cta_type": "signup",
       "category": "guides",
@@ -1488,7 +2300,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 4300,
       "competition": "low",
-      "priority": 49,
+      "priority": 163,
       "word_count": 1800,
       "cta_type": "demo",
       "category": "guides",
@@ -1517,7 +2329,7 @@
       "search_intent": "informational",
       "estimated_monthly_searches": 18500,
       "competition": "high",
-      "priority": 50,
+      "priority": 164,
       "word_count": 1600,
       "cta_type": "demo",
       "category": "guides",
