@@ -506,49 +506,94 @@ export default function AnalyzerPage() {
             )}
 
             {results.skill_gaps?.length > 0 && (
-              <div className="bg-white rounded-2xl border border-outline-variant/20 overflow-hidden">
-                <div className="px-6 py-4 border-b border-outline-variant/10 flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-amber-600" />
-                  <h3 className="font-bold text-on-surface">Areas to Address</h3>
-                  <span className="ml-auto text-xs text-on-surface-variant">{results.skill_gaps.length} gaps</span>
-                </div>
-                <div className="divide-y divide-outline-variant/10">
-                  {visibleGaps?.map((gap, idx) => (
-                    <div key={idx} className="px-6 py-4 flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0">
-                        <AlertTriangle className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-on-surface text-sm">{gap.skill}</p>
-                        {gap.suggestion && (
-                          <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">{gap.suggestion}</p>
+              isPaidPlan ? (
+                <div className="bg-white rounded-2xl border border-outline-variant/20 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-outline-variant/10 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-600" />
+                    <h3 className="font-bold text-on-surface">Areas to Address</h3>
+                    <span className="ml-auto text-xs text-on-surface-variant">{results.skill_gaps.length} gaps</span>
+                  </div>
+                  <div className="divide-y divide-outline-variant/10">
+                    {visibleGaps?.map((gap, idx) => (
+                      <div key={idx} className="px-6 py-4 flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0">
+                          <AlertTriangle className="w-4 h-4 text-amber-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-on-surface text-sm">{gap.skill}</p>
+                          {gap.suggestion && (
+                            <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">{gap.suggestion}</p>
+                          )}
+                        </div>
+                        {gap.impact && (
+                          <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full shrink-0 ${
+                            gap.impact === 'high' ? 'bg-red-50 text-red-700' :
+                            gap.impact === 'medium' ? 'bg-amber-50 text-amber-700' :
+                            'bg-gray-50 text-gray-600'
+                          }`}>
+                            {gap.impact}
+                          </span>
                         )}
                       </div>
-                      {gap.impact && (
-                        <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full shrink-0 ${
-                          gap.impact === 'high' ? 'bg-red-50 text-red-700' :
-                          gap.impact === 'medium' ? 'bg-amber-50 text-amber-700' :
-                          'bg-gray-50 text-gray-600'
-                        }`}>
-                          {gap.impact}
-                        </span>
+                    ))}
+                  </div>
+                  {results.skill_gaps.length > 3 && (
+                    <button
+                      onClick={() => setShowAllGaps(!showAllGaps)}
+                      className="w-full px-6 py-3 text-xs font-bold text-secondary uppercase tracking-widest flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors border-t border-outline-variant/10"
+                    >
+                      {showAllGaps ? (
+                        <><ChevronUp className="w-3.5 h-3.5" /> Show Less</>
+                      ) : (
+                        <><ChevronDown className="w-3.5 h-3.5" /> Show {results.skill_gaps.length - 3} More</>
                       )}
-                    </div>
-                  ))}
+                    </button>
+                  )}
                 </div>
-                {results.skill_gaps.length > 3 && (
-                  <button
-                    onClick={() => setShowAllGaps(!showAllGaps)}
-                    className="w-full px-6 py-3 text-xs font-bold text-secondary uppercase tracking-widest flex items-center justify-center gap-1 hover:bg-surface-container-low transition-colors border-t border-outline-variant/10"
-                  >
-                    {showAllGaps ? (
-                      <><ChevronUp className="w-3.5 h-3.5" /> Show Less</>
-                    ) : (
-                      <><ChevronDown className="w-3.5 h-3.5" /> Show {results.skill_gaps.length - 3} More</>
-                    )}
-                  </button>
-                )}
-              </div>
+              ) : (
+                <div className="relative rounded-2xl border border-amber-200 bg-amber-50 overflow-hidden">
+                  {/* Blurred preview of first gap */}
+                  <div className="px-6 py-4 border-b border-amber-200 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-600" />
+                    <h3 className="font-bold text-amber-900">Areas to Address</h3>
+                    <span className="ml-auto text-xs text-amber-700 font-semibold">{results.skill_gaps.length} gaps found</span>
+                  </div>
+                  <div className="relative">
+                    {/* First gap — blurred */}
+                    <div className="px-6 py-4 flex items-start gap-4 blur-sm pointer-events-none select-none" aria-hidden="true">
+                      <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-amber-900 text-sm">{results.skill_gaps[0].skill}</p>
+                        <p className="text-xs text-amber-700 mt-1">{results.skill_gaps[0].suggestion}</p>
+                      </div>
+                    </div>
+                    {/* Upgrade overlay */}
+                    <div className="px-6 pb-6 pt-2 flex flex-col items-center text-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center">
+                        <Zap className="w-5 h-5 text-amber-700" />
+                      </div>
+                      <div>
+                        <p className="font-black text-amber-900 text-base">
+                          Your score is {results.overall_score}. See the {results.skill_gaps.length} gap{results.skill_gaps.length !== 1 ? 's' : ''} keeping you from a stronger match.
+                        </p>
+                        <p className="text-sm text-amber-700 mt-1">
+                          Upgrade to Pro to see exactly what to fix, in priority order — plus tailoring suggestions tied to your real experience.
+                        </p>
+                      </div>
+                      <Link
+                        href="/pricing"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#1f2937] to-secondary text-white rounded-xl text-sm font-black uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Unlock full breakdown — from $39/mo
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )
             )}
 
             {(results.domain_experience?.overlap?.length ?? 0) > 0 && (

@@ -17,7 +17,7 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   free: {
-    analyses_per_month: 3,
+    analyses_per_month: 1,
     tailoring_per_month: 2,
     cover_letters_per_month: 3, // verdict only
     job_searches_per_month: 0, // No LinkedIn scraping
@@ -241,9 +241,9 @@ export const PLAN_PRICING: Record<Plan, PlanPricing> = {
     name: 'Free',
     price: 0,
     interval: 'month',
-    description: 'Perfect for exploring',
+    description: 'Try it for free',
     features: [
-      '3 job analyses per month',
+      '1 full job analysis (score + strengths)',
       '2 resume tailors per month',
       '3 cover letter verdicts',
       'Basic job tracking (8 jobs)',
