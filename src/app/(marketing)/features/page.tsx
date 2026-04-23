@@ -20,9 +20,9 @@ import { FeaturesShowcase } from './FeaturesShowcase';
 import { StaggerGroup, FadeUp, RevealOnScroll } from '@/components/ui/motion';
 
 export const metadata: Metadata = {
-  title: 'Features — Job Fit Analysis, Resume Tailoring, Outreach & More',
+  title: 'Features — The Job Probability Engine',
   description:
-    'Analyze job fit in seconds, tailor your resume, write outreach messages, prep for interviews, and evaluate offers — all in one platform. Built for serious job seekers.',
+    'WorthApply scores your interview probability before you apply, then gives you every tool to improve it — tailoring, outreach, interview prep, and offer negotiation.',
   alternates: {
     canonical: 'https://www.worthapply.com/features',
   },
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
 const features = [
   {
     title: 'Apply/Skip Decision Engine',
-    text: 'Score your fit across 7 dimensions before investing a single minute. Know which roles are worth your effort.',
-    points: ['7-dimension scoring breakdown', 'Gap analysis + what to fix', 'Effort estimate + interview probability'],
+    text: 'Calculate your interview probability across 7 signals before investing a minute in tailoring.',
+    points: ['7-signal probability score', 'Gap analysis + ranked fix list', 'Apply/Skip verdict in 10 seconds'],
     iconName: 'target',
     badge: null,
   },
@@ -95,11 +95,11 @@ const features = [
 ];
 
 const workflow = [
-  'Score fit across 7 dimensions — skip roles before rewriting anything',
-  'Tailor your resume with stronger evidence and ATS-optimized keywords',
-  'Write outreach messages that get recruiter responses',
-  'Prep for interviews with stage-specific questions from your story bank',
-  'Evaluate offers with 4-year projections and a negotiation script',
+  'Calculate your interview probability — skip roles before rewriting anything',
+  'Boost your probability: tailor with stronger evidence and ATS-optimized keywords',
+  'Boost your probability: write outreach that gets recruiter responses',
+  'Boost your probability: prep with stage-specific questions from your story bank',
+  'Boost your probability: evaluate offers and negotiate with 4-year projections',
 ];
 
 export default function FeaturesPage() {
@@ -108,10 +108,10 @@ export default function FeaturesPage() {
       <section className={styles.hero}>
         <div className={styles.heroBackdrop} />
         <div className={styles.container}>
-          <span className={styles.eyebrow}>Product features</span>
-          <h1>Every tool you need<br />to land the right role</h1>
+          <span className={styles.eyebrow}>Job Probability Engine</span>
+          <h1>Score your probability.<br />Then improve it.</h1>
           <p>
-            From fit analysis to offer negotiation — WorthApply covers every stage of the job search so you apply smarter, outreach better, and walk into interviews prepared.
+            WorthApply calculates your interview probability before you apply — then every tool below exists to close the gap, from resume tailoring to offer negotiation.
           </p>
         </div>
       </section>
@@ -177,10 +177,10 @@ export default function FeaturesPage() {
         <RevealOnScroll className={styles.container}>
           <div className={styles.summaryPanel}>
             <div>
-              <span className={styles.sectionEyebrow}>Complete job search platform</span>
-              <h2>One platform. Every step covered.</h2>
+              <span className={styles.sectionEyebrow}>Job Probability Engine</span>
+              <h2>One engine. Every stage covered.</h2>
               <p>
-                From fit analysis to offer negotiation — WorthApply replaces the spreadsheet, the ATS scanner, the generic rewriter, and the guesswork with one focused workflow.
+                From probability score to signed offer — WorthApply replaces the guesswork, the generic rewriter, and the scattered tools with one focused workflow built around your interview odds.
               </p>
             </div>
             <div className={styles.principlesList}>

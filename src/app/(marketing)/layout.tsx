@@ -17,10 +17,10 @@ const footerColumns = [
   {
     title: 'Workflows',
     links: [
-      { label: 'Job-fit analysis', href: '/features' },
-      { label: 'Resume tailoring', href: '/features' },
-      { label: 'ATS checker', href: '/tools/ats-checker' },
-      { label: 'Application tracking', href: '/features' },
+      { label: 'Job Probability Engine', href: '/features' },
+      { label: 'Outreach Copilot', href: '/features' },
+      { label: 'Interview Prep', href: '/features' },
+      { label: 'Application Tracking', href: '/features' },
     ],
   },
   {
@@ -46,11 +46,11 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
               <span className={styles.brandWordmark}>WorthApply</span>
               <span className={styles.trustPill}>
                 <ShieldCheck size={14} weight="duotone" />
-                Fit-first &middot; Evidence-based &middot; No fabrication
+                Job Probability Engine &middot; Evidence-based &middot; No fabrication
               </span>
             </div>
             <p>
-              Professional job search workspace — fit verdicts, evidence-based edits, and pipeline visibility in one place.
+              The Job Probability Engine — score your interview odds before you apply, then use every tool to improve them.
             </p>
           </div>
 
@@ -72,7 +72,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
 
         <div className={styles.footerBottom}>
           <p>© {new Date().getFullYear()} WorthApply. All rights reserved.</p>
-          <p>Fit-first job search platform. Know if you&apos;re the right fit before you apply.</p>
+          <p>The Job Probability Engine. Know your interview probability before you apply a single hour.</p>
         </div>
       </footer>
     </>

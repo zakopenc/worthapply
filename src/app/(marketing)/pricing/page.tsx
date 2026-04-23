@@ -5,8 +5,8 @@ import PricingCard from '@/components/marketing/PricingCard';
 import { RevealOnScroll, StaggerGroup, FadeUp } from '@/components/ui/motion';
 
 export const metadata: Metadata = {
-  title: 'Pricing — Know Your Fit Before You Apply',
-  description: 'Simple, transparent pricing. Free plan available. Pro at $39/mo includes unlimited analyses, gap breakdown, Outreach Copilot, and ATS optimization. 7-day money-back guarantee.',
+  title: 'Pricing — Job Probability Engine',
+  description: 'Simple, transparent pricing. Free plan available. Pro at $39/mo includes unlimited probability analyses, gap breakdown, Outreach Copilot, and ATS optimization. 7-day money-back guarantee.',
   alternates: { canonical: 'https://www.worthapply.com/pricing' },
 };
 
@@ -18,10 +18,10 @@ export default function PricingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <RevealOnScroll>
             <h1 className="text-4xl sm:text-5xl lg:text-[4.5rem] font-extrabold text-[#171411] tracking-tight leading-[1.0] mb-4">
-              Simple, Transparent Pricing
+              Invest in your probability.
             </h1>
             <p className="text-lg text-[#6e665f] leading-relaxed mb-8">
-              Start free, upgrade when you need more. Cancel anytime.
+              Start free. Upgrade when you want the full engine. Cancel anytime.
             </p>
 
             {/* Money-Back Guarantee Badge */}
@@ -41,7 +41,7 @@ export default function PricingPage() {
             <FadeUp>
             <div className="bg-white rounded-2xl shadow-lg border-2 border-[#e8e2db] p-8">
               <h3 className="text-2xl font-extrabold text-[#171411] mb-2">Free</h3>
-              <p className="text-[#6e665f] mb-6">Perfect for trying out WorthApply</p>
+              <p className="text-[#6e665f] mb-6">Try the probability engine — no card required</p>
               
               <div className="mb-8">
                 <div className="text-5xl font-extrabold text-[#171411]">$0</div>
@@ -281,7 +281,7 @@ export default function PricingPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <RevealOnScroll>
             <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight leading-[1.1] mb-6">
-              Ready to know before you apply?
+              Ready to calculate your probability?
             </h2>
             <p className="text-lg text-gray-300 leading-relaxed mb-10">
               Start free today. No credit card required.
