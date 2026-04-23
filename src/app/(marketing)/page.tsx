@@ -31,12 +31,12 @@ const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentP
 // CircularTestimonials removed — was rendering fabricated testimonials. Reintroduce when real user quotes exist.
 
 export const metadata: Metadata = {
-  title: 'WorthApply — Know if you\'re the right fit, before you apply',
+  title: 'WorthApply — Stop wasting hours on jobs you were never likely to land',
   description:
     'Fit-first job search. Analyze your real fit for a role in 10 seconds before tailoring your resume. Evidence-based, no fabrication. Free plan available.',
   alternates: { canonical: 'https://www.worthapply.com' },
   openGraph: {
-    title: 'WorthApply — Know if you\'re the right fit, before you apply',
+    title: 'WorthApply — Stop wasting hours on jobs you were never likely to land',
     description: 'Fit-first job search. Built for selective applicants targeting competitive roles.',
     url: 'https://www.worthapply.com',
     siteName: 'WorthApply',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WorthApply — Know if you\'re the right fit, before you apply',
+    title: 'WorthApply — Stop wasting hours on jobs you were never likely to land',
     description: 'Fit-first job search. Evidence-based. No fabrication.',
     images: ['https://www.worthapply.com/og-image.png'],
   },
@@ -70,34 +70,33 @@ export default function HomePage() {
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-[4.5rem] font-extrabold text-[#171411] tracking-tight leading-[1.0] mb-6 animate-slide-up">
-              Know if you&apos;re the right fit{' '}
+              Stop wasting hours on jobs{' '}
               <span className="block bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-                before you apply
+                you were never likely to land.
               </span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg text-[#6e665f] leading-relaxed mb-8 max-w-3xl mx-auto animate-slide-up animation-delay-100">
-              WorthApply analyzes your real fit for a role before you spend hours tailoring your resume.
-              Built for selective applicants going after competitive roles &mdash; not another keyword stuffer.
+              WorthApply helps serious applicants decide which jobs are actually worth pursuing, tailor honestly using their real experience, and run a disciplined search from first analysis to interview.
             </p>
 
             {/* Dual CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-slide-up animation-delay-300">
-              <Link 
-                href="/demo"
+              <Link
+                href="/signup"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-secondary to-primary text-white rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-200"
               >
                 <Sparkle className="w-5 h-5" weight="duotone" />
-                Try Demo (No Signup)
+                Get a free fit audit for 3 jobs
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" weight="bold" />
               </Link>
-              <Link 
-                href="/signup"
+              <Link
+                href="/demo"
                 className="inline-flex items-center gap-2 px-8 py-4 border-2 border-primary text-gray-900 rounded-xl font-semibold text-lg hover:bg-primary hover:text-white transition-all duration-200"
               >
                 <Target className="w-5 h-5" weight="duotone" />
-                Analyze Your Resume Free
+                See a live demo
               </Link>
             </div>
 
