@@ -87,20 +87,15 @@ export async function checkRateLimit(
 
   if (!limiter) {
     if (!warnedNoRedis) {
-      if (IS_PROD) {
-        console.error('[ratelimit] CRITICAL: Upstash Redis not configured in production. Failing CLOSED — all rate-limited endpoints will 429 until UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are set.');
-      } else {
-        console.warn('[ratelimit] Upstash Redis not configured — rate limiting disabled in development.');
-      }
+      console.warn('[ratelimit] Upstash Redis not configured — rate limiting disabled (fail-open). Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enable.');
       warnedNoRedis = true;
     }
-    const success = !IS_PROD;
     return {
-      success,
+      success: true,
       limit: TIER_RPM[tier],
-      remaining: success ? TIER_RPM[tier] : 0,
+      remaining: TIER_RPM[tier],
       reset: Date.now() + 60_000,
-      retryAfterSeconds: success ? 0 : 60,
+      retryAfterSeconds: 0,
       tier,
     };
   }
@@ -119,14 +114,13 @@ export async function checkRateLimit(
       tier,
     };
   } catch (error) {
-    console.error('[ratelimit] Redis call failed:', error);
-    const success = !IS_PROD;
+    console.error('[ratelimit] Redis call failed, failing open:', error);
     return {
-      success,
+      success: true,
       limit: TIER_RPM[tier],
-      remaining: success ? TIER_RPM[tier] : 0,
+      remaining: TIER_RPM[tier],
       reset: Date.now() + 60_000,
-      retryAfterSeconds: success ? 0 : 60,
+      retryAfterSeconds: 0,
       tier,
     };
   }
