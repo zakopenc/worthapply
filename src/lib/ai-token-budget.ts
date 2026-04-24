@@ -91,20 +91,15 @@ export async function reserveAiBudget(
 
   if (!redis) {
     if (!warnedNoRedis) {
-      if (IS_PROD) {
-        console.error('[ai-budget] CRITICAL: Redis not configured in production — failing CLOSED');
-      } else {
-        console.warn('[ai-budget] Redis not configured — budget disabled in development');
-      }
+      console.warn('[ai-budget] Redis not configured — budget disabled (fail-open). Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enable.');
       warnedNoRedis = true;
     }
     return {
-      allowed: !IS_PROD,
+      allowed: true,
       used: 0,
       limit,
       remaining: limit,
       cost,
-      reason: IS_PROD ? 'Budget service unavailable' : undefined,
     };
   }
 
@@ -138,14 +133,13 @@ export async function reserveAiBudget(
       cost,
     };
   } catch (error) {
-    console.error('[ai-budget] Redis error:', error);
+    console.error('[ai-budget] Redis error, failing open:', error);
     return {
-      allowed: !IS_PROD,
+      allowed: true,
       used: 0,
       limit,
       remaining: limit,
       cost,
-      reason: IS_PROD ? 'Budget service error' : undefined,
     };
   }
 }
