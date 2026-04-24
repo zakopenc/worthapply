@@ -80,7 +80,8 @@ export async function checkRateLimit(
   scope: string = 'global',
   plan?: string
 ): Promise<RateLimitResult> {
-  const tier: TierName = plan && plan in limiters ? (plan as TierName) : 'default';
+  const normalised = plan === 'lifetime' ? 'premium' : plan;
+  const tier: TierName = normalised && normalised in limiters ? (normalised as TierName) : 'default';
   const limiter = limiters[tier];
   const key = `${identifier}:${scope}`;
 

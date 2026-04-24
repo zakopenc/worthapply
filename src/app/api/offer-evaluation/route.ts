@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Offer Evaluation is a Premium feature.', upgrade_required: true }, { status: 403 });
     }
 
-    const rateLimit = await checkRateLimit(user.id, 'offer-evaluation', plan);
+    const rateLimit = await checkRateLimit(user.id, 'offer-evaluation', rawPlan);
     if (!rateLimit.success) {
       return NextResponse.json(
         buildRateLimitErrorBody(rateLimit, 'offer-evaluation'),

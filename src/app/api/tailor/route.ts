@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     const plan = getEffectivePlan(rawPlan, profile?.subscription_status);
     const limits = getPlanLimits(plan);
 
-    const rateLimit = await checkRateLimit(user.id, 'tailor', plan);
+    const rateLimit = await checkRateLimit(user.id, 'tailor', rawPlan);
     if (!rateLimit.success) {
       return NextResponse.json(
         buildRateLimitErrorBody(rateLimit, 'tailor'),
