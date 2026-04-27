@@ -77,12 +77,15 @@ export interface BlogPost {
 export type BlogPostMetadata = Omit<BlogPost, 'content'>;
 
 export async function getAllPosts(): Promise<BlogPostMetadata[]> {
-  const categories = ['comparison', 'guides'];
+  const categoryDirs: Array<{ dir: string; category: 'comparison' | 'guide' }> = [
+    { dir: 'comparison', category: 'comparison' },
+    { dir: 'guides', category: 'guide' },
+  ];
   const allPosts: BlogPostMetadata[] = [];
 
-  for (const category of categories) {
-    const categoryPath = path.join(postsDirectory, category);
-    
+  for (const { dir, category } of categoryDirs) {
+    const categoryPath = path.join(postsDirectory, dir);
+
     if (!fs.existsSync(categoryPath)) {
       continue;
     }
@@ -104,7 +107,7 @@ export async function getAllPosts(): Promise<BlogPostMetadata[]> {
         title: data.title,
         description: data.description,
         publishedAt: data.publishedAt,
-        category: category as 'comparison' | 'guide',
+        category,
         author: data.author || 'WorthApply Team',
         readTime: data.readTime || '5 min read',
         featured: data.featured || false,
@@ -120,11 +123,14 @@ export async function getAllPosts(): Promise<BlogPostMetadata[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const categories = ['comparison', 'guides'];
+  const categoryDirs: Array<{ dir: string; category: 'comparison' | 'guide' }> = [
+    { dir: 'comparison', category: 'comparison' },
+    { dir: 'guides', category: 'guide' },
+  ];
 
-  for (const category of categories) {
-    const fullPath = path.join(postsDirectory, category, `${slug}.md`);
-    
+  for (const { dir, category } of categoryDirs) {
+    const fullPath = path.join(postsDirectory, dir, `${slug}.md`);
+
     if (fs.existsSync(fullPath)) {
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const { data, content } = matter(fileContents);
@@ -140,7 +146,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
         title: data.title,
         description: data.description,
         publishedAt: data.publishedAt,
-        category: category as 'comparison' | 'guide',
+        category,
         author: data.author || 'WorthApply Team',
         readTime: data.readTime || '5 min read',
         content: contentHtml,
