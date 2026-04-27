@@ -129,11 +129,13 @@ export default async function BlogPostPage({ params }: PageProps) {
             {/* Category Badge */}
             <div className="mb-4">
               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                post.category === 'comparison' 
-                  ? 'bg-secondary/20 text-secondary' 
+                post.category === 'comparison'
+                  ? 'bg-secondary/20 text-secondary'
+                  : post.category === 'insight'
+                  ? 'bg-primary/20 text-primary'
                   : 'bg-tertiary/20 text-tertiary'
               }`}>
-                {post.category === 'comparison' ? 'Comparison' : 'Guide'}
+                {post.category === 'comparison' ? 'Comparison' : post.category === 'insight' ? 'Insight' : 'Guide'}
               </span>
             </div>
 

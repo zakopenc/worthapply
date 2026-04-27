@@ -66,7 +66,7 @@ export interface BlogPost {
   title: string;
   description: string;
   publishedAt: string;
-  category: 'comparison' | 'guide' | 'tool';
+  category: 'comparison' | 'guide' | 'insight' | 'tool';
   author: string;
   readTime: string;
   content: string;
@@ -77,9 +77,10 @@ export interface BlogPost {
 export type BlogPostMetadata = Omit<BlogPost, 'content'>;
 
 export async function getAllPosts(): Promise<BlogPostMetadata[]> {
-  const categoryDirs: Array<{ dir: string; category: 'comparison' | 'guide' }> = [
+  const categoryDirs: Array<{ dir: string; category: 'comparison' | 'guide' | 'insight' }> = [
     { dir: 'comparison', category: 'comparison' },
     { dir: 'guides', category: 'guide' },
+    { dir: 'insights', category: 'insight' },
   ];
   const allPosts: BlogPostMetadata[] = [];
 
@@ -123,9 +124,10 @@ export async function getAllPosts(): Promise<BlogPostMetadata[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const categoryDirs: Array<{ dir: string; category: 'comparison' | 'guide' }> = [
+  const categoryDirs: Array<{ dir: string; category: 'comparison' | 'guide' | 'insight' }> = [
     { dir: 'comparison', category: 'comparison' },
     { dir: 'guides', category: 'guide' },
+    { dir: 'insights', category: 'insight' },
   ];
 
   for (const { dir, category } of categoryDirs) {
@@ -164,7 +166,7 @@ export async function getFeaturedPosts(): Promise<BlogPostMetadata[]> {
   return allPosts.filter(post => post.featured).slice(0, 3);
 }
 
-export async function getPostsByCategory(category: 'comparison' | 'guide' | 'tool'): Promise<BlogPostMetadata[]> {
+export async function getPostsByCategory(category: 'comparison' | 'guide' | 'insight' | 'tool'): Promise<BlogPostMetadata[]> {
   const allPosts = await getAllPosts();
   return allPosts.filter(post => post.category === category);
 }

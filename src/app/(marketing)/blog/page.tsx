@@ -20,11 +20,13 @@ function PostCard({ post }: { post: BlogPostMetadata }) {
         {/* Category Badge */}
         <div className="flex items-center gap-2 mb-3">
           <span className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
-            post.category === 'comparison' 
-              ? 'bg-secondary/20 text-secondary' 
+            post.category === 'comparison'
+              ? 'bg-secondary/20 text-secondary'
+              : post.category === 'insight'
+              ? 'bg-primary/20 text-primary'
               : 'bg-tertiary/20 text-tertiary'
           }`}>
-            {post.category === 'comparison' ? 'Comparison' : 'Guide'}
+            {post.category === 'comparison' ? 'Comparison' : post.category === 'insight' ? 'Insight' : 'Guide'}
           </span>
           {post.featured && (
             <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-primary/20 text-primary flex items-center gap-1">
@@ -79,6 +81,7 @@ export default async function BlogPage() {
   const featuredPosts = posts.filter(p => p.featured);
   const comparisonPosts = posts.filter(p => p.category === 'comparison');
   const guidePosts = posts.filter(p => p.category === 'guide');
+  const insightPosts = posts.filter(p => p.category === 'insight');
 
   return (
     <div className="min-h-screen bg-surface">
@@ -125,6 +128,24 @@ export default async function BlogPage() {
             </RevealOnScroll>
             <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {comparisonPosts.map(post => (
+                <FadeUp key={post.slug}>
+                  <PostCard post={post} />
+                </FadeUp>
+              ))}
+            </StaggerGroup>
+          </section>
+        )}
+
+        {/* Insight Posts */}
+        {insightPosts.length > 0 && (
+          <section className="mb-16">
+            <RevealOnScroll>
+              <h2 className="text-3xl lg:text-4xl font-extrabold text-[#171411] tracking-tight leading-[1.1] mb-6">
+                Insights
+              </h2>
+            </RevealOnScroll>
+            <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {insightPosts.map(post => (
                 <FadeUp key={post.slug}>
                   <PostCard post={post} />
                 </FadeUp>
